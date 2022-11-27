@@ -21,6 +21,7 @@
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
+    <PythonDebugWebServerCommandArguments>runserver --noreload --settings $(DjangoSettingsModule) %SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="core\admin.py" />
+    <Compile Include="core\apps.py" />
+    <Compile Include="core\migrations\__init__.py" />
+    <Compile Include="core\models.py" />
+    <Compile Include="core\tests.py" />
+    <Compile Include="core\views.py" />
+    <Compile Include="core\__init__.py" />
     <Compile Include="manage.py" />
     <Compile Include="pyInterClubs\__init__.py" />
     <Compile Include="pyInterClubs\settings.py" />
@@ -41,6 +49,8 @@
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="core\" />
+    <Folder Include="core\migrations\" />
     <Folder Include="pyInterClubs\" />
   </ItemGroup>
   <ItemGroup>
@@ -94,4 +104,15 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PythonCommands>
+	  $(PythonCommands);
+	  Django_command
+    </PythonCommands>
+  </PropertyGroup>
+  <Target Name="Django_command" Label="Django - migrate --fake-initial" Returns="@(Commands)">
+    <CreatePythonCommandItem TargetType="script" Target="manage.py" Arguments="migrate --fake-initial" WorkingDirectory="$(MSBuildProjectDirectory)" ExecuteIn="output">
+      <Output TaskParameter="Command" ItemName="Commands" />
+    </CreatePythonCommandItem>
+  </Target>
 </Project>
