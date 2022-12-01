@@ -1,0 +1,35 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>{% filter default:0|add:' - ' %}{% block title %}{% endblock %}{% endfilter %}pyInterClubs</title>
+
+    <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}" />
+    <link rel="stylesheet" href="{% static '3rd/bootstrap-5.2.0-beta1-dist/css/bootstrap.min.css' %}" />
+
+    <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+    <script src="{% static '3rd/jquery-3.6.0-dist/jquery-3.6.0.min.js' %}" defer></script>
+    <script src="{% static '3rd/htmx-1.8.0-dist/htmx.min.js' %}" defer></script>
+    <script src="{% static '3rd/bootstrap-5.2.0-beta1-dist/js/bootstrap.min.js' %}" defer></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    {% include 'menu.html' %}
+
+    <div id="mainFragment" class="container">
+        {% block body %}{% endblock %}
+    </div>
+
+    <div id="messagesFragment" class="toast-container position-fixed top-0 end-0 m-2">
+        {% block toast %}{% endblock %}
+    </div>
+
+    <div id="modalFragment">
+        {% block modal %}{% endblock %}
+    </div>
+
+    {% block script %}{% endblock %}
+</body>
+</html>

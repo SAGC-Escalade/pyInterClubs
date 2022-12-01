@@ -1,0 +1,34 @@
+{% load static %}
+<div id="menu" class="offcanvas offcanvas-start">
+    <div class="offcanvas-header bg-light">
+        {% if user.is_authenticated %}
+        <div class="vstack gap-2 position-relative align-items-center">
+            <div class="hstack position-absolute top-0 start-0 end-0">
+                <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <a role="button" class="btn" href="{% url 'logout' %}" title="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+            <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
+            <span class="fw-bold"><span class="text-uppercase">{{ user.first_name }}</span> <span class="text-capitalize">{{ user.last_name }}</span></span>
+        </div>
+        {% else %}
+        <div class="vstack gap-2 position-relative align-items-center">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
+            <a role="button" class="btn btn-light" href="{% url 'login' %}" title="S'authentifier">S'authentifier <i class="fa-solid fa-right-to-bracket ms-1"></i></a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="offcanvas-body p-0">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                item 1
+            </li>
+            <li class="list-group-item">
+                item 2
+            </li>
+            <li class="list-group-item">
+                item 3
+            </li>
+        </ul>
+    </div>
+</div>
