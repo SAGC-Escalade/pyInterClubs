@@ -24,7 +24,7 @@ SECRET_KEY = 'dc7519ba-91c9-42c9-b41f-c8ac5c6fc48b'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'interClubs.sqlite',
     },
 }
-DATABASE_ROUTERS = ['pyInterClubs.routers.inMetaRouter']
+DATABASE_ROUTERS = ['pyInterClubs.routers.inModelRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -107,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTHENTICATION_BACKENDS = ['pyInterClubs.backends.ClubBackend', 'django.contrib.auth.backends.ModelBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

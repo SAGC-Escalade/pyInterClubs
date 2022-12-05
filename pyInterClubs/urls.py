@@ -21,9 +21,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from .views import *
+
 urlpatterns = [
     # Uncomment the next line to enable the admin:
     path('admin/', admin.site.urls),
-    path('account/', include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
+    path('accounts/clubs', ClubQRCodesView.as_view(), name='qrcode-clubs'),
     path('', TemplateView.as_view(template_name="index.html")),
 ]

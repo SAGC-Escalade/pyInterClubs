@@ -1,0 +1,35 @@
+{% extends request.htmx|yesno:"base.html,index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+{% bootstrap_messages %}
+
+<div class="container">
+    {% if form.errors %}
+        <p>Votre identifiant ou votre mot de passe n'est pas valide. Réessayez.</p>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+            <p>Vous n'avez pas accès à cette page, Connectez-vous avec un compte valide.</p>
+        {% else %}
+            <p>Connectez-vous pour avoir accès à cette page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+
+        <div class="col s12 input-field">
+            <button class="btn btn-primary" type="submit", name="action">Se connecter <i class="fa-solid fa-id-card ms-1"></i></button>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

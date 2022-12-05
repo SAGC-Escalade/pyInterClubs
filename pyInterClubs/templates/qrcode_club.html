@@ -1,0 +1,48 @@
+{% extends request.htmx|yesno:"base.html,index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}QRCode des clubs{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="accordion" id="qrcodes">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="hdrWifi">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bdyWifi" aria-expanded="true" aria-controls="bdyWifi">
+                    Codes Wifi
+                </button>
+            </h2>
+            <div id="bdyWifi" class="accordion-collapse collapse show" aria-labelledby="hdrWifi" data-bs-parent="#qrcodes">
+                <div class="accordion-body">
+                    Codes Wifi...
+                </div>
+            </div>
+        </div>
+        {% for o in object_list %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="hdr{{ o.ID }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.ID }}" aria-expanded="true" aria-controls="bdy{{ o.ID }}">
+                    {{ o.Nom }} ({{ o.Localisation }})
+                </button>
+            </h2>
+            <div id="bdy{{ o.ID }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.ID }}" data-bs-parent="#qrcodes">
+                <div class="accordion-body">
+                    {{ o.md5 }}
+                    <form method="post" action="{% url 'auth-club' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="token" value="{{ o.md5 }}" />
+                        <div class="col s12 input-field">
+                            <button class="btn btn-primary" type="submit" , name="action">Se connecter <i class="fa-solid fa-id-card ms-1"></i></button>
+                        </div>
+                        <input type="hidden" name="next" value="/">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

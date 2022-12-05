@@ -22,7 +22,8 @@
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
-    <PythonDebugWebServerCommandArguments>runserver --noreload --settings $(DjangoSettingsModule) %SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
+    <PythonDebugWebServerCommandArguments>runserver --noreload --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
+    <PythonRunWebServerCommandArguments>runserver --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonRunWebServerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,18 +42,119 @@
     <Compile Include="core\views.py" />
     <Compile Include="core\__init__.py" />
     <Compile Include="manage.py" />
+    <Compile Include="pyInterClubs\backends.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pyInterClubs\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pyInterClubs\views.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pyInterClubs\routers.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pyInterClubs\__init__.py" />
     <Compile Include="pyInterClubs\settings.py" />
     <Compile Include="pyInterClubs\urls.py" />
     <Compile Include="pyInterClubs\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.rtl.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.rtl.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.rtl.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.rtl.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.rtl.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.rtl.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.rtl.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.rtl.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.rtl.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.rtl.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.rtl.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.rtl.min.css" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap.rtl.min.css.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.bundle.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.bundle.js.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.bundle.min.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.bundle.min.js.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.esm.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.esm.js.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.esm.min.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.esm.min.js.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.js.map" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.min.js" />
+    <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.min.js.map" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\ajax-header.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\alpine-morph.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\class-tools.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\client-side-templates.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\debug.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\disable-element.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\event-header.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\include-vals.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\json-enc.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\loading-states.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\method-override.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\morphdom-swap.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\path-deps.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\preload.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\rails-method.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\remove-me.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\restored.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\sse.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\ws.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.min.js" />
+    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.min.js.gz" />
+    <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.js" />
+    <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.min.js" />
+    <Content Include="pyInterClubs\static\css\ourse.old.css" />
+    <Content Include="pyInterClubs\static\img\user.png" />
+    <Content Include="pyInterClubs\templates\qrcode_club.html" />
+    <Content Include="pyInterClubs\templates\index.html" />
+    <Content Include="pyInterClubs\templates\menu.html" />
+    <Content Include="pyInterClubs\templates\navbar.html" />
+    <Content Include="pyInterClubs\templates\registration\login.html" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
+    <Folder Include="core\templates\" />
     <Folder Include="pyInterClubs\" />
+    <Folder Include="pyInterClubs\static\" />
+    <Folder Include="pyInterClubs\static\3rd\" />
+    <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\" />
+    <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\" />
+    <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\" />
+    <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\" />
+    <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\" />
+    <Folder Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\" />
+    <Folder Include="pyInterClubs\static\css\" />
+    <Folder Include="pyInterClubs\static\img\" />
+    <Folder Include="pyInterClubs\static\js\" />
+    <Folder Include="pyInterClubs\templates\" />
+    <Folder Include="pyInterClubs\templates\registration\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="venv\">
