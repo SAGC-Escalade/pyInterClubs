@@ -33,6 +33,7 @@ class EtatVoie(models.IntegerChoices):
 class Niveau(models.Model):
     class Meta:
         db_table = 'Niveaux'
+        _using = 'interClubs'
 
     Categorie = models.IntegerField(choices=Categorie.choices)
     NomVoie = models.CharField(max_length=10)
@@ -52,6 +53,7 @@ class Niveau(models.Model):
 class Club(models.Model):
     class Meta:
         db_table = 'Clubs'
+        _using = 'interClubs'
 
     Nom = models.CharField(max_length=50)
     Localisation = models.CharField(max_length=50)
@@ -64,6 +66,7 @@ class Club(models.Model):
 class Grimpeur(models.Model):
     class Meta:
         db_table = 'Grimpeurs'
+        _using = 'interClubs'
 
     Nom = models.CharField(max_length=50)
     Prenom = models.CharField(max_length=50)
@@ -80,6 +83,7 @@ class Grimpeur(models.Model):
 class Saison(models.Model):
     class Meta:
         db_table = 'Saisons'
+        _using = 'interClubs'
 
     Annee = models.IntegerField()
     ID = models.AutoField(primary_key=True)
@@ -91,6 +95,7 @@ class Saison(models.Model):
 class Rencontre(models.Model):
     class Meta:
         db_table = 'Rencontres'
+        _using = 'interClubs'
 
     Saison = models.ForeignKey(Saison, on_delete=models.PROTECT, related_name='Rencontres', db_column='IDSaison')
     Club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='Rencontres', db_column='IDClub')
@@ -105,6 +110,7 @@ class Rencontre(models.Model):
 class Equipe(models.Model):
     class Meta:
         db_table = 'Equipes'
+        _using = 'interClubs'
 
     Rencontre = models.ForeignKey(Rencontre, on_delete=models.PROTECT, related_name='Equipes', db_column='IDRencontre')
     Club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='Equipes', db_column='IDClub')
@@ -119,6 +125,7 @@ class Equipe(models.Model):
 class Score(models.Model):
     class Meta:
         db_table = 'Scores'
+        _using = 'interClubs'
 
     Equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='Scores', db_column='IDEquipe')
     Grimpeur = models.ForeignKey(Grimpeur, on_delete=models.PROTECT, related_name='Scores', db_column='IDGrimpeur')

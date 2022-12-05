@@ -82,9 +82,14 @@ WSGI_APPLICATION = 'pyInterClubs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'InterClubs.sqlite',
-    }
+        'NAME': BASE_DIR / 'django.sqlite',
+    },
+    'interClubs': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'interClubs.sqlite',
+    },
 }
+DATABASE_ROUTERS = ['pyInterClubs.routers.inMetaRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
