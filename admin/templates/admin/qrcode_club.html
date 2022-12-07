@@ -21,7 +21,7 @@
         {% for o in object_list %}
         <div class="accordion-item">
             <h2 class="accordion-header" id="hdr{{ o.ID }}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.ID }}" aria-expanded="true" aria-controls="bdy{{ o.ID }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.ID }}" aria-expanded="true" aria-controls="bdy{{ o.ID }}">
                     {{ o.Nom }} ({{ o.Localisation }})
                 </button>
             </h2>

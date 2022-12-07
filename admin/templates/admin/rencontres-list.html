@@ -1,0 +1,43 @@
+{% extends request.htmx|yesno:"base.html,index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Liste des rencontres{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <span class="text-muted">Liste des rencontres par saisons</span>
+        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i><span class="ms-1 d-none d-lg-inline">Ajouter une rencontre</span></button>
+    </div>
+    <table class="table table-hover table-sm">
+        <thead class="table-light">
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Date</th>
+                <th scope="col">Lieu</th>
+                <th scope="col">Equipes (Enfants/Ados)</th>
+                <th scope="col">Participants (Enfants/Ados)</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        {% for saison in object_list|dictsort:"Annee" %}
+        <tbody class="table-group-divider">
+            <tr><th colspan="6">{{ saison }}</th></tr>
+            {% for rencontre in saison.Rencontres.all|dictsort:"Date" %}
+            <tr>
+                <td><input type="radio" name="selected" /></td>
+                <td>{{ rencontre.Date }}</td>
+                <td>{{ rencontre.Club.Localisation }}</td>
+                <td>{{ rencontre.Equipes.count }}</td>
+                <td>- / -</td>
+                <td><button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

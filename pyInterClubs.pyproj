@@ -69,7 +69,7 @@
     <Compile Include="pyInterClubs\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="admin\templates\admin\index.html" />
+    <Content Include="admin\templates\admin\rencontres-list.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
@@ -140,10 +140,10 @@
     <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.min.js" />
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
-    <Content Include="pyInterClubs\templates\qrcode_club.html" />
+    <Content Include="pyInterClubs\templates\p_menu.html" />
+    <Content Include="pyInterClubs\templates\p_navbar.html" />
+    <Content Include="admin\templates\admin\qrcode_club.html" />
     <Content Include="pyInterClubs\templates\index.html" />
-    <Content Include="pyInterClubs\templates\menu.html" />
-    <Content Include="pyInterClubs\templates\navbar.html" />
     <Content Include="pyInterClubs\templates\registration\login.html" />
     <Content Include="requirements.txt" />
   </ItemGroup>
