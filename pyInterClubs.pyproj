@@ -36,6 +36,9 @@
   <ItemGroup>
     <Compile Include="admin\admin.py" />
     <Compile Include="admin\apps.py" />
+    <Compile Include="admin\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="admin\migrations\__init__.py" />
     <Compile Include="admin\models.py" />
     <Compile Include="admin\tests.py" />

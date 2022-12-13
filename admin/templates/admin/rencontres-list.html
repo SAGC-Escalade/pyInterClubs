@@ -9,33 +9,40 @@
         <span class="text-muted">Liste des rencontres par saisons</span>
         <button class="btn btn-primary"><i class="fa-solid fa-plus"></i><span class="ms-1 d-none d-lg-inline">Ajouter une rencontre</span></button>
     </div>
-    <table class="table table-hover table-sm">
-        <thead class="table-light">
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">Date</th>
-                <th scope="col">Lieu</th>
-                <th scope="col">Equipes (Enfants/Ados)</th>
-                <th scope="col">Participants (Enfants/Ados)</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        {% for saison in object_list|dictsort:"Annee" %}
-        <tbody class="table-group-divider">
-            <tr><th colspan="6">{{ saison }}</th></tr>
-            {% for rencontre in saison.Rencontres.all|dictsort:"Date" %}
-            <tr>
-                <td><input type="radio" name="selected" /></td>
-                <td>{{ rencontre.Date }}</td>
-                <td>{{ rencontre.Club.Localisation }}</td>
-                <td>{{ rencontre.Equipes.count }}</td>
-                <td>- / -</td>
-                <td><button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button></td>
-            </tr>
+    <form action="{% url 'rencontres' %}" method="post">
+        {% csrf_token %}
+        <table class="table table-hover table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Enfants</th>
+                    <th scope="col">Ados</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Lieu</th>
+                    <th scope="col">Equipes (Enfants/Ados)</th>
+                    <th scope="col">Participants (Enfants/Ados)</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            {% for saison in object_list|dictsort:"Annee" %}
+            <tbody class="table-group-divider">
+                <tr><th colspan="7">{{ saison }}</th></tr>
+                {% for r in saison.Rencontres.all|dictsort:"Date" %}
+                <tr>
+                    <td><input type="radio" name="selected" value="{{ r.ID }}-1" {% if r.ID == rencontre and categorie == 1 %}checked="" {% endif %}/></td>
+                    <td><input type="radio" name="selected" value="{{ r.ID }}-2" {% if r.ID == rencontre and categorie == 2 %}checked="" {% endif %} /></td>
+                    <td>{{ r.Date }}</td>
+                    <td>{{ r.Club.Localisation }}</td>
+                    <td>{{ r.Equipes.count }}</td>
+                    <td>- / -</td>
+                    <td><button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
             {% endfor %}
-        </tbody>
-        {% endfor %}
-    </table>
+        </table>
+
+        <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i>Sélectionner la manche</button>
+    </form>
 </div>
 {% endblock %}
 
