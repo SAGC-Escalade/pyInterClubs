@@ -1,10 +1,15 @@
 {% extends request.htmx|yesno:"base.html,index.html" %}
+{% load static %}
 {% load django_bootstrap5 %}
 
+{% block head %}
+    <script src="{% static '3rd/qrcode-2015.11.25-dist/qrcode.min.js' %}"></script>
+{% endblock %}
 {% block title %}QRCode des clubs{% endblock %}
 
 {% block body %}
 <div class="container">
+    {{ request.environ.SERVER_PORT }}
     <div class="accordion" id="qrcodes">
         <div class="accordion-item">
             <h2 class="accordion-header" id="hdrWifi">
@@ -26,16 +31,26 @@
                 </button>
             </h2>
             <div id="bdy{{ o.ID }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.ID }}" data-bs-parent="#qrcodes">
-                <div class="accordion-body">
-                    {{ o.md5 }}
-                    <form method="post" action="{% url 'auth-club' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="token" value="{{ o.md5 }}" />
-                        <div class="col s12 input-field">
-                            <button class="btn btn-primary" type="submit" , name="action">Se connecter <i class="fa-solid fa-id-card ms-1"></i></button>
+                <div class="accordion-body row row-cols-1 row-cols-md-2">
+                    <div class="col text-center">
+                        <div id="qrcode{{ o.ID }}"></div>
+                    </div>
+                    <div class="col">
+                        <div class="vstack gap-1">
+                            <span>Nom : {{ o.Nom }}</span>
+                            <span>Ville : {{ o.Localisation }}</span>
+                            <span>Nombre de grimpeurs : {{ o.Grimpeurs.count }}</span>
+                            <span>MD5 : {{ o.md5 }}</span>
+                            <form method="post" action="{% url 'auth-club' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="token" value="{{ o.md5 }}" />
+                                <div class="col s12 input-field">
+                                    <button class="btn btn-primary" type="submit" , name="action">Se connecter <i class="fa-solid fa-id-card ms-1"></i></button>
+                                </div>
+                                <input type="hidden" name="next" value="/">
+                            </form>
                         </div>
-                        <input type="hidden" name="next" value="/">
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,4 +60,9 @@
 {% endblock %}
 
 {% block script %}
+<script>
+    {% for o in object_list %}
+        new QRCode(document.getElementById("qrcode{{ o.ID }}"), "http://192.168.1.22:{{ request.environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}");
+    {% endfor %}
+</script>
 {% endblock %}

@@ -141,6 +141,8 @@
     <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.min.js.gz" />
     <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.js" />
     <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.min.js" />
+    <Content Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\qrcode.js" />
+    <Content Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\qrcode.min.js" />
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
@@ -166,6 +168,7 @@
     <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\" />
     <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\" />
     <Folder Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\" />
+    <Folder Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\" />
     <Folder Include="pyInterClubs\static\css\" />
     <Folder Include="pyInterClubs\static\img\" />
     <Folder Include="pyInterClubs\static\js\" />
