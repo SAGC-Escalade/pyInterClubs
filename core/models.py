@@ -63,6 +63,21 @@ class Club(models.Model):
         return self.Nom if self.Nom else "Nouveau Club"
 
 
+class GrimpeurQuerySet(models.QuerySet):
+    def hommes(self):
+        return self.filter(Sexe=Genre.Homme)
+    def femmes(self):
+        return self.filter(Sexe=Genre.Femme)
+
+class GrimpeurManager(models.Manager):
+    def get_queryset(self):
+        return GrimpeurQuerySet(self.model, using=self.db)
+
+    def hommes(self):
+        return self.get_queryset().hommes()
+    def femmes(self):
+        return self.get_queryset().femmes()
+
 class Grimpeur(models.Model):
     class Meta:
         db_table = 'Grimpeurs'
@@ -78,6 +93,8 @@ class Grimpeur(models.Model):
 
     def __str__(self):
         return f'{self.Nom} {self.Prenom}'
+
+    objects = GrimpeurManager()
 
 
 class Saison(models.Model):
@@ -106,6 +123,15 @@ class Rencontre(models.Model):
         date = date_format(self.Date, format='SHORT_DATE_FORMAT', use_l10n=True)
         return f'{self.Club.Localisation} le {date}'
 
+    @property
+    def Scores(self):
+        return Score.objects.filter(Equipe__Rencontre__pk=self.pk)
+
+class EquipeManager(models.Manager):
+    def adolescents(self):
+        return self.filter(Categorie=Categorie.Adolescents)
+    def enfants(self):
+        return self.filter(Categorie=Categorie.Enfants)
 
 class Equipe(models.Model):
     class Meta:
@@ -121,6 +147,32 @@ class Equipe(models.Model):
     def __str__(self):
         return f'{self.Club.Nom} {self.Numero}'
 
+    objects = EquipeManager()
+
+
+class ScoreQuerySet(models.QuerySet):
+    def adolescents(self):
+        return self.filter(Equipe__Categorie=Categorie.Adolescents)
+    def enfants(self):
+        return self.filter(Equipe__Categorie=Categorie.Enfants)
+
+    def hommes(self):
+        return self.filter(Grimpeur__Sexe=Genre.Homme)
+    def femmes(self):
+        return self.filter(Grimpeur__Sexe=Genre.Femme)
+
+class ScoreManager(models.Manager):
+    def get_queryset(self):
+        return ScoreQuerySet(self.model, using=self.db)
+
+    def adolescents(self):
+        return self.get_queryset().adolescents()
+    def enfants(self):
+        return self.get_queryset().enfants()
+    def hommes(self):
+        return self.get_queryset().hommes()
+    def femmes(self):
+        return self.get_queryset().femmes()
 
 class Score(models.Model):
     class Meta:
@@ -150,3 +202,5 @@ class Score(models.Model):
 
     def __str__(self):
         return f'{self.Equipe.Rencontre} - {Categorie(self.Equipe.Categorie).name} - {self.Grimpeur}'
+
+    objects = ScoreManager()

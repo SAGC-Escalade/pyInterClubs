@@ -32,8 +32,8 @@
                     <td><input type="radio" name="selected" value="{{ r.ID }}-2" {% if r.ID == rencontre and categorie == 2 %}checked="" {% endif %} /></td>
                     <td>{{ r.Date }}</td>
                     <td>{{ r.Club.Localisation }}</td>
-                    <td>{{ r.Equipes.count }}</td>
-                    <td>- / -</td>
+                    <td>{{ r.Equipes.enfants.count }} / {{ r.Equipes.adolescents.count }}</td>
+                    <td>{{ r.Scores.enfants.count }} / {{ r.Scores.adolescents.count }}</td>
                     <td><button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button></td>
                 </tr>
                 {% endfor %}
