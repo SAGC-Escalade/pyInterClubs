@@ -30,8 +30,11 @@ ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
 INSTALLED_APPS = [
     # Add your apps here to enable them
+    'leader',
     'admin',
     'core',
+    'dal',
+    'dal_select2',
     'fontawesomefree',
     'django_htmx',
     'django_bootstrap5',

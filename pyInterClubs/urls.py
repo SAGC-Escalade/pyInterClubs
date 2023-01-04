@@ -23,6 +23,7 @@ from django.views.generic import TemplateView
 from .views import *
 
 urlpatterns = [
+    path('autocomplete/grimpeurs', GrimpeurAutocomplete.as_view(), name='grimpeur-autocomplete'),
     path('debug/', admin.site.urls),
     path('admin/', include('admin.urls')),
     path('accounts/', include('django.contrib.auth.urls')),

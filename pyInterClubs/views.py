@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 
-from core.models import Club
+from core.models import Club, Grimpeur
 from .forms import TokenAuthenticationForm
 
 
@@ -19,3 +19,13 @@ class ClubAuthenticationView(LoginView):
 
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
+
+
+from dal import autocomplete
+class GrimpeurAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Grimpeur.objects.all()
+        if self.q:
+            qs = qs.filter(Nom__contains=self.q)
+        # Ordonner le résultat dans l'ordre alphabétique
+        return qs
