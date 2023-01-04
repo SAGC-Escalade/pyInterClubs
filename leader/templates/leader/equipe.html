@@ -1,0 +1,48 @@
+{% extends request.htmx|yesno:"base.html,index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}{% if object %}Equipe {{ object }}{% else %}Nouvelle équipe{% endif %}{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if equipe %}
+        <table>
+        {% for e in object.Scores.all %}
+            <tr>
+                <td>{{ e.Grimpeur }}</td>
+                <td>{{ e.ClubPreteur }}</td>
+                <td>{{ e.Bloc1 }}</td>
+                <td>{{ e.Bloc2 }}</td>
+                <td>{{ e.Voie1 }}</td>
+                <td>{{ e.Voie2 }}</td>
+                <td>{{ e.Voie3 }}</td>
+                <td>{{ e.Voie4 }}</td>
+                <td>{{ e.Vitesse }}</td>
+                <td>{{ e.Points }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if form %}
+        {% if equipe %}
+        <form action="{% url 'equipe:edit' object.ID %}" method="post">
+        {% else %}
+        <form action="{% url 'equipe:add' %}" method="post">
+        {% endif %}
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% bootstrap_formset equipiers %}
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+{% if form %}
+    {{ form.media }}
+{% endif %}
+{% if equipiers %}
+    {{ equipiers.media }}
+{% endif %}
+{% endblock %}

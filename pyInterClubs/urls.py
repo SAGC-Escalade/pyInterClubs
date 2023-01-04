@@ -26,6 +26,7 @@ urlpatterns = [
     path('autocomplete/grimpeurs', GrimpeurAutocomplete.as_view(), name='grimpeur-autocomplete'),
     path('debug/', admin.site.urls),
     path('admin/', include('admin.urls')),
+    path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),

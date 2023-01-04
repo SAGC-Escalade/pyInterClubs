@@ -39,6 +39,9 @@
     <Compile Include="admin\forms.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="admin\middleware.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="admin\migrations\__init__.py" />
     <Compile Include="admin\models.py" />
     <Compile Include="admin\tests.py" />
@@ -53,6 +56,13 @@
     <Compile Include="core\models.py" />
     <Compile Include="core\tests.py" />
     <Compile Include="core\__init__.py" />
+    <Compile Include="leader\apps.py" />
+    <Compile Include="leader\tests.py" />
+    <Compile Include="leader\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="leader\views.py" />
+    <Compile Include="leader\__init__.py" />
     <Compile Include="manage.py" />
     <Compile Include="pyInterClubs\backends.py">
       <SubType>Code</SubType>
@@ -73,6 +83,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\templates\admin\rencontres-list.html" />
+    <Content Include="leader\templates\leader\equipe.html" />
+    <Content Include="leader\templates\leader\equipes.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
@@ -159,6 +171,9 @@
     <Folder Include="admin\templates\admin\" />
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
+    <Folder Include="leader\" />
+    <Folder Include="leader\templates\" />
+    <Folder Include="leader\templates\leader\" />
     <Folder Include="pyInterClubs\" />
     <Folder Include="pyInterClubs\static\" />
     <Folder Include="pyInterClubs\static\3rd\" />
