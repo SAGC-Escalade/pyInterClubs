@@ -24,6 +24,7 @@ from .views import *
 
 urlpatterns = [
     path('autocomplete/grimpeurs', GrimpeurAutocomplete.as_view(), name='grimpeur-autocomplete'),
+    path('autocomplete/clubs', ClubAutocomplete.as_view(), name='club-autocomplete'),
     path('debug/', admin.site.urls),
     path('admin/', include('admin.urls')),
     path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),

@@ -37,7 +37,7 @@
             {# Menu Club #}
             {% if user.is_authenticated %}
                 {% for e in request.interclub.equipes %}
-                    <a href="{% url 'equipe:detail' e.ID %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <a href="{% url 'equipe:edit' e.ID %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <span>{{ e }}</span>
                     </a>
                 {% endfor %}

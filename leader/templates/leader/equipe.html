@@ -5,35 +5,54 @@
 
 {% block body %}
 <div class="container">
-    {% if equipe %}
-        <table>
-        {% for e in object.Scores.all %}
-            <tr>
-                <td>{{ e.Grimpeur }}</td>
-                <td>{{ e.ClubPreteur }}</td>
-                <td>{{ e.Bloc1 }}</td>
-                <td>{{ e.Bloc2 }}</td>
-                <td>{{ e.Voie1 }}</td>
-                <td>{{ e.Voie2 }}</td>
-                <td>{{ e.Voie3 }}</td>
-                <td>{{ e.Voie4 }}</td>
-                <td>{{ e.Vitesse }}</td>
-                <td>{{ e.Points }}</td>
-            </tr>
-        {% endfor %}
-        </table>
-    {% endif %}
-
     {% if form %}
-        {% if equipe %}
-        <form action="{% url 'equipe:edit' object.ID %}" method="post">
-        {% else %}
-        <form action="{% url 'equipe:add' %}" method="post">
-        {% endif %}
+        <form action="{% if equipe %}{% url 'equipe:edit' object.ID %}{% else %}{% url 'equipe:add' %}{% endif %}" method="post">
             {% csrf_token %}
-            {% bootstrap_form form %}
-            {% bootstrap_formset equipiers %}
+            {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {{ form.formset.management_form }}
+            <ul class="list-unstyled text-danger">
+            {% for error in form.formset.non_form_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+            <div class="accordion" id="equipe">
+            {% for form in form.formset.forms %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="hdg{{ forloop.counter }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ forloop.counter }}" aria-expanded="false" aria-controls="bdy{{ forloop.counter }}">
+                            {{ form.instance.Grimpeur }}
+                        </button>
+                    </h2>
+                    <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
+                        <div class="accordion-body">
+                            {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
         </form>
+
+    {% else %}
+        {% if equipe %}
+            <table>
+            {% for e in object.Scores.all %}
+                <tr>
+                    <td>{{ e.Grimpeur }}</td>
+                    <td>{{ e.ClubPreteur }}</td>
+                    <td>{{ e.Bloc1 }}</td>
+                    <td>{{ e.Bloc2 }}</td>
+                    <td>{{ e.Voie1 }}</td>
+                    <td>{{ e.Voie2 }}</td>
+                    <td>{{ e.Voie3 }}</td>
+                    <td>{{ e.Voie4 }}</td>
+                    <td>{{ e.Vitesse }}</td>
+                    <td>{{ e.Points }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+
     {% endif %}
 </div>
 {% endblock %}
@@ -41,8 +60,6 @@
 {% block script %}
 {% if form %}
     {{ form.media }}
-{% endif %}
-{% if equipiers %}
-    {{ equipiers.media }}
+    {% if form.formset %}{{ form.formset.media }}{% endif %}
 {% endif %}
 {% endblock %}

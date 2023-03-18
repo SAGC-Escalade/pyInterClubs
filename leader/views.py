@@ -23,70 +23,22 @@ class EquipeDetailView(DetailView):
     template_name = 'leader/equipe.html'
 
 
-EquipiersFormSet = inlineformset_factory(Equipe, Score, max_num=8, extra=1,
-    fields=['Grimpeur', 'ClubPreteur', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'PtsVitesse', 'Points'],
-    widgets={
-        'Grimpeur': autocomplete.ModelSelect2(url='grimpeur-autocomplete')
-    },
-    labels={'Grimpeur': 'Mon grimpeur'}
-)
+from .forms import *
+
 
 class EquipeCreateView(CreateView):
     model = Equipe
-    fields = ['Club', 'Numero']
+    form_class = EquipeForm
     template_name = 'leader/equipe.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['equipiers'] = EquipiersFormSet(self.request.POST)
-        else:
-            context['equipiers'] = EquipiersFormSet()
-        return context
-
     def form_valid(self, form):
-        context = self.get_context_data()
-        equipiers = context['equipiers']
-        if equipiers.is_valid():
-            self.object = form.save()
-            equipiers.instance = self.object
-            equipiers.save()
-        return super().form_valid(form)
+        raise RuntimeError("Interdiction de continuer pour le moment")
+
 
 class EquipeUpdateView(UpdateView):
     model = Equipe
-    fields = ['Club', 'Numero']
+    form_class = EquipeForm
     template_name = 'leader/equipe.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['equipiers'] = EquipiersFormSet(self.request.POST, instance=self.object)
-        else:
-            context['equipiers'] = EquipiersFormSet(instance=self.object)
-        return context
-
     def form_valid(self, form):
-        context = self.get_context_data()
-        equipiers = context['equipiers']
-        if equipiers.is_valid():
-            self.object = form.save()
-            equipiers.instance = self.object
-            equipiers.save()
-        return super().form_valid(form)
-
-
-#class EquipeDetailView(SingleObjectTemplateResponseMixin, FormMixin, SingleObjectMixin, ProcessFormView):
-#    model = Equipe
-#    template_name = 'leader/equipe.html'
-
-#    def get_form_class(self):
-#        return modelformset_factory(Score, exclude=('Equipe', 'ID', 'Ordre'), max_num=8, extra=1)
-
-#    def get(self, request, *args, **kwargs):
-#        self.object = self.get_object()
-#        return super().get(request, *args, **kwargs)
-
-#    def post(self, request, *args, **kwargs):
-#        self.object = self.get_object()
-#        return super().post(request, *args, **kwargs)
+        raise RuntimeError("Interdiction de continuer pour le moment")

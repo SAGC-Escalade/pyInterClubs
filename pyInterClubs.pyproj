@@ -57,6 +57,9 @@
     <Compile Include="core\tests.py" />
     <Compile Include="core\__init__.py" />
     <Compile Include="leader\apps.py" />
+    <Compile Include="leader\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="leader\tests.py" />
     <Compile Include="leader\urls.py">
       <SubType>Code</SubType>

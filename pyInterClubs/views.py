@@ -22,9 +22,18 @@ class ClubAuthenticationView(LoginView):
 
 
 from dal import autocomplete
+
 class GrimpeurAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Grimpeur.objects.all()
+        if self.q:
+            qs = qs.filter(Nom__contains=self.q)
+        # Ordonner le résultat dans l'ordre alphabétique
+        return qs
+
+class ClubAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Club.objects.all()
         if self.q:
             qs = qs.filter(Nom__contains=self.q)
         # Ordonner le résultat dans l'ordre alphabétique
