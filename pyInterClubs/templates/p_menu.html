@@ -45,3 +45,12 @@
         </ul>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        /* Fermeture du menu quand un requête ajax est lancée */
+        $("#menu").on('htmx:beforeRequest', function (evt) {
+            $(this).offcanvas('hide');
+        });
+    });
+</script>

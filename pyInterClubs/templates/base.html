@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% load static %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE|default:'en_us' }}" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% filter default:0|add:' - ' %}{% block title %}{% endblock %}{% endfilter %}pyInterClubs</title>
+</head>
+<body>
+    {% block head %}{% endblock %}
+    {% block body %}{% endblock %}
+    {% block script %}{% endblock %}
+</body>
+</html>

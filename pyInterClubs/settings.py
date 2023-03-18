@@ -127,3 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'pyInterClubs/static']
+
+# Ajout de types MIME pour les fichiers statiques
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)

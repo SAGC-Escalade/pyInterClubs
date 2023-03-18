@@ -9,7 +9,6 @@
 
 {% block body %}
 <div class="container">
-    {{ request.environ.SERVER_PORT }}
     <div class="accordion" id="qrcodes">
         <div class="accordion-item">
             <h2 class="accordion-header" id="hdrWifi">
@@ -61,8 +60,10 @@
 
 {% block script %}
 <script>
+    $("script").on('load', function() {
     {% for o in object_list %}
         new QRCode(document.getElementById("qrcode{{ o.ID }}"), "http://192.168.1.22:{{ request.environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}");
     {% endfor %}
+    });
 </script>
 {% endblock %}
