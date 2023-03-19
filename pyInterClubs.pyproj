@@ -161,6 +161,7 @@
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\templates\base.html" />
+    <Content Include="pyInterClubs\templates\hx_lst_equipes.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
     <Content Include="pyInterClubs\templates\p_navbar.html" />
     <Content Include="admin\templates\admin\qrcode_club.html" />

@@ -31,4 +31,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
+
+    path('partial/lst_equipes', TemplateView.as_view(template_name="hx_lst_equipes.html"), name='lst_equipes'),
 ]

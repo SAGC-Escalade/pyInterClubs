@@ -17,9 +17,10 @@
     <script src="{% static 'fontawesomefree/js/all.min.js' %}" type="text/javascript"></script>
     <script src="{% static '3rd/jquery-3.6.0-dist/jquery-3.6.0.min.js' %}" type="text/javascript"></script>
     <script src="{% static '3rd/htmx-1.8.0-dist/htmx.min.js' %}" type="text/javascript" defer></script>
+    <script src="{% static '3rd/htmx-1.8.0-dist/ext/path-deps.js' %}" type="text/javascript" defer></script>
     <script src="{% static '3rd/bootstrap-5.2.0-beta1-dist/js/bootstrap.min.js' %}" type="text/javascript" defer></script>
 </head>
-<body hx-boost="true" hx-target="#mainFragment">
+<body hx-boost="true" hx-target="#mainFragment" hx-ext="path-deps">
     {% include 'p_navbar.html' %}
     {% include 'p_menu.html' %}
 
