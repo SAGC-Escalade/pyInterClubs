@@ -23,14 +23,23 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().annotate(md5=MD5('Nom'))
 
+    def get_context_data(self, **kwargs):
+        import socket
+        ip = socket.gethostbyname(socket.gethostname())
+        if not ip or ip == "127.0.0.1": ip = socket.gethostbyname(socket.getfqdn())
+        if 'server_ip' not in kwargs: kwargs['server_ip'] = ip
+
+        kwargs['config'] = Config
+        return super().get_context_data(**kwargs)
+
 
 class RencontresListView(SuperUserRequiredMixin, ListView):
     model = Saison
     template_name = 'admin/rencontres-list.html'
 
     def get_context_data(self, **kwargs):
-        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get(Config.CURRENT_RENCONTRE)
-        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get(Config.CURRENT_CATEGORIE)
+        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get('CURRENT_RENCONTRE')
+        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get('CURRENT_CATEGORIE')
         return super().get_context_data(**kwargs)
 
 class MancheSelectionView(SuperUserRequiredMixin, FormView):

@@ -24,8 +24,8 @@ class pyInterclubDetails:
 
     def __init__(self, request):
         self._request = request
-        self._rencontreID = Config.get(Config.CURRENT_RENCONTRE)
-        self._categorieID = Config.get(Config.CURRENT_CATEGORIE)
+        self._rencontreID = Config.get('CURRENT_RENCONTRE')
+        self._categorieID = Config.get('CURRENT_CATEGORIE')
 
     # Sélection de la rencontre en cours
     @property

@@ -10,5 +10,5 @@ class MancheSelectionForm(forms.Form):
     categorie = forms.ChoiceField(required=True, choices=Categorie.choices)
 
     def save(self):
-        Config.set(Config.CURRENT_RENCONTRE, self.cleaned_data['rencontre'].ID)
-        Config.set(Config.CURRENT_CATEGORIE, self.cleaned_data['categorie'])
+        Config.set('CURRENT_RENCONTRE', self.cleaned_data['rencontre'].ID)
+        Config.set('CURRENT_CATEGORIE', int(self.cleaned_data['categorie']))

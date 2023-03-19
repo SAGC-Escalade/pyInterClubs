@@ -2,9 +2,6 @@
 {% load static %}
 {% load django_bootstrap5 %}
 
-{% block head %}
-    <script src="{% static '3rd/qrcode-2015.11.25-dist/qrcode.min.js' %}"></script>
-{% endblock %}
 {% block title %}QRCode des clubs{% endblock %}
 
 {% block body %}
@@ -17,8 +14,17 @@
                 </button>
             </h2>
             <div id="bdyWifi" class="accordion-collapse collapse show" aria-labelledby="hdrWifi" data-bs-parent="#qrcodes">
-                <div class="accordion-body">
-                    Codes Wifi...
+                <div class="accordion-body row row-cols-1 row-cols-md-2">
+                    <div class="col d-flex justify-content-center">
+                        <div qrcode="WIFI:S:{{ config.WIFI_SSID|default:'Interclubs' }};T:{{ config.WIFI_KEY_TYPE|default:'WPA' }};P:{{ config.WIFI_KEY|default:'ffme2022!' }};;"></div>
+                    </div>
+                    <div class="col">
+                        <div class="vstack gap-1">
+                            <span>SSID : {{ config.WIFI_SSID|default:'Interclubs' }}</span>
+                            <span>Clé de sécurité : {{ config.WIFI_KEY|default:'ffme2022!' }}</span>
+                            <span>Type de sécurité : {{ config.WIFI_KEY_TYPE|default:'WPA' }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,8 +37,8 @@
             </h2>
             <div id="bdy{{ o.ID }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.ID }}" data-bs-parent="#qrcodes">
                 <div class="accordion-body row row-cols-1 row-cols-md-2">
-                    <div class="col text-center">
-                        <div id="qrcode{{ o.ID }}"></div>
+                    <div class="col d-flex justify-content-center">
+                        <div qrcode="http://{{ server_ip }}:{{ request.environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}"></div>
                     </div>
                     <div class="col">
                         <div class="vstack gap-1">
@@ -60,10 +66,13 @@
 
 {% block script %}
 <script>
-    $("script").on('load', function() {
-    {% for o in object_list %}
-        new QRCode(document.getElementById("qrcode{{ o.ID }}"), "http://192.168.1.22:{{ request.environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}");
-    {% endfor %}
-    });
+	$(function () {
+		$.getScript("{% static '3rd/qrcode-2015.11.25-dist/qrcode.min.js' %}")
+		.done(function(script, status) {
+			$("div[qrcode]").each(function(i) {
+				var code = new QRCode(this, $(this).attr("qrcode"));
+			});
+		});
+	});
 </script>
 {% endblock %}
