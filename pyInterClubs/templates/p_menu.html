@@ -22,23 +22,35 @@
         <ul class="list-group list-group-flush">
             {# Menu Administrateur #}
             {% if user.is_authenticated and user.is_superuser %}
-                <a href="{% url 'rencontres' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <a href="{% url 'rencontres' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fa-solid fa-map-location fa-fw me-2"></i>
                     Administration des rencontres
-                    <i class="fa-solid fa-map-location ms-auto"></i>
                 </a>
             {% endif %}
             {# Menu Staff #}
             {% if user.is_authenticated and user.is_staff %}
-                <a href="{% url 'qrcode-clubs' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <a href="{% url 'qrcode-clubs' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fa-solid fa-qrcode fa-fw me-2"></i>
                     QRCodes de connexion
-                    <i class="fa-solid fa-qrcode"></i>
                 </a>
             {% endif %}
-        </ul>
-        <ul id="lstEquipes" class="list-group list-group-flush" hx-get="{% url 'lst_equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
             {# Menu Club #}
-            {# include 'hx_lst_equipes.html' #}
-            <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'lst_equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <div id="hdrEquipes" class="accordion-header">
+                        <button class="accordion-button d-flex" type="button" data-bs-toggle="collapse" data-bs-target="#lstEquipes" aria-expanded="true" aria-controls="lstEquipes" style="--bs-accordion-btn-padding-y:0.5rem; --bs-accordion-btn-padding-x:1rem;">
+                            <i class="fa-solid fa-users me-2"></i>
+                            <span class="">Mes équipes</span>
+                        </button>
+                    </div>
+                    <div id="lstEquipes" class="accordion-collapse collapse show" aria-labelledby="hdrEquipes" hx-get="{% url 'lst_equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
+                        <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'lst_equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
+                    </div>
+                </div>
+            </div>
+            <!--ul id="lstEquipes" class="list-group list-group-flush" hx-get="{% url 'lst_equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
+                <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'lst_equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
+            </ul-->
         </ul>
     </div>
 </div>

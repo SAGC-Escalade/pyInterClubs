@@ -3,6 +3,14 @@
 
 {% block title %}{% if object %}Equipe {{ object }}{% else %}Nouvelle équipe{% endif %}{% endblock %}
 
+{% block head %}
+<style>
+    .Sexe   { color: rgba(0,0,0,.3); }
+    .Fille  { color: lightpink; }
+    .Garçon { color: lightblue; }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     {% if form %}
@@ -20,6 +28,10 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="hdg{{ forloop.counter }}">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ forloop.counter }}" aria-expanded="false" aria-controls="bdy{{ forloop.counter }}">
+                            <span class="fa-layers fa-fw me-2">
+                                <i class="Sexe {{ form.instance.Grimpeur.get_Sexe_display }} fa-solid fa-circle" data-fa-transform="grow-6 down-1"></i>
+                                <i class="fa-solid fa-user fa-inverse" data-fa-transform="shrink-1"></i>
+                            </span>
                             {{ form.instance.Grimpeur }}
                         </button>
                     </h2>

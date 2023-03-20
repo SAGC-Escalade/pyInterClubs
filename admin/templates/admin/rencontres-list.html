@@ -5,21 +5,21 @@
 
 {% block body %}
 <div class="container">
-    <div class="d-flex justify-content-between">
-        <span class="text-muted">Liste des rencontres par saisons</span>
-        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i><span class="ms-1 d-none d-lg-inline">Ajouter une rencontre</span></button>
-    </div>
     <form action="{% url 'rencontres' %}" method="post">
         {% csrf_token %}
-        <table class="table table-hover table-sm">
+        <table class="table table-hover table-sm caption-top">
+            <caption>
+                Liste des rencontres par saisons
+                <button class="btn btn-lg btn-primary shadow rounded-circle position-fixed end-0 me-5"><i class="fa-solid fa-plus" data-fa-transform="up-1" title="Ajouter une rencontre"></i></button>
+            </caption>
             <thead class="table-light">
                 <tr>
-                    <th scope="col">Enfants</th>
-                    <th scope="col">Ados</th>
+                    <th scope="col"><i class="fa-solid fa-child fa-sm" title="Enfants"></i></th>
+                    <th scope="col"><i class="fa-solid fa-person" title="Adolescents"></i></th>
                     <th scope="col">Date</th>
                     <th scope="col">Lieu</th>
-                    <th scope="col">Equipes (Enfants/Ados)</th>
-                    <th scope="col">Participants (Enfants/Ados)</th>
+                    <th scope="col">Equipes <i class="fa-solid fa-child fa-sm" title="Enfants"></i> / <i class="fa-solid fa-person" title="Adolescents"></i></th>
+                    <th scope="col">Participants <i class="fa-solid fa-child fa-sm" title="Enfants"></i> / <i class="fa-solid fa-person" title="Adolescents"></i></th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
