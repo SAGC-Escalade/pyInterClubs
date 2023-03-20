@@ -13,8 +13,8 @@ class ListEquipesView(ListView):
     template_name = 'leader/equipes.html'
 
     def get_context_data(self, **kwargs):
-        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get(Config.CURRENT_RENCONTRE)
-        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get(Config.CURRENT_CATEGORIE)
+        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get('CURRENT_RENCONTRE')
+        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get('CURRENT_CATEGORIE')
         return super().get_context_data(**kwargs)
 
 
