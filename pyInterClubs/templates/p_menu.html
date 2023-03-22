@@ -43,14 +43,11 @@
                             <span class="">Mes équipes</span>
                         </button>
                     </div>
-                    <div id="lstEquipes" class="accordion-collapse collapse show" aria-labelledby="hdrEquipes" hx-get="{% url 'lst_equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
-                        <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'lst_equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
+                    <div id="lstEquipes" class="accordion-collapse collapse show" aria-labelledby="hdrEquipes" hx-get="{% url 'leader:list-equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
+                        <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'leader:list-equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
                     </div>
                 </div>
             </div>
-            <!--ul id="lstEquipes" class="list-group list-group-flush" hx-get="{% url 'lst_equipes' %}" hx-trigger="path-deps" path-deps="leader/*" hx-replace-url="false" hx-target="this">
-                <span class="placeholder placeholder-glow placeholder-lg w-50" hx-get="{% url 'lst_equipes' %}" hx-trigger="load" hx-target="#lstEquipes"></span>
-            </ul-->
         </ul>
     </div>
 </div>

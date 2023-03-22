@@ -26,8 +26,6 @@ urlpatterns = [
     path('autocomplete/grimpeurs', GrimpeurAutocomplete.as_view(), name='grimpeur-autocomplete'),
     path('autocomplete/clubs', ClubAutocomplete.as_view(), name='club-autocomplete'),
 
-    path('partial/lst_equipes', TemplateView.as_view(template_name="hx_lst_equipes.html"), name='lst_equipes'),
-
     path('debug/', admin.site.urls),
     path('admin/', include('admin.urls')),
     path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),

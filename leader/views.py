@@ -6,30 +6,13 @@ from dal import autocomplete
 
 from core.models import Equipe, Score
 from admin.models import Config
-
-
-class ListEquipesView(ListView):
-    model = Equipe
-    template_name = 'leader/equipes.html'
-
-    def get_context_data(self, **kwargs):
-        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get('CURRENT_RENCONTRE')
-        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get('CURRENT_CATEGORIE')
-        return super().get_context_data(**kwargs)
-
-
-class EquipeDetailView(DetailView):
-    model = Equipe
-    template_name = 'leader/equipe.html'
-
-
 from .forms import *
 
 
 class EquipeCreateView(CreateView):
     model = Equipe
-    form_class = EquipeForm
-    template_name = 'leader/equipe.html'
+    form_class = EquipeCreateForm
+    template_name = 'leader/add_equipe.html'
 
     def form_valid(self, form):
         raise RuntimeError("Interdiction de continuer pour le moment")
@@ -37,8 +20,22 @@ class EquipeCreateView(CreateView):
 
 class EquipeUpdateView(UpdateView):
     model = Equipe
-    form_class = EquipeForm
-    template_name = 'leader/equipe.html'
+    fields = ['Numero']
+    template_name = 'leader/edit_equipe.html'
 
     def form_valid(self, form):
         raise RuntimeError("Interdiction de continuer pour le moment")
+
+
+class AddScoreView(CreateView):
+    model = Score
+    form_class = ScoreCreateForm
+    template_name = 'leader/add_score.html'
+
+    def form_valid(self, form):
+        raise RuntimeError("Interdiction de continuer pour le moment")
+
+    def get_initial(self):
+        kws = super().get_initial()
+        kws['Equipe'] = Equipe.objects.get(pk=self.kwargs['id_Equipe'])
+        return kws

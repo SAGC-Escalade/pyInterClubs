@@ -1,0 +1,54 @@
+{% extends request.htmx|yesno:"base.html,index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Nouvelle équipe{% endblock %}
+
+{% block head %}
+    <style>
+        .Sexe   { color: rgba(0,0,0,.3); }
+        .Fille  { color: lightpink; }
+        .Garçon { color: lightblue; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{% if equipe %}{% url 'equipe:edit' object.ID %}{% else %}{% url 'equipe:add' %}{% endif %}" method="post">
+            {% csrf_token %}
+            <div class="card-header">
+                <ul class="list-unstyled text-danger">
+                {% for error in form.formset.non_form_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                </ul>
+
+                {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+                {{ form.formset.management_form }}
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for form in form.formset.forms %}
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-1">{{ forloop.counter }}.</div>
+                            {% for field in form.visible_fields %}
+                                <div class="col-5">
+                                    {% bootstrap_field field layout='horizontal' wrapper_class='align-items-center' horizontal_label_class='col-4' horizontal_field_class='col-8' %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% for field in form.hidden_fields %}
+                            {% bootstrap_field field %}
+                        {% endfor %}
+                        {% bootstrap_form_errors form type='all' %}
+                        {# bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' #}
+                    </li>
+                {% endfor %}
+            </ul>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {{ form.media }}
+    {% if form.formset %}{{ form.formset.media }}{% endif %}
+{% endblock %}

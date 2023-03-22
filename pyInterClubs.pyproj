@@ -86,8 +86,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\templates\admin\rencontres-list.html" />
-    <Content Include="leader\templates\leader\equipe.html" />
-    <Content Include="leader\templates\leader\equipes.html" />
+    <Content Include="leader\templates\leader\add_equipe.html" />
+    <Content Include="leader\templates\leader\add_score.html" />
+    <Content Include="leader\templates\leader\edit_score.html" />
+    <Content Include="leader\templates\leader\edit_equipe.html" />
+    <Content Include="leader\templates\leader\list_equipes.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
@@ -161,7 +164,6 @@
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\templates\base.html" />
-    <Content Include="pyInterClubs\templates\hx_lst_equipes.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
     <Content Include="pyInterClubs\templates\p_navbar.html" />
     <Content Include="admin\templates\admin\qrcode_club.html" />
