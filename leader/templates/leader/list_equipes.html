@@ -1,8 +1,6 @@
 {% extends request.htmx|yesno:"base.html,index.html" %}
 {% load django_bootstrap5 %}
 
-{% block title %}Liste des équipes{% endblock %}
-
 {% block body %}
 {% if user.is_authenticated %}
     {% for e in request.interclub.equipes %}
@@ -12,7 +10,4 @@
         </a>
     {% endfor %}
 {% endif %}
-{% endblock %}
-
-{% block script %}
 {% endblock %}
