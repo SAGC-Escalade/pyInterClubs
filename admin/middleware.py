@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.db.models.functions import MD5
 
-from core.models import Rencontre, Equipe, Grimpeur, Categorie, Club
+from core.models import Rencontre, Equipe, Grimpeur, Categorie, Club, Niveau
 from .models import Config
 
 
@@ -55,13 +55,21 @@ class pyInterclubDetails:
     def scores(self):
         return self.rencontre.Scores.filter(Equipe__Categorie=self._categorieID)
 
+    # Filtre sur les niveaux pour la catégorie sélectionnée
     @property
-    def categorie(self):
-        if self._categorieID == Categorie.Enfants:
-            return Categorie.Enfants
-        else:
-            return Categorie.Adolescents
+    def niveaux(self):
+        return Niveau.objects.filter(Categorie=self._categorieID, Actif=True).exclude(NomVoie='Bloc')
 
+
+    @property
+    def is_enfants(self):
+        return self._categorieID == Categorie.Enfants
+
+    @property
+    def is_adolescents(self):
+        return self._categorieID == Categorie.Adolescents
+
+    # Méthode d'initialisation des éléments statiques des formulaires
     def get_initial(self, initial):
         if not 'Categorie' in initial: initial['Categorie'] = self._categorieID
         if not 'Rencontre' in initial: initial['Rencontre'] = self._rencontreID

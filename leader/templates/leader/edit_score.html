@@ -1,13 +1,48 @@
 {% extends request.htmx|yesno:"base.html,index.html" %}
 {% load django_bootstrap5 %}
 
-{% block title %}Ajouter un grimpeur{% endblock %}
-
-{% block head %}
-{% endblock %}
-
 {% block body %}
-    {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+    <ul class="list-group list-group-flush">
+        <button class="list-group-item bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#bdyOptions{{ object.ID }}" aria-expanded="false" aria-controls="bdyOptions{{ object.ID }}">
+            <i class="fa-solid fa-gear fa-fw me-2"></i>
+            Paramètres
+        </button>
+        <div id="bdyOptions{{ object.ID }}" class="list-group-item collapse border-bottom" style="--bs-list-group-item-padding-x:1.25rem;">
+            {% if request.interclub.is_enfants %}
+                {% bootstrap_field form.IDVoie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% endif %}
+            {% bootstrap_field form.ClubPreteur layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            <div class="row align-items-center">
+                <label class="col-5 col-sm-3 col-form-label">Actions</label>
+                <div class="col-7 col-sm-9 btn-toolbar" role="toolbar">
+                    <div class="btn-group me-3" role="group">
+                        <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-up fa-fw me-2"></i>Monter</button>
+                        <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</button>
+                    </div>
+                    <div class="btn-group mt-2 mt-md-0" role="group">
+                        <button type="button" class="btn btn-danger col-12 col-md-3 mt-0"><i class="fa-solid fa-trash fa-fw me-2"></i>Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ul>
+    <div class="accordion-body">
+        {# bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' #}
+        {% if request.interclub.is_enfants %}
+            {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+        {% else %}
+            {% bootstrap_field form.IDVoie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.IDVoie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.IDVoie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.IDVoie4 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.Voie4 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block script %}

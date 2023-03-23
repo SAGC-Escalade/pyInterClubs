@@ -12,11 +12,13 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
+    <div class="card">
         <form action="{% url 'equipe:edit' object.ID %}" method="post">
             {% csrf_token %}
-            {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            <div class="accordion" id="equipe">
+            <div class="card-header">
+                {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' wrapper_class='' %}
+            </div>
+            <div class="accordion accordion-flush" id="equipe">
                 {% for score in object.Scores.all %}
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="hdg{{ forloop.counter }}">
@@ -29,16 +31,19 @@
                         </button>
                     </h2>
                     <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
-                        <div class="accordion-body">
-                            <div hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false"></div>
-                        </div>
+                        <div hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false"></div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            {% if object.Scores.count < 8 %}
-                <a class="btn btn-primary mt-3" href="{% url 'equipe:add-score' object.ID %}" hx-boost="fales"><i class="fa-solid fa-plus"></i> Ajouter un grimpeur</a>
-            {% endif %}
+            <div class="card-footer">
+                <div class="row g-2 justify-content-around">
+                    {% if object.Scores.count < 8 %}
+                        <a class="btn btn-primary col-12 col-md-3" href="{% url 'equipe:add-score' object.ID %}" hx-boost="false"><i class="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>
+                    {% endif %}
+                    <a class="btn btn-danger col-12 col-md-3" href=""><i class="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe</a>
+                </div>
+            </div>
         </form>
     </div>
 {% endblock %}

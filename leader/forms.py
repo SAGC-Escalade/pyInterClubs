@@ -73,7 +73,12 @@ class ScoreCreateForm(forms.ModelForm):
 class ScoreUpdateForm(forms.ModelForm):
     class Meta:
         model  = Score
-        fields = ['ClubPreteur', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'PtsVitesse', 'Points']
+        # fields = ['ClubPreteur', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'PtsVitesse', 'Points']
+        fields = '__all__'
         widgets={
             'ClubPreteur': autocomplete.ModelSelect2(url='club-autocomplete'),
+            'IDVoie1': autocomplete.ModelSelect2(url='niveau-autocomplete'),
+            'IDVoie2': autocomplete.ModelSelect2(url='niveau-autocomplete'),
+            'IDVoie3': autocomplete.ModelSelect2(url='niveau-autocomplete'),
+            'IDVoie4': autocomplete.ModelSelect2(url='niveau-autocomplete'),
         }

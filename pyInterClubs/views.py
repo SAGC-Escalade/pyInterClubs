@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 
-from core.models import Club, Grimpeur
+from core.models import Club, Grimpeur, Niveau
 from .forms import TokenAuthenticationForm
 
 
@@ -14,7 +14,6 @@ class ClubAuthenticationView(LoginView):
         kwargs = super().get_form_kwargs()
         if self.request.method == "GET":
             kwargs.update({ "data": self.request.GET })
-        print(kwargs)
         return kwargs
 
     def get(self, *args, **kwargs):
@@ -34,6 +33,14 @@ class GrimpeurAutocomplete(autocomplete.Select2QuerySetView):
 class ClubAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Club.objects.all()
+        if self.q:
+            qs = qs.filter(Nom__contains=self.q)
+        # Ordonner le résultat dans l'ordre alphabétique
+        return qs
+
+class NiveauAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = self.request.interclub.niveaux
         if self.q:
             qs = qs.filter(Nom__contains=self.q)
         # Ordonner le résultat dans l'ordre alphabétique
