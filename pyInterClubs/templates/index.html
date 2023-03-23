@@ -64,7 +64,7 @@
             toast.addClass(classes)
                 .find(".toast-header > strong").text(title);
             toast.find(".toast-body").text(message);
-            toast.appendTo("#messageFragment")
+            toast.appendTo("#messagesFragment")
                 .on("hidden.bs.toast", function () {
                     $(this).remove();
                 });
@@ -94,6 +94,7 @@
                 .on('htmx:xhr:progress', function (evt) {
                     $("htmx-indicator progress-bar").css("width", (evt.originalEvent.detail.loaded / evt.originalEvent.detail.total) + "%");
                 })
+                ;
 
             /* Suppression du focus sur les boutons une fois clické */
             $("button.btn").click(function (e) { this.blur(); });
