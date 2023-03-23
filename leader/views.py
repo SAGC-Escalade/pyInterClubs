@@ -14,8 +14,8 @@ class EquipeCreateView(CreateView):
     form_class = EquipeCreateForm
     template_name = 'leader/add_equipe.html'
 
-    def form_valid(self, form):
-        raise RuntimeError("Interdiction de continuer pour le moment")
+    def get_initial(self):
+        return self.request.interclub.get_initial(super().get_initial())
 
 
 class EquipeUpdateView(UpdateView):

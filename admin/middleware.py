@@ -54,3 +54,19 @@ class pyInterclubDetails:
     @property
     def scores(self):
         return self.rencontre.Scores.filter(Equipe__Categorie=self._categorieID)
+
+    @property
+    def categorie(self):
+        if self._categorieID == Categorie.Enfants:
+            return Categorie.Enfants
+        else:
+            return Categorie.Adolescents
+
+    def get_initial(self, initial):
+        if not 'Categorie' in initial: initial['Categorie'] = self._categorieID
+        if not 'Rencontre' in initial: initial['Rencontre'] = self._rencontreID
+        if not 'Club' in initial:
+            try:
+                initial['Club'] = Club.objects.annotate(md5=MD5('Nom')).get(md5=self._request.user.username)
+            except Club.DoesNotExist: pass
+        return initial

@@ -13,7 +13,7 @@
 
 {% block body %}
     <div class="container">
-        <form action="{% if equipe %}{% url 'equipe:edit' object.ID %}{% else %}{% url 'equipe:add' %}{% endif %}" method="post">
+        <form action="{% url 'equipe:edit' object.ID %}" method="post">
             {% csrf_token %}
             {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
             <div class="accordion" id="equipe">
@@ -30,15 +30,15 @@
                     </h2>
                     <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
                         <div class="accordion-body">
-                            <div hx-get="{% url 'leader:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false"></div>
+                            <div hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false"></div>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
-                {% if object.Scores.count < 8 %}
-                    <a class="btn btn-primary w-100" href="{% url 'leader:add-score' object.ID %}" hx-boost="fales"><i class="fa-solid fa-plus"></i> Ajouter un grimpeur</a>
-                {% endif %}
             </div>
+            {% if object.Scores.count < 8 %}
+                <a class="btn btn-primary mt-3" href="{% url 'equipe:add-score' object.ID %}" hx-boost="fales"><i class="fa-solid fa-plus"></i> Ajouter un grimpeur</a>
+            {% endif %}
         </form>
     </div>
 {% endblock %}

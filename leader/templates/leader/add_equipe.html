@@ -13,7 +13,7 @@
 
 {% block body %}
     <div class="card">
-        <form action="{% if equipe %}{% url 'equipe:edit' object.ID %}{% else %}{% url 'equipe:add' %}{% endif %}" method="post">
+        <form action="{% url 'equipe:add' %}" method="post">
             {% csrf_token %}
             <div class="card-header">
                 <ul class="list-unstyled text-danger">
@@ -22,16 +22,28 @@
                 {% endfor %}
                 </ul>
 
-                {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+                <div class="row align-items-center">
+                    <label for="" class="col-md-2 col-form-label">Equipe</label>
+                    {% for field in form.visible_fields %}
+                        <div class="col-md-5">
+                            {% bootstrap_field field layout='inline' wrapper_class='align-items-center' %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% for field in form.hidden_fields %}
+                    {% bootstrap_field field %}
+                {% endfor %}
+                {% bootstrap_form_errors form type='all' %}
+                {# bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' #}
                 {{ form.formset.management_form }}
             </div>
             <ul class="list-group list-group-flush">
                 {% for form in form.formset.forms %}
                     <li class="list-group-item">
                         <div class="row align-items-center">
-                            <div class="col-1">{{ forloop.counter }}.</div>
+                            <!--div class="col-2">{{ forloop.counter }}.</div-->
                             {% for field in form.visible_fields %}
-                                <div class="col-5">
+                                <div class="col-6">
                                     {% bootstrap_field field layout='horizontal' wrapper_class='align-items-center' horizontal_label_class='col-4' horizontal_field_class='col-8' %}
                                 </div>
                             {% endfor %}
@@ -40,9 +52,11 @@
                             {% bootstrap_field field %}
                         {% endfor %}
                         {% bootstrap_form_errors form type='all' %}
-                        {# bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' #}
                     </li>
                 {% endfor %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk fa-fw me-2"></i>Enregistrer l'équipe</button>
+                </li>
             </ul>
         </form>
     </div>

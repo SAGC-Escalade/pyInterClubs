@@ -30,6 +30,12 @@ class InlineScoreForm(forms.ModelForm):
         model   = Score
         # fields  = ['Grimpeur', 'ClubPreteur', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'PtsVitesse', 'Points']
         fields  = ['Grimpeur', 'ClubPreteur']
+        labels  = {
+            'ClubPreteur': 'Club prêteur',
+        }
+        help_texts = {
+            'ClubPreteur': "Le grimpeur est un prêt d'un autre club ? Lequel ?",
+        }
         widgets = {
             'Grimpeur': autocomplete.ModelSelect2(url='grimpeur-autocomplete'),
             'ClubPreteur': autocomplete.ModelSelect2(url='club-autocomplete'),
@@ -39,13 +45,19 @@ class InlineScoreForm(forms.ModelForm):
 class EquipeCreateForm(ModelFormWithFormset):
     class Meta:
         model   = Equipe
-        fields  = ['Club', 'Numero']
+        fields  = ['Club', 'Numero', 'Categorie', 'Rencontre']
         widgets = {
             'Club': autocomplete.ModelSelect2(url='club-autocomplete'),
+            'Categorie': forms.HiddenInput,
+            'Rencontre': forms.HiddenInput,
         }
 
     formset_class = inlineformset_factory(Equipe, Score, max_num=8, extra=8, form=InlineScoreForm, can_delete=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if kwargs.get('initial', {}).get('Club', None) is not None:
+            self.fields['Club'].disabled = True
 
 class ScoreCreateForm(forms.ModelForm):
     class Meta:
