@@ -42,6 +42,8 @@
     <Compile Include="admin\middleware.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="admin\migrations\0001_initial.py" />
+    <Compile Include="admin\migrations\0002_config_type_alter_config_value.py" />
     <Compile Include="admin\migrations\__init__.py" />
     <Compile Include="admin\models.py" />
     <Compile Include="admin\tests.py" />
@@ -52,6 +54,8 @@
     <Compile Include="admin\__init__.py" />
     <Compile Include="core\admin.py" />
     <Compile Include="core\apps.py" />
+    <Compile Include="core\migrations\0001_initial.py" />
+    <Compile Include="core\migrations\0002_remove_nullables.py" />
     <Compile Include="core\migrations\__init__.py" />
     <Compile Include="core\models.py" />
     <Compile Include="core\tests.py" />
