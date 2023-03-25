@@ -1,20 +1,21 @@
 {% extends request.htmx|yesno:"base.html,index.html" %}
 {% load django_bootstrap5 %}
+{% load widget_tweak %}
 
 {% block body %}
     <ul class="list-group list-group-flush">
-        <button class="list-group-item bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#bdyOptions{{ object.ID }}" aria-expanded="false" aria-controls="bdyOptions{{ object.ID }}">
+        <button class="list-group-item bg-light text-left" type="button" data-bs-toggle="collapse" data-bs-target="#bdyOptions{{ object.ID }}" aria-expanded="false" aria-controls="bdyOptions{{ object.ID }}">
             <i class="fa-solid fa-gear fa-fw me-2"></i>
             Paramètres
         </button>
-        <div id="bdyOptions{{ object.ID }}" class="list-group-item collapse border-bottom" style="--bs-list-group-item-padding-x:1.25rem;">
+        <li id="bdyOptions{{ object.ID }}" class="list-group-item collapse border-bottom">
             {% if request.interclub.is_enfants %}
-                {% bootstrap_field form.IDVoie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+                {% bootstrap_field form.IDVoie1 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
             {% endif %}
-            {% bootstrap_field form.ClubPreteur layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
+            {% bootstrap_field form.ClubPreteur layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
             <div class="row align-items-center">
-                <label class="col-5 col-sm-3 col-form-label">Actions</label>
-                <div class="col-7 col-sm-9 btn-toolbar" role="toolbar">
+                <label class="col-3 col-form-label">Actions</label>
+                <div class="col-9 btn-toolbar" role="toolbar">
                     <div class="btn-group me-3" role="group">
                         <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-up fa-fw me-2"></i>Monter</button>
                         <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</button>
@@ -24,29 +25,45 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </li>
+        <li class="list-group-item">
+            <h5>Difficulté</h5>
+            {% if request.interclub.is_enfants %}
+                {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
+                {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
+                {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
+            {% else %}
+                {% include 'leader/p_IDfield.html' with field=form.Voie1 IDfield=form.IDVoie1 Points=object.PtsVoie1 Valid=object.Voie1 %}
+                {% include 'leader/p_IDfield.html' with field=form.Voie2 IDfield=form.IDVoie2 Points=object.PtsVoie2 Valid=object.Voie2 %}
+                {% include 'leader/p_IDfield.html' with field=form.Voie3 IDfield=form.IDVoie3 Points=object.PtsVoie3 Valid=object.Voie3 %}
+                {% include 'leader/p_IDfield.html' with field=form.Voie4 IDfield=form.IDVoie4 Points=object.PtsVoie4 Valid=object.Voie4 %}
+            {% endif %}
+        </li>
+        <li class="list-group-item">
+            <h5>Bloc</h5>
+            {% include 'leader/p_field.html' with field=form.Bloc1 Points=object.PtsBloc1 Valid=object.Bloc1 %}
+            {% include 'leader/p_field.html' with field=form.Bloc2 Points=object.PtsBloc2 Valid=object.Bloc2 %}
+        </li>
+        <li class="list-group-item">
+            <h5>Vitesse</h5>
+            <div class="row mb-3">
+                {{ form.Vitesse.errors }}
+                <label class="col-3 col-form-label" for="{{ form.Vitesse.id_for_label }}">
+                    {{ form.Vitesse.label }}
+                </label>
+                <div class="col-9">
+                    <div class="input-group">
+                        {{ form.Vitesse|class:"form-control" }}
+                        <span class="input-group-text {% if object.Vitesse != None %}bg-success{% endif %}">
+                            {{ object.PtsVitesse }}<span class="d-none d-sm-inline ms-1">pts</span>
+                        </span>
+                    </div>
+                </div>
+                {{ form.Vitesse.errors }}
+                {% if form.Vitesse.help_text %}<div class="form-text">{{ form.Vitesse.help_text|safe }}</div>{% endif %}
+            </div>
+        </li>
     </ul>
     <div class="accordion-body">
-        {# bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' #}
-        {% if request.interclub.is_enfants %}
-            {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-        {% else %}
-            {% bootstrap_field form.IDVoie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.IDVoie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.IDVoie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.IDVoie4 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-            {% bootstrap_field form.Voie4 layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' %}
-        {% endif %}
     </div>
-{% endblock %}
-
-{% block script %}
-{% if form %}
-    {{ form.media }}
-{% endif %}
 {% endblock %}

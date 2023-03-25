@@ -56,12 +56,16 @@
     <Compile Include="core\apps.py" />
     <Compile Include="core\migrations\0001_initial.py" />
     <Compile Include="core\migrations\0002_remove_nullables.py" />
+    <Compile Include="core\migrations\0003_alter_score_vitesse.py" />
     <Compile Include="core\migrations\__init__.py" />
     <Compile Include="core\models.py" />
     <Compile Include="core\tests.py" />
     <Compile Include="core\__init__.py" />
     <Compile Include="leader\apps.py" />
     <Compile Include="leader\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="leader\templatetags\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="leader\tests.py" />
@@ -75,6 +79,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pyInterClubs\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="leader\templatetags\widget_tweak.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pyInterClubs\views.py">
@@ -95,6 +102,8 @@
     <Content Include="leader\templates\leader\edit_score.html" />
     <Content Include="leader\templates\leader\edit_equipe.html" />
     <Content Include="leader\templates\leader\list_equipes.html" />
+    <Content Include="leader\templates\leader\p_IDfield.html" />
+    <Content Include="leader\templates\leader\p_field.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
@@ -186,6 +195,7 @@
     <Folder Include="leader\templates\" />
     <Folder Include="leader\templates\leader\" />
     <Folder Include="pyInterClubs\" />
+    <Folder Include="leader\templatetags\" />
     <Folder Include="pyInterClubs\static\" />
     <Folder Include="pyInterClubs\static\3rd\" />
     <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\" />

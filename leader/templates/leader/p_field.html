@@ -1,0 +1,17 @@
+{% load widget_tweak %}
+<div class="row mb-3">
+    {{ field.errors }}
+    <label class="col-3 col-form-label" for="{{ field.id_for_label }}">
+        {{ field.label }}
+    </label>
+    <div class="col-9">
+        <div class="input-group">
+            {{ field|class:"form-select" }}
+            <span class="input-group-text {% if Valid != None %}bg-success{% endif %}">
+                {{ Points }}<span class="d-none d-sm-inline ms-1">pts</span>
+            </span>
+        </div>
+    </div>
+    {{ field.errors }}
+    {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+</div>
