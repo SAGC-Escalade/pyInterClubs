@@ -161,6 +161,9 @@ class ScoreQuerySet(models.QuerySet):
     def femmes(self):
         return self.filter(Grimpeur__Sexe=Genre.Femme)
 
+    def in_order(self):
+        return self.order_by('Ordre')
+
 class ScoreManager(models.Manager):
     def get_queryset(self):
         return ScoreQuerySet(self.model, using=self.db)
@@ -173,6 +176,9 @@ class ScoreManager(models.Manager):
         return self.get_queryset().hommes()
     def femmes(self):
         return self.get_queryset().femmes()
+
+    def in_order(self):
+        return self.get_queryset().in_order()
 
 class Score(models.Model):
     class Meta:
@@ -193,7 +199,7 @@ class Score(models.Model):
     Voie2 = models.IntegerField(choices=EtatVoie.choices, blank=True, null=True)
     Voie3 = models.IntegerField(choices=EtatVoie.choices, blank=True, null=True)
     Voie4 = models.IntegerField(choices=EtatVoie.choices, blank=True, null=True)
-    Vitesse = models.BigIntegerField(default=0)
+    Vitesse = models.DurationField(default=0)
     PtsVitesse = models.IntegerField(default=0)
     Points = models.IntegerField(default=0)
     Ordre = models.IntegerField(default=1, validators=[MaxValueValidator(8), MinValueValidator(1)])
@@ -204,3 +210,28 @@ class Score(models.Model):
         return f'{self.Equipe.Rencontre} - {Categorie(self.Equipe.Categorie).name} - {self.Grimpeur}'
 
     objects = ScoreManager()
+
+    @property
+    def PtsVoie1(self):
+        return self.PtsVoie(self.Voie1, self.IDVoie1)
+    @property
+    def PtsVoie2(self):
+        return self.PtsVoie(self.Voie2, self.IDVoie2)
+    @property
+    def PtsVoie3(self):
+        return self.PtsVoie(self.Voie3, self.IDVoie3)
+    @property
+    def PtsVoie4(self):
+        return self.PtsVoie(self.Voie4, self.IDVoie4)
+    @property
+    def PtsBloc1(self):
+        return self.PtsVoie(self.Bloc1, self.IDBloc1)
+    @property
+    def PtsBloc2(self):
+        return self.PtsVoie(self.Bloc2, self.IDBloc2)
+
+    def PtsVoie(self, result, niveau):
+        if result is None: return 0
+        if result == EtatVoie.Valorisee: return niveau.PtsValorises
+        if result == EtatVoie.Reussie: return niveau.PtsVoieComplete
+        return 0
