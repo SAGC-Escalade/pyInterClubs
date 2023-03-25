@@ -70,6 +70,20 @@ class ScoreCreateForm(forms.ModelForm):
         }
 
 
+
+from datetime import timedelta
+class DurationField(forms.DurationField):
+    def prepare_value(self, value):
+        print(type(value), value, value.microseconds if type(value) is timedelta else None)
+        if value == timedelta(microseconds=-1): return 'Chute'
+        if value == timedelta(microseconds=-2): return 'Abandon'
+        return super().prepare_value(value)
+
+    def to_python(self, value):
+        if value == 'Chute': return timedelta(microseconds=-1)
+        if value == 'Abandon': return timedelta(microsecons=-2)
+        return super().prepare_value(value)
+
 class ScoreUpdateForm(forms.ModelForm):
     class Meta:
         model  = Score
@@ -82,3 +96,5 @@ class ScoreUpdateForm(forms.ModelForm):
             'IDVoie3': autocomplete.ModelSelect2(url='niveau-autocomplete'),
             'IDVoie4': autocomplete.ModelSelect2(url='niveau-autocomplete'),
         }
+
+    Vitesse = DurationField()

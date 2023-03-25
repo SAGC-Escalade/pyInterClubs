@@ -29,9 +29,9 @@
         <li class="list-group-item">
             <h5>Difficulté</h5>
             {% if request.interclub.is_enfants %}
-                {% bootstrap_field form.Voie1 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
-                {% bootstrap_field form.Voie2 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
-                {% bootstrap_field form.Voie3 layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-9' %}
+                {% include 'leader/p_field.html' with field=form.Voie1 Points=object.PtsVoie1 Valid=object.Voie1 %}
+                {% include 'leader/p_field.html' with field=form.Voie2 Points=object.PtsVoie2 Valid=object.Voie2 %}
+                {% include 'leader/p_field.html' with field=form.Voie3 Points=object.PtsVoie3 Valid=object.Voie3 %}
             {% else %}
                 {% include 'leader/p_IDfield.html' with field=form.Voie1 IDfield=form.IDVoie1 Points=object.PtsVoie1 Valid=object.Voie1 %}
                 {% include 'leader/p_IDfield.html' with field=form.Voie2 IDfield=form.IDVoie2 Points=object.PtsVoie2 Valid=object.Voie2 %}
