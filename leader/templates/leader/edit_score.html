@@ -54,6 +54,31 @@
                 <div class="col-9">
                     <div class="input-group">
                         {{ form.Vitesse|class:"form-control" }}
+                        <button class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-reference="parent">
+                            <span class="visually-hidden">Cas particuliers</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end vitesse">
+                            <li><button class="dropdown-item" data-value="00:00:00.000000">
+                                <i class="fa-regular fa-clock fa-fw me-2"></i>
+                                hh:mm:ss.ffffff
+                            </button></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><h6 class="dropdown-header">Cas particuliers</h6></li>
+                            <li><button class="dropdown-item" data-value="Chute">
+                                <span class="fa-layers fa-fw me-2">
+                                    <i class="fa-solid fa-person-falling" data-fa-transform="shrink-2 down-2 left-2"></i>
+                                    <i class="fa-solid fa-slash" data-fa-transform="rotate-52 right-5"></i>
+                                </span>
+                                Chute
+                            </button></li>
+                            <li><button type="button" class="dropdown-item" data-value="Abandon">
+                                <span class="fa-layers fa-fw me-2">
+                                    <i class="fa-solid fa-person-walking" data-fa-transform="flip-h shrink-2 left-2"></i>
+                                    <i class="fa-solid fa-slash" data-fa-transform="rotate-52 shrink-2 right-5 up-4"></i>
+                                </span>
+                                Abandon
+                            </button></li>
+                        </ul>
                         <span class="input-group-text {% if object.Vitesse != None %}bg-success{% endif %}">
                             {{ object.PtsVitesse }}<span class="d-none d-sm-inline ms-1">pts</span>
                         </span>
@@ -66,4 +91,13 @@
     </ul>
     <div class="accordion-body">
     </div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    $(".vitesse button").on('click', function (e) {
+        $(this).closest("form").find("input[name='Vitesse']").val($(this).data("value"));
+        e.preventDefault();
+    });
+</script>
 {% endblock %}

@@ -71,6 +71,7 @@ class ScoreCreateForm(forms.ModelForm):
 
 
 
+# Champs de formulaire spécifique pour l'affichage particulier de la Vitesse (Chute et Abandon inclus)
 from datetime import timedelta
 class DurationField(forms.DurationField):
     def prepare_value(self, value):
@@ -83,6 +84,7 @@ class DurationField(forms.DurationField):
         if value == 'Chute': return timedelta(microseconds=-1)
         if value == 'Abandon': return timedelta(microsecons=-2)
         return super().prepare_value(value)
+
 
 class ScoreUpdateForm(forms.ModelForm):
     class Meta:
