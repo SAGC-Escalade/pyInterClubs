@@ -5,8 +5,8 @@
 
 {% block head %}
     <style>
-        .sexe   { color: rgba(0,0,0,.3); }
-        .femme  { color: lightpink; }
+        .sexe  { color: rgba(0,0,0,.3); }
+        .femme { color: lightpink; }
         .homme { color: lightblue; }
     </style>
 {% endblock %}
@@ -38,7 +38,38 @@
                         </button>
                     </h2>
                     <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
-                        <div hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false"></div>
+                        <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false">
+                            <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
+                            <li class="list-group-item placeholder-glow">
+                                <h5 class="placeholder col-1 my-3"></h5>
+                                <div class="row">
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                </div>
+                            </li>
+                            <li class="list-group-item placeholder-glow">
+                                <h5 class="placeholder col-1 my-3"></h5>
+                                <div class="row">
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                </div>
+                            </li>
+                            <li class="list-group-item placeholder-glow">
+                                <h5 class="placeholder col-1 my-3"></h5>
+                                <div class="row">
+                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 {% endfor %}
