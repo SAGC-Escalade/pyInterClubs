@@ -9,6 +9,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.formats import date_format
 
+from datetime import timedelta
+
 
 class Categorie(models.IntegerChoices):
     __empty__   = 'Sélectionnez la catégorie'
@@ -210,6 +212,18 @@ class Score(models.Model):
         return f'{self.Equipe.Rencontre} - {Categorie(self.Equipe.Categorie).name} - {self.Grimpeur}'
 
     objects = ScoreManager()
+
+    @property
+    def Valid(self):
+        return self.IDVoie1 != None and self.Voie1 != None \
+           and self.IDVoie2 != None and self.Voie2 != None \
+           and self.IDVoie3 != None and self.Voie3 != None \
+           and True if (self.Equipe != None and self.Equipe.Categorie == Categorie.Enfants) else \
+              (self.Voie4 != None if self.IDVoie4 != None else True) \
+           and self.IDBloc1 != None and self.Bloc1 != None \
+           and self.IDBloc2 != None and self.Bloc2 != None \
+           and self.Vitesse != timedelta()
+
 
     @property
     def PtsVoie1(self):
