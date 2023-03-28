@@ -2,6 +2,7 @@ from django.views.generic import DetailView, ListView, FormView
 #from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import CreateView, UpdateView # BaseFormView, FormMixin, ProcessFormView
 from django.forms.models import inlineformset_factory
+from django.urls import reverse_lazy
 from dal import autocomplete
 
 from core.models import Equipe, Score
@@ -39,3 +40,13 @@ class AddScoreView(CreateView):
         kws = super().get_initial()
         kws['Equipe'] = Equipe.objects.get(pk=self.kwargs['id_Equipe'])
         return kws
+
+
+class ScoreUpdateView(UpdateView):
+    model = Score
+    form_class = ScoreUpdateForm
+    template_name = 'leader/edit_score.html'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(self.get_context_data(form=form))

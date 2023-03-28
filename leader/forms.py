@@ -75,7 +75,6 @@ class ScoreCreateForm(forms.ModelForm):
 from datetime import timedelta
 class DurationField(forms.DurationField):
     def prepare_value(self, value):
-        print(type(value), value, value.microseconds if type(value) is timedelta else None)
         if value == timedelta(microseconds=-1): return 'Chute'
         if value == timedelta(microseconds=-2): return 'Abandon'
         return super().prepare_value(value)
@@ -89,8 +88,8 @@ class DurationField(forms.DurationField):
 class ScoreUpdateForm(forms.ModelForm):
     class Meta:
         model  = Score
-        # fields = ['ClubPreteur', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'PtsVitesse', 'Points']
         fields = '__all__'
+        exclude = ['Points', 'PtsVitesse', 'Ordre', 'Equipe', 'Grimpeur']
         widgets={
             'ClubPreteur': autocomplete.ModelSelect2(url='club-autocomplete'),
             'IDVoie1': autocomplete.ModelSelect2(url='niveau-autocomplete'),

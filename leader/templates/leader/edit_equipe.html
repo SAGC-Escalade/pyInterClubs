@@ -12,77 +12,77 @@
 {% endblock %}
 
 {% block body %}
-    <div class="card">
-        <form action="{% url 'equipe:edit' object.ID %}" method="post">
+    <div class="card" hx-target="this" hx-swap="outerHTML">
+        <form action="{% url 'equipe:edit' object.ID %}" method="post" hx-post="{% url 'equipe:edit' object.ID %}" hx-trigger="change">
             {% csrf_token %}
             <div class="card-header">
-                {% bootstrap_form form layout='horizontal' horizontal_label_class='col-5 col-sm-3' horizontal_field_class='col-7 col-sm-9' wrapper_class='' %}
-            </div>
-            <div class="accordion accordion-flush" id="equipe">
-                {% for score in object.Scores.in_order %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="hdg{{ forloop.counter }}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ forloop.counter }}" aria-expanded="false" aria-controls="bdy{{ forloop.counter }}">
-                            <span class="w-100 d-flex">
-                                <span class="fa-layers fa-fw me-2 d-none">
-                                    <i class="Sexe {{ score.Grimpeur.get_Sexe_display }} fa-solid fa-circle" data-fa-transform="grow-6 down-1"></i>
-                                    <i class="fa-solid fa-user fa-inverse" data-fa-transform="shrink-1"></i>
-                                </span>
-                                <i class="sexe {% if score.Grimpeur.Sexe == 2 %}homme{% else %}d-none{% endif %} fa-solid fa-person fa-fw me-2 fa-lg"></i>
-                                <i class="sexe {% if score.Grimpeur.Sexe == 1 %}femme{% else %}d-none{% endif %} fa-solid fa-person-dress fa-fw me-2 fa-lg"></i>
-                                {{ score.Grimpeur }}
-                                <span class="me-3 ms-auto badge {% if score.Valid %}text-bg-success{% else %}text-bg-primary{% endif %}">
-                                    {{ score.Points }}<span class="d-none d-sm-inline ms-1">pts</span>
-                                </span>
-                            </span>
-                        </button>
-                    </h2>
-                    <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
-                        <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false">
-                            <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
-                            <li class="list-group-item placeholder-glow">
-                                <h5 class="placeholder col-1 my-3"></h5>
-                                <div class="row">
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                </div>
-                            </li>
-                            <li class="list-group-item placeholder-glow">
-                                <h5 class="placeholder col-1 my-3"></h5>
-                                <div class="row">
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                </div>
-                            </li>
-                            <li class="list-group-item placeholder-glow">
-                                <h5 class="placeholder col-1 my-3"></h5>
-                                <div class="row">
-                                    <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                    <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="card-footer">
-                <div class="row g-2 justify-content-around">
-                    {% if object.Scores.count < 8 %}
-                        <a class="btn btn-primary col-12 col-md-3" href="{% url 'equipe:add-score' object.ID %}" hx-boost="false"><i class="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>
-                    {% endif %}
-                    <a class="btn btn-danger col-12 col-md-3" href=""><i class="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe</a>
-                </div>
+                {% bootstrap_form form layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-3' wrapper_class='' %}
             </div>
         </form>
+        <div class="accordion accordion-flush" id="equipe">
+            {% for score in object.Scores.in_order %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="hdg{{ forloop.counter }}" hx-get="{% url 'equipe:edit' score.ID %}" hx-trigger="path-deps" path-deps="{% url 'equipe:edit' object.ID %}/*">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ forloop.counter }}" aria-expanded="false" aria-controls="bdy{{ forloop.counter }}">
+                        <span class="w-100 d-flex">
+                            <span class="fa-layers fa-fw me-2 d-none">
+                                <i class="Sexe {{ score.Grimpeur.get_Sexe_display }} fa-solid fa-circle" data-fa-transform="grow-6 down-1"></i>
+                                <i class="fa-solid fa-user fa-inverse" data-fa-transform="shrink-1"></i>
+                            </span>
+                            <i class="sexe {% if score.Grimpeur.Sexe == 2 %}homme{% else %}d-none{% endif %} fa-solid fa-person fa-fw me-2 fa-lg"></i>
+                            <i class="sexe {% if score.Grimpeur.Sexe == 1 %}femme{% else %}d-none{% endif %} fa-solid fa-person-dress fa-fw me-2 fa-lg"></i>
+                            <span class="overflow-x-hidden">{{ score.Grimpeur }}</span>
+                            <span class="me-3 ms-auto badge {% if score.Valid %}text-bg-success{% else %}text-bg-primary{% endif %}">
+                                {{ score.Points }}<span class="d-none d-sm-inline ms-1">pts</span>
+                            </span>
+                        </span>
+                    </button>
+                </h2>
+                <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
+                    <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false">
+                        <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
+                        <li class="list-group-item placeholder-glow">
+                            <h5 class="placeholder col-1 my-3"></h5>
+                            <div class="row">
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item placeholder-glow">
+                            <h5 class="placeholder col-1 my-3"></h5>
+                            <div class="row">
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item placeholder-glow">
+                            <h5 class="placeholder col-1 my-3"></h5>
+                            <div class="row">
+                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="card-footer">
+            <div class="row g-2 justify-content-around">
+                {% if object.Scores.count < 8 %}
+                    <a class="btn btn-primary col-12 col-md-3" href="{% url 'equipe:add-score' object.ID %}" hx-boost="false"><i class="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>
+                {% endif %}
+                <a class="btn btn-danger col-12 col-md-3" href=""><i class="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe</a>
+            </div>
+        </div>
     </div>
 {% endblock %}
 

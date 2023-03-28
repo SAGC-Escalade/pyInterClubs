@@ -8,6 +8,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.formats import date_format
+from django.db.models import Q
 
 from datetime import timedelta
 
@@ -245,7 +246,35 @@ class Score(models.Model):
         return self.PtsVoie(self.Bloc2, self.IDBloc2)
 
     def PtsVoie(self, result, niveau):
-        if result is None: return 0
+        if result is None or niveau is None: return 0
         if result == EtatVoie.Valorisee: return niveau.PtsValorises
         if result == EtatVoie.Reussie: return niveau.PtsVoieComplete
         return 0
+
+    @property
+    def NiveauxPossibles(self):
+        qs = Q(Actif=True) & (~Q(NomVoie='Bloc'))
+        if self.Equipe  != None: qs &= Q(Categorie=self.Equipe.Categorie)
+        if self.IDVoie1 != None and not self.IDVoie1.Actif: qs = qs | Q(pk=self.IDVoie1.ID)
+        if self.IDVoie2 != None and not self.IDVoie2.Actif: qs = qs | Q(pk=self.IDVoie2.ID)
+        if self.IDVoie3 != None and not self.IDVoie3.Actif: qs = qs | Q(pk=self.IDVoie3.ID)
+        if self.IDVoie4 != None and not self.IDVoie4.Actif: qs = qs | Q(pk=self.IDVoie4.ID)
+        return Niveau.objects.filter(qs)
+
+
+    def save(self, *args, **kwargs):
+        if self.Equipe != None:
+            categorie = self.Equipe.Categorie
+
+            # On sélectionne les voies de Bloc
+            self.IDBloc1 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=1,Categorie=categorie)
+            self.IDBloc2 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=2,Categorie=categorie)
+
+            # On sélectionne les voies 2 et 3 pour les enfants
+            if categorie == Categorie.Enfants and self.IDVoie1 != None:
+                self.IDVoie2 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+1)
+                self.IDVoie3 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+2)
+
+        self.Points = self.PtsBloc1 + self.PtsBloc2 + self.PtsVoie1 + self.PtsVoie2 + self.PtsVoie3 + self.PtsVoie4 + self.PtsVitesse
+
+        return super().save(*args, **kwargs)
