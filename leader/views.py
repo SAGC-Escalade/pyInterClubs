@@ -9,6 +9,14 @@ from core.models import Equipe, Score
 from admin.models import Config
 from .forms import *
 
+class SelfRedirectedViewMixin:
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(self.get_context_data(form=form))
+
+class HTMXCreateView(SelfRedirectedViewMixin, CreateView): pass
+class HTMXUpdateView(SelfRedirectedViewMixin, UpdateView): pass
+
 
 class EquipeCreateView(CreateView):
     model = Equipe
@@ -19,13 +27,10 @@ class EquipeCreateView(CreateView):
         return self.request.interclub.get_initial(super().get_initial())
 
 
-class EquipeUpdateView(UpdateView):
+class EquipeUpdateView(HTMXUpdateView):
     model = Equipe
     fields = ['Numero']
     template_name = 'leader/edit_equipe.html'
-
-    def form_valid(self, form):
-        raise RuntimeError("Interdiction de continuer pour le moment")
 
 
 class AddScoreView(CreateView):
@@ -42,14 +47,11 @@ class AddScoreView(CreateView):
         return kws
 
 
-class ScoreUpdateView(UpdateView):
+class ScoreUpdateView(HTMXUpdateView):
     model = Score
     form_class = ScoreUpdateForm
     template_name = 'leader/edit_score.html'
 
-    def form_valid(self, form):
-        self.object = form.save()
-        return self.render_to_response(self.get_context_data(form=form))
 
 class ScoreHeaderView(DetailView):
     model = Score

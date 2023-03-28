@@ -1,0 +1,23 @@
+{% load widget_tweak %}
+<form action="{% url 'equipe:form' object.ID %}" method="post" hx-post="{% url 'equipe:form' object.ID %}" hx-trigger="change" hx-target="this">
+    {% csrf_token %}
+    <div class="card-header">
+        {# bootstrap_form form layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-3' wrapper_class='' #}
+
+        {{ form.non_field_errors }}
+        <div class="row">
+            <label class="col-9 col-sm-8 col-xl-10 col-form-label" for="{{ form.Numero.id_for_label }}">
+                {{ object.Club.Nom }}
+            </label>
+            <label class="d-none col-2 d-sm-inline col-xl-1 col-form-label" for="{{ form.Numero.id_for_label }}">
+                Numéro
+            </label>
+            <div class="col-3 col-sm-2 col-xl-1">
+                {{ form.Numero|class:"form-control" }}
+            </div>
+            {{ form.Numero.errors }}
+            {% if form.Numero.help_text %}<div class="form-text">{{ form.Numero.help_text|safe }}</div>{% endif %}
+        </div>
+
+    </div>
+</form>

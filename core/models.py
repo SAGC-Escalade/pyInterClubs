@@ -143,7 +143,7 @@ class Equipe(models.Model):
 
     Rencontre = models.ForeignKey(Rencontre, on_delete=models.PROTECT, related_name='Equipes', db_column='IDRencontre')
     Club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='Equipes', db_column='IDClub')
-    Numero = models.IntegerField(default=1)
+    Numero = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     Categorie = models.IntegerField(choices=Categorie.choices)
     ID = models.AutoField(primary_key=True)
 
