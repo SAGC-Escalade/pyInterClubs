@@ -10,5 +10,6 @@ urlpatterns = [
     path('<int:pk>', EquipeUpdateView.as_view(), name='edit'),
     # path('<int:pk>/edit', EquipeUpdateView.as_view(), name='edit'),
     path('<int:id_Equipe>/add', AddScoreView.as_view(), name='add-score'),
-    path('<int:id_Equipe>/<int:pk>', ScoreUpdateView.as_view(), name='edit-score'),
+    path('<int:id_Equipe>/<int:pk>/form', ScoreUpdateView.as_view(), name='edit-score'),
+    path('<int:id_Equipe>/<int:pk>/hdr', ScoreHeaderView.as_view(), name='hdr-score'),
 ]

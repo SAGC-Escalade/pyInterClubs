@@ -102,6 +102,7 @@
     <Content Include="leader\templates\leader\edit_score.html" />
     <Content Include="leader\templates\leader\edit_equipe.html" />
     <Content Include="leader\templates\leader\list_equipes.html" />
+    <Content Include="leader\templates\leader\p_hdrScore.html" />
     <Content Include="leader\templates\leader\p_IDfield.html" />
     <Content Include="leader\templates\leader\p_field.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />

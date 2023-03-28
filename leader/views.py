@@ -50,3 +50,7 @@ class ScoreUpdateView(UpdateView):
     def form_valid(self, form):
         self.object = form.save()
         return self.render_to_response(self.get_context_data(form=form))
+
+class ScoreHeaderView(DetailView):
+    model = Score
+    template_name = "leader/p_hdrScore.html"

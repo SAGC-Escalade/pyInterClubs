@@ -22,23 +22,12 @@
         <div class="accordion accordion-flush" id="equipe">
             {% for score in object.Scores.in_order %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="hdg{{ forloop.counter }}" hx-get="{% url 'equipe:edit' score.ID %}" hx-trigger="path-deps" path-deps="{% url 'equipe:edit' object.ID %}/*">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ forloop.counter }}" aria-expanded="false" aria-controls="bdy{{ forloop.counter }}">
-                        <span class="w-100 d-flex">
-                            <span class="fa-layers fa-fw me-2 d-none">
-                                <i class="Sexe {{ score.Grimpeur.get_Sexe_display }} fa-solid fa-circle" data-fa-transform="grow-6 down-1"></i>
-                                <i class="fa-solid fa-user fa-inverse" data-fa-transform="shrink-1"></i>
-                            </span>
-                            <i class="sexe {% if score.Grimpeur.Sexe == 2 %}homme{% else %}d-none{% endif %} fa-solid fa-person fa-fw me-2 fa-lg"></i>
-                            <i class="sexe {% if score.Grimpeur.Sexe == 1 %}femme{% else %}d-none{% endif %} fa-solid fa-person-dress fa-fw me-2 fa-lg"></i>
-                            <span class="overflow-x-hidden">{{ score.Grimpeur }}</span>
-                            <span class="me-3 ms-auto badge {% if score.Valid %}text-bg-success{% else %}text-bg-primary{% endif %}">
-                                {{ score.Points }}<span class="d-none d-sm-inline ms-1">pts</span>
-                            </span>
-                        </span>
+                <h2 class="accordion-header placeholder-glow" id="hdg{{ score.ID }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ score.ID }}" aria-expanded="false" aria-controls="bdy{{ score.ID }}">
+                        {% include "leader/p_hdrScore.html" with object=score %}
                     </button>
                 </h2>
-                <div id="bdy{{ forloop.counter }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ forloop.counter }}" data-bs-parent="#equipe">
+                <div id="bdy{{ score.ID }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ score.ID }}" data-bs-parent="#equipe">
                     <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false">
                         <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
                         <li class="list-group-item placeholder-glow">
