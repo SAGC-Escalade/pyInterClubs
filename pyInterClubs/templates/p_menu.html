@@ -45,7 +45,7 @@
                             </button>
                         </div>
                         <div id="bdyEquipes" class="accordion-collapse collapse show" aria-labelledby="hdrEquipes">
-                            <ul id="lstEquipes" class="list-group list-group-flush" hx-get="{% url 'equipe:list-equipes' %}" hx-trigger="load, path-deps" hx-target="this" path-deps="leader/*" hx-replace-url="false" >
+                            <ul id="lstEquipes" class="list-group list-group-flush" hx-get="{% url 'equipe:list-equipes' %}" hx-ext="path-deps" hx-trigger="load, path-deps" path-deps="leader/*" hx-replace-url="false" >
                                 <span class="placeholder placeholder-glow placeholder-lg w-50"></span>
                                 <span class="placeholder placeholder-glow placeholder-lg w-75"></span>
                                 <span class="placeholder placeholder-glow placeholder-lg w-25"></span>

@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="card" hx-target="this" hx-swap="outerHTML">
+    <div class="card" hx-swap="outerHTML">
         {% include 'leader/p_frmEquipe.html' with object=object form=form %}
         <div class="accordion accordion-flush" id="equipe">
             {% for score in object.Scores.in_order %}
@@ -23,7 +23,7 @@
                     </button>
                 </h2>
                 <div id="bdy{{ score.ID }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ score.ID }}" data-bs-parent="#equipe">
-                    <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-target="this" hx-replace-url="false">
+                    <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-replace-url="false">
                         <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
                         <li class="list-group-item placeholder-glow">
                             <h5 class="placeholder col-1 my-3"></h5>

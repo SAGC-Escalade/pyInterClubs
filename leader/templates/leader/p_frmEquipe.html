@@ -1,5 +1,5 @@
 {% load widget_tweak %}
-<form action="{% url 'equipe:form' object.ID %}" method="post" hx-post="{% url 'equipe:form' object.ID %}" hx-trigger="change" hx-target="this">
+<form action="{% url 'equipe:form' object.ID %}" method="post" hx-post="{% url 'equipe:form' object.ID %}" hx-trigger="change">
     {% csrf_token %}
     <div class="card-header">
         {# bootstrap_form form layout='horizontal' horizontal_label_class='col-3' horizontal_field_class='col-3' wrapper_class='' #}

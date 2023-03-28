@@ -3,7 +3,7 @@
 {% load widget_tweak %}
 
 {% block body %}
-    <form action="{% url 'equipe:edit-score' object.Equipe.ID object.ID %}" method="post" hx-boot="true" hx-trigger="change" hx-target="this" hx-swap="outerHTML" hx-replace-url="false">
+    <form action="{% url 'equipe:edit-score' object.Equipe.ID object.ID %}" method="post" hx-target="this" hx-trigger="change" hx-swap="outerHTML" hx-replace-url="false">
         {% csrf_token %}
         <ul class="list-group list-group-flush">
             <button class="list-group-item bg-light text-left" type="button" data-bs-toggle="collapse" data-bs-target="#bdyOptions{{ object.ID }}" aria-expanded="false" aria-controls="bdyOptions{{ object.ID }}">
