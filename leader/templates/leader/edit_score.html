@@ -28,6 +28,7 @@
                     </div>
                 </div>
             </li>
+            {{ form.non_field_errors }}
             <li class="list-group-item">
                 <h5>Difficulté</h5>
                 {% if request.interclub.is_enfants %}
@@ -49,7 +50,6 @@
             <li class="list-group-item">
                 <h5>Vitesse</h5>
                 <div class="row mb-3">
-                    {{ form.Vitesse.errors }}
                     <label class="col-3 col-form-label" for="{{ form.Vitesse.id_for_label }}">
                         {{ form.Vitesse.label }}
                     </label>

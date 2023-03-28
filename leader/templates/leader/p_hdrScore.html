@@ -1,11 +1,7 @@
 <span class="w-100 d-flex" hx-get="{% url 'equipe:hdr-score' object.Equipe.ID object.ID %}" hx-trigger="path-deps" path-deps="/leader/{{ object.Equipe.ID }}/{{ object.ID }}/*" hx-target="this">
-    <span class="fa-layers fa-fw me-2 d-none">
-        <i class="Sexe {{ object.Grimpeur.get_Sexe_display }} fa-solid fa-circle" data-fa-transform="grow-6 down-1"></i>
-        <i class="fa-solid fa-user fa-inverse" data-fa-transform="shrink-1"></i>
-    </span>
     <i class="sexe {% if object.Grimpeur.Sexe == 2 %}homme{% else %}d-none{% endif %} fa-solid fa-person fa-fw me-2 fa-lg"></i>
     <i class="sexe {% if object.Grimpeur.Sexe == 1 %}femme{% else %}d-none{% endif %} fa-solid fa-person-dress fa-fw me-2 fa-lg"></i>
-    <span class="overflow-x-hidden">{{ object.Grimpeur }}</span>
+    <span class="text-truncate">{{ object.Grimpeur }}</span>
     <span class="me-3 ms-auto badge {% if object.Valid %}text-bg-success{% else %}text-bg-primary{% endif %}">
         {{ object.Points }}<span class="d-none d-sm-inline ms-1">pts</span>
     </span>
