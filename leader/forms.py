@@ -89,7 +89,7 @@ class ScoreUpdateForm(forms.ModelForm):
     class Meta:
         model  = Score
         fields = '__all__'
-        exclude = ['Points', 'PtsVitesse', 'Ordre', 'Equipe', 'Grimpeur']
+        # exclude = ['Points', 'PtsVitesse', 'Ordre', 'Equipe', 'Grimpeur']
         widgets={
             'ClubPreteur': autocomplete.ModelSelect2(url='club-autocomplete'),
             'IDVoie1': autocomplete.ModelSelect2(url='niveau-autocomplete'),
@@ -97,5 +97,37 @@ class ScoreUpdateForm(forms.ModelForm):
             'IDVoie3': autocomplete.ModelSelect2(url='niveau-autocomplete'),
             'IDVoie4': autocomplete.ModelSelect2(url='niveau-autocomplete'),
         }
+        labels = {
+            'ClubPreteur': 'Club prêteur',
+        }
 
-    Vitesse = DurationField()
+
+class ScoreUpdateGroupeForm(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['IDVoie1']
+        labels = {'IDVoie1': 'Groupe'}
+class ScoreUpdateClubPreteurForm(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['ClubPreteur']
+class ScoreUpdateBloc1Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['Bloc1']
+class ScoreUpdateBloc2Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['Bloc2']
+class ScoreUpdateVoie1Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['IDVoie1', 'Voie1']
+class ScoreUpdateVoie2Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['IDVoie2', 'Voie2']
+class ScoreUpdateVoie3Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['IDVoie3', 'Voie3']
+class ScoreUpdateVoie4Form(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['IDVoie4', 'Voie4']
+class ScoreUpdateVitesseForm(ScoreUpdateForm):
+    class Meta(ScoreUpdateForm.Meta):
+        fields = ['Vitesse']
+    Vitesse = DurationField(label='Temps')

@@ -13,7 +13,7 @@
                 Numéro
             </label>
             <div class="col-3 col-sm-2 col-xl-1">
-                {{ form.Numero|class:"form-control" }}
+                {{ form.Numero|widget_class }}
             </div>
             {{ form.Numero.errors }}
             {% if form.Numero.help_text %}<div class="form-text">{{ form.Numero.help_text|safe }}</div>{% endif %}

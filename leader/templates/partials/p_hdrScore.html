@@ -1,4 +1,4 @@
-<span class="w-100 d-flex" hx-get="{% url 'equipe:hdr-score' object.Equipe.ID object.ID %}" hx-trigger="path-deps" path-deps="/leader/{{ object.Equipe.ID }}/{{ object.ID }}/*">
+<span class="w-100 d-flex" hx-get="{% url 'equipe:hdr-score' object.ID %}" hx-trigger="path-deps" path-deps="/leader/{{ object.Equipe.ID }}/{{ object.ID }}/*">
     <i class="sexe {% if object.Grimpeur.Sexe == 2 %}homme{% else %}d-none{% endif %} fa-solid fa-person fa-fw me-2 fa-lg"></i>
     <i class="sexe {% if object.Grimpeur.Sexe == 1 %}femme{% else %}d-none{% endif %} fa-solid fa-person-dress fa-fw me-2 fa-lg"></i>
     <span class="text-truncate">{{ object.Grimpeur }}</span>

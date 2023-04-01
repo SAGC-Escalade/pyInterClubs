@@ -12,46 +12,83 @@
 {% endblock %}
 
 {% block body %}
-    <div class="card" hx-swap="outerHTML">
-        {% include 'leader/p_frmEquipe.html' with object=object form=form %}
+    <div class="card placeholder-glow" hx-swap="outerHTML">
+        {% include 'partials/p_frmEquipe.html' with object=object form=form %}
         <div class="accordion accordion-flush" id="equipe">
             {% for score in object.Scores.in_order %}
             <div class="accordion-item">
                 <h2 class="accordion-header placeholder-glow" id="hdg{{ score.ID }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ score.ID }}" aria-expanded="false" aria-controls="bdy{{ score.ID }}">
-                        {% include "leader/p_hdrScore.html" with object=score %}
+                        {% include "partials/p_hdrScore.html" with object=score %}
                     </button>
                 </h2>
                 <div id="bdy{{ score.ID }}" class="accordion-collapse collapse collapsed" aria-labelledby="hdg{{ score.ID }}" data-bs-parent="#equipe">
-                    <ul class="list-group list-group-flush" hx-get="{% url 'equipe:edit-score' object.ID score.ID %}" hx-trigger="load" hx-replace-url="false">
-                        <div class="w-100 bg-light placeholder" style="height:2.5rem;"></div>
-                        <li class="list-group-item placeholder-glow">
-                            <h5 class="placeholder col-1 my-3"></h5>
-                            <div class="row">
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                    <ul class="list-group list-group-flush">
+                        <button class="list-group-item bg-light text-left" type="button" data-bs-toggle="collapse" data-bs-target="#bdyOptions{{ score.ID }}" aria-expanded="false" aria-controls="bdyOptions{{ score.ID }}">
+                            <i class="fa-solid fa-gear fa-fw me-2"></i>
+                            Paramètres
+                        </button>
+                        <li id="bdyOptions{{ score.ID }}" class="list-group-item collapse border-bottom">
+                            {% if request.interclub.is_enfants %}
+                                <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'groupe' %}" hx-trigger="load" hx-replace-url="false">
+                                    <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                    <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                                </div>
+                            {% endif %}
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'clubpreteur' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            <div class="row align-items-center">
+                                <label class="col-3 col-form-label">Actions</label>
+                                <div class="col-9 btn-toolbar" role="toolbar">
+                                    <div class="btn-group me-3" role="group">
+                                        <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-up fa-fw me-2"></i>Monter</button>
+                                        <button type="button" class="btn btn-primary"><i class="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</button>
+                                    </div>
+                                    <div class="btn-group mt-2 mt-md-0" role="group">
+                                        <button type="button" class="btn btn-danger col-12 col-md-3 mt-0"><i class="fa-solid fa-trash fa-fw me-2"></i>Supprimer</button>
+                                    </div>
+                                </div>
                             </div>
                         </li>
-                        <li class="list-group-item placeholder-glow">
-                            <h5 class="placeholder col-1 my-3"></h5>
-                            <div class="row">
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                        <li class="list-group-item">
+                            <h5>Difficulté</h5>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'voie1' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'voie2' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'voie3' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            {% if request.interclub.is_adolescents %}
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'voie4' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <h5>Bloc</h5>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'bloc1' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                            </div>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'bloc2' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
                             </div>
                         </li>
-                        <li class="list-group-item placeholder-glow">
-                            <h5 class="placeholder col-1 my-3"></h5>
-                            <div class="row">
-                                <div class="col-3 mb-3"><span class="w-100 placeholder placeholder-lg"></span></div>
-                                <div class="col-9 mb-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                        <li class="list-group-item">
+                            <h5>Vitesse</h5>
+                            <div class="row mb-3" hx-get="{% url 'leader:edit-field' score.ID 'vitesse' %}" hx-trigger="load" hx-replace-url="false">
+                                <div class="col-3 col-form-label"><span class="w-100 placeholder placeholder-lg"></span></div>
+                                <div class="col-9"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
                             </div>
                         </li>
                     </ul>
@@ -72,4 +109,10 @@
 
 {% block script %}
     {{ form.media }}
+    <script type="text/javascript">
+        $(".vitesse button").on('click', function (e) {
+            $(this).closest("form").find("input[name='Vitesse']").val($(this).data("value"));
+            e.preventDefault();
+        });
+    </script>
 {% endblock %}
