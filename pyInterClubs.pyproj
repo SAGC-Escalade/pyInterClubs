@@ -85,6 +85,9 @@
     <Compile Include="leader\templatetags\widget_tweak.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pyInterClubs\asgi.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pyInterClubs\views.py">
       <SubType>Code</SubType>
     </Compile>
