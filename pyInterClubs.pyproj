@@ -57,6 +57,7 @@
     <Compile Include="core\migrations\0001_initial.py" />
     <Compile Include="core\migrations\0002_remove_nullables.py" />
     <Compile Include="core\migrations\0003_alter_score_vitesse.py" />
+    <Compile Include="core\migrations\0004_alter_equipe_numero.py" />
     <Compile Include="core\migrations\__init__.py" />
     <Compile Include="core\models.py" />
     <Compile Include="core\tests.py" />
@@ -94,6 +95,25 @@
     <Compile Include="pyInterClubs\settings.py" />
     <Compile Include="pyInterClubs\urls.py" />
     <Compile Include="pyInterClubs\wsgi.py" />
+    <Compile Include="push\admin.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="push\apps.py" />
+    <Compile Include="push\migrations\0001_initial.py" />
+    <Compile Include="push\migrations\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="push\models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="push\tests.py" />
+    <Compile Include="push\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="push\views.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="push\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\templates\admin\rencontres-list.html" />
@@ -204,6 +224,7 @@
     <Content Include="pyInterClubs\templates\index.html" />
     <Content Include="pyInterClubs\templates\registration\login.html" />
     <Content Include="requirements.txt" />
+    <Content Include="push\templates\push\p_sse_javascript.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin\" />
@@ -233,6 +254,10 @@
     <Folder Include="pyInterClubs\static\js\" />
     <Folder Include="pyInterClubs\templates\" />
     <Folder Include="pyInterClubs\templates\registration\" />
+    <Folder Include="push\" />
+    <Folder Include="push\migrations\" />
+    <Folder Include="push\templates\" />
+    <Folder Include="push\templates\push\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="venv\">

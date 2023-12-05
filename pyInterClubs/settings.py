@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'leader',
     'admin',
     'core',
+    'push',
     'dal',
     'dal_select2',
     'fontawesomefree',

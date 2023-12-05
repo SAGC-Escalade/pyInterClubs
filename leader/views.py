@@ -9,6 +9,8 @@ from datetime import timedelta
 
 from core.models import Equipe, Score
 from admin.models import Config
+from push.models import Notification
+
 from .forms import *
 
 class SelfRedirectedViewMixin:
@@ -17,7 +19,11 @@ class SelfRedirectedViewMixin:
         return self.render_to_response(self.get_context_data(form=form))
 
 class HTMXCreateView(SelfRedirectedViewMixin, CreateView): pass
-class HTMXUpdateView(SelfRedirectedViewMixin, UpdateView): pass
+class HTMXUpdateView(SelfRedirectedViewMixin, UpdateView):
+    def form_valid(self, form):
+        self.object = form.save()
+        Notification.send_event(self.request.path)
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class EquipeCreateView(CreateView):

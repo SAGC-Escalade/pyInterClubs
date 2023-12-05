@@ -1,5 +1,5 @@
 {% load widget_tweak %}
-<form action="{{ request.path }}" method="post" hx-target="this" hx-trigger="change" hx-swap="outerHTML" hx-replace-url="false">
+<form action="{{ request.path }}" method="post" hx-target="this" hx-trigger="change, sse:{{ request.path }}" hx-swap="outerHTML" hx-replace-url="false">
     {% csrf_token %}
     <div class="row mb-3">
         <label class="col-3 col-form-label" for="{{ label.id_for_label }}">
