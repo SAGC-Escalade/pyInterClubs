@@ -1,20 +1,15 @@
 from django.db.models import Q
 from django.db.models.functions import MD5
+from django.utils.deprecation import MiddlewareMixin
+from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
 from core.models import Rencontre, Equipe, Grimpeur, Categorie, Club, Niveau
 from .models import Config
 
 
-class pyInterClubsMiddleware:
-    sync_capable = True
-    async_capable = True
-
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
+class pyInterClubsMiddleware(MiddlewareMixin):
+    def process_request(self, request):
         request.interclub = pyInterclubDetails(request)
-        return self.get_response(request)
 
 
 class pyInterclubDetails:
