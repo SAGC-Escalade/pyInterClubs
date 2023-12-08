@@ -22,7 +22,7 @@
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
-    <PythonDebugWebServerCommandArguments>runserver --noreload --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
+    <PythonDebugWebServerCommandArguments>runserver --nostatic --noreload --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
     <PythonRunWebServerCommandArguments>runserver --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonRunWebServerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -218,8 +218,14 @@
     <Content Include="pyInterClubs\static\3rd\popperjs-2.11.7-dist\popper.min.js.map" />
     <Content Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\qrcode.js" />
     <Content Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\qrcode.min.js" />
+    <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react-dom.development.js" />
+    <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react-dom.production.min.js" />
+    <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react.development.js" />
+    <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react.production.min.js" />
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
+    <Content Include="pyInterClubs\static\js\react\hello.jsx" />
+    <Content Include="pyInterClubs\static\js\react\tictactoe.jsx" />
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
     <Content Include="pyInterClubs\templates\p_navbar.html" />
@@ -252,9 +258,11 @@
     <Folder Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\" />
     <Folder Include="pyInterClubs\static\3rd\popperjs-2.11.7-dist\" />
     <Folder Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\" />
+    <Folder Include="pyInterClubs\static\3rd\react-18.2.0-dist\" />
     <Folder Include="pyInterClubs\static\css\" />
     <Folder Include="pyInterClubs\static\img\" />
     <Folder Include="pyInterClubs\static\js\" />
+    <Folder Include="pyInterClubs\static\js\react\" />
     <Folder Include="pyInterClubs\templates\" />
     <Folder Include="pyInterClubs\templates\registration\" />
     <Folder Include="push\" />

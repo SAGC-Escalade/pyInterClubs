@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-16"?>
-<DevTrackerData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SolutionTotalEditTime="PT13H49M56.9075973S" SolutionTotalViewTime="PT16H50M27.2239195S" SolutionTotalDebugTime="PT38M1.4994876S">
+<DevTrackerData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SolutionTotalEditTime="PT14H29M22.4245905S" SolutionTotalViewTime="PT18H14M21.1629934S" SolutionTotalDebugTime="PT1H15M49.49216S">
   <FileVersion>
     <Major>1</Major>
     <Minor>0</Minor>
@@ -14,465 +14,235 @@
   </ProjectsCreatedDateList>
   <SessionTimeList />
   <LastSessionTimeList>
-    <DevTrackerDataItem ViewActiveTime="PT20.3256966S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT3.5297818S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\migrations\0001_initial.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:09:00.8415104+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT25.1624738S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\migrations\0003_alter_score_vitesse.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:11:24.6296165+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT47.1351108S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\migrations\0004_alter_equipe_numero.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:11:49.793092+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2.474382S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\__init__.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:04:58.0194546+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT7M41.6739879S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\admin.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:07:36.4634546+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT40.2021967S" EditActiveTime="PT1M5.3551155S">
-      <ModifiedDate>2023-12-05T12:14:58.6907359+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\admin.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:04:53.5168967+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT22.9536891S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\admin\admin.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:13:15.8718518+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1.3468563S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\apps.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:12:17.8475992+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT6.286339S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\apps.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:04:48.2428724+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M18.1786746S" EditActiveTime="PT4M36.3088589S">
-      <ModifiedDate>2023-12-05T15:32:52.9911463+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\asgi.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T14:42:19.8967473+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT25.6820246S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\backends.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:05:59.6608763+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT3.5734794S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\templates\base.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T15:45:48.8387648+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M56.1138029S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\venv\Lib\site-packages\django\contrib\admin\templates\admin\base_site.html</Item>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\.gitignore</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName />
-      <CreatedDate>2023-12-05T11:52:32.2189217+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T12:03:47.9810731+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M22.3536621S" EditActiveTime="PT27M57.1827162S">
+    <DevTrackerDataItem ViewActiveTime="PT12M46.0982733S" EditActiveTime="PT1H23M4.0227247S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>Debug Mode</Item>
       <ItemType>DebugModeItem</ItemType>
       <ProjectName />
-      <CreatedDate>2023-12-05T11:06:17.7042025+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:24:05.3466146+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT9M53.2271583S" EditActiveTime="PT21.8349437S">
-      <ModifiedDate>2023-12-05T19:34:38.1351788+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\leader\edit_equipe.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:22:15.3662134+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M29.1900645S" EditActiveTime="PT47.5189879S">
-      <ModifiedDate>2023-12-05T19:26:58.6411941+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\leader\edit_score.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T19:17:01.6738765+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT19M12.5372586S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT1.980537S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\forms.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\leader\edit_equipe.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:35:38.95879+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:35.6392598+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT20.7508706S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT6.2955298S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.js</Item>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.js</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T19:22:02.2042707+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T12:16:16.5351434+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT6M22.4737167S" EditActiveTime="PT29.70178S">
-      <ModifiedDate>2023-12-05T20:06:22.5305708+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT6M44.9319351S" EditActiveTime="PT16.3022181S">
+      <ModifiedDate>2023-12-06T22:21:40.3823049+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T07:50:09.2916375+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1M53.3055473S" EditActiveTime="PT57.4689378S">
+      <ModifiedDate>2023-12-06T19:13:23.7025225+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T12:12:32.7883577+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3M40.6703021S" EditActiveTime="PT4M17.0711486S">
+      <ModifiedDate>2023-12-06T22:39:44.1707017+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>c:\users\jimmy\source\python\pyinterclubs\pyInterClubs\templates\index.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:45:26.2445206+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:20:57.5359731+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT13.2999929S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\templates\registration\login.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:05:37.966609+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT5M30.2248311S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT34.5955916S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\manage.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T14:34:28.4703128+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:25:18.3767348+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT13M31.4812783S" EditActiveTime="PT4M36.1424589S">
-      <ModifiedDate>2023-12-05T16:01:29.487129+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\admin\middleware.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T15:02:23.770601+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M38.813361S" EditActiveTime="PT3M46.6058069S">
-      <ModifiedDate>2023-12-05T20:06:46.9127459+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\models.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:07:40.86328+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M5.8469319S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT3.6550518S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>c:\users\jimmy\source\python\pyinterclubs\push\models.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\core\models.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:09:21.1702065+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:18.112601+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT3M12.9922453S" EditActiveTime="PT1M1.1754534S">
-      <ModifiedDate>2023-12-05T15:18:06.4473493+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\admin\models.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:10:56.3576693+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT14.0068397S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT1.9875609S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\module1.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T14:42:05.8859074+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT14.386576S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\partials\p_frmEquipe.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T19:45:20.0100846+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT8M52.2203745S" EditActiveTime="PT1M41.0238324S">
-      <ModifiedDate>2023-12-05T19:51:48.9126455+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_frmScoreField.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:44:06.8053651+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:38.2366468+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M41.3087522S" EditActiveTime="PT45.5714519S">
-      <ModifiedDate>2023-12-05T19:47:05.2975656+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
+    <DevTrackerDataItem ViewActiveTime="PT3.6359459S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\partials\p_hdrScore.html</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_hdrScore.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:25:38.2863255+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:13.525823+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M22.0444282S" EditActiveTime="PT31.9223975S">
-      <ModifiedDate>2023-12-05T19:14:40.2175317+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>c:\users\jimmy\source\python\pyinterclubs\push\templates\push\p_sse_javascript.html</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:09:36.3566171+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT14M5.4307267S" EditActiveTime="PT9M23.5872337S">
-      <ModifiedDate>2023-12-05T23:27:34.7643845+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT22.1720453S" EditActiveTime="PT2M36.2181257S">
+      <ModifiedDate>2023-12-06T19:05:47.9070503+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\requirements.txt</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:46:43.9446854+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T07:53:13.5103623+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT19.4255811S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\routers.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:06:24.3916321+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT12M47.6233533S" EditActiveTime="PT50.6921347S">
-      <ModifiedDate>2023-12-05T19:06:16.1093239+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT27M39.0703845S" EditActiveTime="PT12M4.7379319S">
+      <ModifiedDate>2023-12-06T19:08:42.797435+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\settings.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:46:06.6715281+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:51.5002829+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT3M45.6528827S" EditActiveTime="PT18.7368247S">
-      <ModifiedDate>2023-12-05T20:29:04.6321322+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT3.9987383S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\static\staticfiles.json</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T11:58:29.6387069+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT9.9628901S" EditActiveTime="PT23.2914941S">
+      <ModifiedDate>2023-12-06T09:55:16.6753694+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\sse.js</Item>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\test.js</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T19:58:47.9048146+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T09:54:46.4875943+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1.9911679S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT6M58.4138773S" EditActiveTime="PT3M14.4743383S">
+      <ModifiedDate>2023-12-06T23:08:42.1981348+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\tictactoe.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T22:30:25.6395806+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2.7497718S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\tests.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\push\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:12:12.3986711+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:24.1509347+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT5.3391738S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT2.475042S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\tests.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:04:37.9968815+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:32.602488+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT6M5.8736552S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT8.9696732S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:46:13.2909697+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T19:51:54.0638921+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M21.700413S" EditActiveTime="PT2M58.6742924S">
-      <ModifiedDate>2023-12-05T16:01:34.5901851+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\urls.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:04:35.6617932+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M22.9046599S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT2.7461545S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\urls.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\push\views.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T12:18:01.90195+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:09.74021+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT19M9.9271053S" EditActiveTime="PT31M12.6076193S">
-      <ModifiedDate>2023-12-05T23:16:13.9786556+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\views.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:05:45.1087345+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT7M40.4213763S" EditActiveTime="PT12.0131535S">
-      <ModifiedDate>2023-12-05T19:44:12.2330016+01:00</ModifiedDate>
-      <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\views.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:44:46.0530725+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT22.7503849S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT4.3498601S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
       <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\views.py</Item>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\views.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T14:57:51.2129882+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT45.8373223S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templatetags\widget_tweak.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T11:10:10.5183443+01:00</CreatedDate>
-      <ViewedBy>jimmy</ViewedBy>
-    </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M26.2616568S" EditActiveTime="PT0S">
-      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
-      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\wsgi.py</Item>
-      <ItemType>ProjectItem</ItemType>
-      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
-      <CreatedDate>2023-12-05T14:36:37.9327179+01:00</CreatedDate>
+      <CreatedDate>2023-12-06T08:21:27.5307006+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
   </LastSessionTimeList>
   <TotalTimeList>
+    <DevTrackerDataItem ViewActiveTime="PT3.5297818S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\.gitignore</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T12:03:47.9810731+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT2M55.7095161S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
@@ -739,11 +509,11 @@
       <CreatedDate>2023-04-03T01:24:17.8354147+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M18.1786746S" EditActiveTime="PT4M36.3088589S">
+    <DevTrackerDataItem ViewActiveTime="PT1M25.7900199S" EditActiveTime="PT4M36.3088589S">
       <ModifiedDate>2023-12-05T15:32:52.9911463+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
-      <ViewedCount>1</ViewedCount>
+      <ViewedCount>2</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\asgi.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -791,21 +561,21 @@
       <CreatedDate>2023-03-23T15:59:57.8049824+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT38M1.4994876S" EditActiveTime="PT4H59M3.5193815S">
+    <DevTrackerDataItem ViewActiveTime="PT51M24.8650839S" EditActiveTime="PT6H22M7.534107S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
-      <EditedCount>17</EditedCount>
-      <ViewedCount>22</ViewedCount>
+      <EditedCount>18</EditedCount>
+      <ViewedCount>24</ViewedCount>
       <Item>Debug Mode</Item>
       <ItemType>DebugModeItem</ItemType>
       <ProjectName />
       <CreatedDate>2023-03-22T12:09:03.2090159+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1H56M29.2862818S" EditActiveTime="PT1H24M8.447011S">
+    <DevTrackerDataItem ViewActiveTime="PT1H56M47.1917495S" EditActiveTime="PT1H24M8.447011S">
       <ModifiedDate>2023-12-05T19:34:38.1351788+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>12</EditedCount>
-      <ViewedCount>15</ViewedCount>
+      <ViewedCount>17</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\leader\edit_equipe.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -909,6 +679,38 @@
       <CreatedDate>2023-03-22T18:43:09.2262009+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT6.2955298S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.js</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T12:16:16.5351434+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT7M21.4548981S" EditActiveTime="PT27.3500947S">
+      <ModifiedDate>2023-12-06T22:21:40.3823049+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>2</EditedCount>
+      <ViewedCount>2</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T00:20:10.6710338+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1M53.3055473S" EditActiveTime="PT57.4689378S">
+      <ModifiedDate>2023-12-06T19:13:23.7025225+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T12:12:32.7883577+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT20.7508706S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
@@ -939,11 +741,11 @@
       <CreatedDate>2023-03-22T12:06:56.6188957+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT32M5.4346908S" EditActiveTime="PT7M22.0110125S">
-      <ModifiedDate>2023-12-05T20:06:22.5305708+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT38M5.2411063S" EditActiveTime="PT14M46.1207876S">
+      <ModifiedDate>2023-12-06T22:39:44.1707017+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>8</EditedCount>
-      <ViewedCount>9</ViewedCount>
+      <EditedCount>10</EditedCount>
+      <ViewedCount>11</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\templates\index.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1022,10 +824,10 @@
       <CreatedDate>2023-03-22T12:17:09.5498854+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT7M8.3468275S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT7M42.9424191S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
-      <ViewedCount>2</ViewedCount>
+      <ViewedCount>3</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\manage.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1053,22 +855,22 @@
       <CreatedDate>2023-03-22T10:45:34.8483533+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT44M56.8463675S" EditActiveTime="PT1H48M0.632945S">
+    <DevTrackerDataItem ViewActiveTime="PT45M13.8979837S" EditActiveTime="PT1H48M0.632945S">
       <ModifiedDate>2023-12-05T20:06:46.9127459+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>7</EditedCount>
-      <ViewedCount>14</ViewedCount>
+      <ViewedCount>16</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\core\models.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
       <CreatedDate>2023-03-22T18:51:53.2709117+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT3M27.0995286S" EditActiveTime="PT1M1.1754534S">
+    <DevTrackerDataItem ViewActiveTime="PT3M38.2958983S" EditActiveTime="PT1M1.1754534S">
       <ModifiedDate>2023-12-05T15:18:06.4473493+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>1</EditedCount>
-      <ViewedCount>2</ViewedCount>
+      <ViewedCount>3</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\admin\models.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1192,11 +994,11 @@
       <CreatedDate>2023-03-28T10:59:38.8361986+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT12M41.4965443S" EditActiveTime="PT11M6.2175824S">
+    <DevTrackerDataItem ViewActiveTime="PT13M3.720016S" EditActiveTime="PT11M6.2175824S">
       <ModifiedDate>2023-12-05T19:51:48.9126455+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>3</EditedCount>
-      <ViewedCount>4</ViewedCount>
+      <ViewedCount>6</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\partials\p_frmScoreField.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1214,11 +1016,11 @@
       <CreatedDate>2023-03-28T09:50:49.2089476+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M52.5056854S" EditActiveTime="PT46.5151756S">
+    <DevTrackerDataItem ViewActiveTime="PT3M9.4843202S" EditActiveTime="PT46.5151756S">
       <ModifiedDate>2023-12-05T19:47:05.2975656+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>2</EditedCount>
-      <ViewedCount>2</ViewedCount>
+      <ViewedCount>4</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\templates\partials\p_hdrScore.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1288,31 +1090,31 @@
       <CreatedDate>2023-04-02T21:32:08.6961123+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT6M38.1313958S" EditActiveTime="PT2M39.6459813S">
+    <DevTrackerDataItem ViewActiveTime="PT6M51.3382998S" EditActiveTime="PT2M39.6459813S">
       <ModifiedDate>2023-12-05T19:14:40.2175317+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>2</EditedCount>
-      <ViewedCount>2</ViewedCount>
+      <ViewedCount>3</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\templates\push\p_sse_javascript.html</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
       <CreatedDate>2023-04-03T12:23:10.8291628+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT3M59.6517234S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT4M7.7016173S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
-      <ViewedCount>3</ViewedCount>
+      <ViewedCount>4</ViewedCount>
       <Item>C:\Users\jimmy\AppData\Local\Temp\pyInterClubs - Copier.pyproj</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName />
       <CreatedDate>2023-03-22T23:54:48.0214539+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT2M44.9559592S" EditActiveTime="PT0S">
+    <DevTrackerDataItem ViewActiveTime="PT3M31.806988S" EditActiveTime="PT0S">
       <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
       <EditedCount>0</EditedCount>
-      <ViewedCount>1</ViewedCount>
+      <ViewedCount>2</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.dt</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName />
@@ -1329,11 +1131,11 @@
       <CreatedDate>2023-03-26T19:06:24.3269295+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT20M25.4008607S" EditActiveTime="PT10M57.656116S">
-      <ModifiedDate>2023-12-05T23:27:34.7643845+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT22M16.9854327S" EditActiveTime="PT14M31.3929177S">
+      <ModifiedDate>2023-12-06T19:05:47.9070503+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>2</EditedCount>
-      <ViewedCount>2</ViewedCount>
+      <EditedCount>4</EditedCount>
+      <ViewedCount>4</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\requirements.txt</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1360,11 +1162,11 @@
       <CreatedDate>2023-03-22T22:07:24.1358913+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT20M39.6626664S" EditActiveTime="PT1M26.4560628S">
-      <ModifiedDate>2023-12-05T19:06:16.1093239+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT48M38.3021215S" EditActiveTime="PT13M32.4264911S">
+      <ModifiedDate>2023-12-06T19:08:42.797435+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>7</EditedCount>
-      <ViewedCount>7</ViewedCount>
+      <EditedCount>9</EditedCount>
+      <ViewedCount>9</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\settings.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1380,6 +1182,16 @@
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
       <CreatedDate>2023-04-03T01:47:24.5441707+02:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3.9987383S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\static\staticfiles.json</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T11:58:29.6387069+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT43.2393285S" EditActiveTime="PT0S">
@@ -1400,6 +1212,17 @@
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
       <CreatedDate>2023-03-22T22:31:16.9312576+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT9.9628901S" EditActiveTime="PT23.2914941S">
+      <ModifiedDate>2023-12-06T09:55:16.6753694+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\test.js</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T09:54:46.4875943+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT4.1796861S" EditActiveTime="PT0S">
@@ -1442,6 +1265,17 @@
       <CreatedDate>2023-12-05T12:04:37.9968815+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT6M58.4138773S" EditActiveTime="PT3M14.4743383S">
+      <ModifiedDate>2023-12-06T23:08:42.1981348+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\tictactoe.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T22:30:25.6395806+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT7M18.9827153S" EditActiveTime="PT6M16.9655862S">
       <ModifiedDate>2023-03-22T18:20:31.7454188+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
@@ -1453,22 +1287,22 @@
       <CreatedDate>2023-03-22T12:05:36.8889198+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT57M41.8559645S" EditActiveTime="PT29M47.7786223S">
+    <DevTrackerDataItem ViewActiveTime="PT57M44.3310065S" EditActiveTime="PT29M47.7786223S">
       <ModifiedDate>2023-04-01T20:45:11.942847+02:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>11</EditedCount>
-      <ViewedCount>19</ViewedCount>
+      <ViewedCount>20</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
       <CreatedDate>2023-03-22T12:05:57.371258+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT11M41.9425602S" EditActiveTime="PT8M55.077902S">
+    <DevTrackerDataItem ViewActiveTime="PT11M50.9122334S" EditActiveTime="PT8M55.077902S">
       <ModifiedDate>2023-04-03T01:23:17.2128314+02:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>5</EditedCount>
-      <ViewedCount>9</ViewedCount>
+      <ViewedCount>10</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1497,11 +1331,11 @@
       <CreatedDate>2023-04-02T21:33:19.7045129+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1M31.2466683S" EditActiveTime="PT3M6.6501567S">
+    <DevTrackerDataItem ViewActiveTime="PT1M33.9964401S" EditActiveTime="PT3M6.6501567S">
       <ModifiedDate>2023-12-05T16:01:34.5901851+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>2</EditedCount>
-      <ViewedCount>3</ViewedCount>
+      <ViewedCount>4</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\urls.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1519,11 +1353,11 @@
       <CreatedDate>2023-03-22T10:44:27.738802+01:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT1H51M17.0826743S" EditActiveTime="PT1H22M22.8301971S">
+    <DevTrackerDataItem ViewActiveTime="PT1H51M21.4325344S" EditActiveTime="PT1H22M22.8301971S">
       <ModifiedDate>2023-12-05T19:44:12.2330016+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
       <EditedCount>11</EditedCount>
-      <ViewedCount>19</ViewedCount>
+      <ViewedCount>20</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\leader\views.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1561,11 +1395,11 @@
       <CreatedDate>2023-04-02T21:35:47.8348031+02:00</CreatedDate>
       <ViewedBy>jimmy</ViewedBy>
     </DevTrackerDataItem>
-    <DevTrackerDataItem ViewActiveTime="PT26M19.6105387S" EditActiveTime="PT31M47.6552577S">
-      <ModifiedDate>2023-12-05T23:16:13.9786556+01:00</ModifiedDate>
+    <DevTrackerDataItem ViewActiveTime="PT29M6.4669521S" EditActiveTime="PT34M26.2292418S">
+      <ModifiedDate>2023-12-05T23:39:15.610566+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>
-      <EditedCount>3</EditedCount>
-      <ViewedCount>3</ViewedCount>
+      <EditedCount>4</EditedCount>
+      <ViewedCount>5</ViewedCount>
       <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\views.py</Item>
       <ItemType>ProjectItem</ItemType>
       <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
@@ -1617,6 +1451,378 @@
     </DevTrackerDataItem>
   </TotalTimeList>
   <HistoryTimeList>
+    <DevTrackerDataItem ViewActiveTime="PT6M58.4138773S" EditActiveTime="PT3M14.4743383S">
+      <ModifiedDate>2023-12-06T23:08:42.1981348+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\tictactoe.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T22:30:25.6395806+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT8.9696732S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\urls.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T19:51:54.0638921+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT6.2955298S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.js</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T12:16:16.5351434+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1M53.3055473S" EditActiveTime="PT57.4689378S">
+      <ModifiedDate>2023-12-06T19:13:23.7025225+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T12:12:32.7883577+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3.5297818S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\.gitignore</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T12:03:47.9810731+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3.9987383S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\static\staticfiles.json</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T11:58:29.6387069+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT9.9628901S" EditActiveTime="PT23.2914941S">
+      <ModifiedDate>2023-12-06T09:55:16.6753694+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\assets\js\test.js</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T09:54:46.4875943+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT34.5955916S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\manage.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:25:18.3767348+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT12M46.0982733S" EditActiveTime="PT1H23M4.0207248S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>Debug Mode</Item>
+      <ItemType>DebugModeItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T08:24:05.3466146+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT27M39.0703845S" EditActiveTime="PT12M4.7379319S">
+      <ModifiedDate>2023-12-06T19:08:42.797435+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\settings.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:51.5002829+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1.9875609S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_frmScoreField.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:38.2366468+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1.980537S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\leader\edit_equipe.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:35.6392598+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2.475042S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\urls.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:32.602488+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT4.3498601S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\views.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:27.5307006+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2.7497718S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\push\urls.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:24.1509347+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3.6550518S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\core\models.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:18.112601+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3.6359459S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_hdrScore.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:13.525823+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2.7461545S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\push\views.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:21:09.74021+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT3M40.6703021S" EditActiveTime="PT4M17.0711486S">
+      <ModifiedDate>2023-12-06T22:39:44.1707017+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\pyInterClubs\templates\index.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T08:20:57.5359731+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT22.1720453S" EditActiveTime="PT2M36.2181257S">
+      <ModifiedDate>2023-12-06T19:05:47.9070503+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\requirements.txt</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T07:53:13.5103623+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT6M44.9319351S" EditActiveTime="PT16.3022181S">
+      <ModifiedDate>2023-12-06T22:21:40.3823049+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-06T07:50:09.2916375+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT36.5259601S" EditActiveTime="PT11.0478766S">
+      <ModifiedDate>2023-12-06T00:46:20.0805281+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\static\js\react\hello.jsx</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-06T00:20:10.6710338+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT1M29.4125267S" EditActiveTime="PT57.518676S">
+      <ModifiedDate>2023-12-06T00:36:54.8982987+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\requirements.txt</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:48:10.0901831+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT8.0498939S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\AppData\Local\Temp\pyInterClubs - Copier.pyproj</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-05T23:48:02.0392901+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT46.8510288S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.dt</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-05T23:47:15.1872615+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT19.5690706S" EditActiveTime="PT1.2324964S">
+      <ModifiedDate>2023-12-05T23:47:02.3222747+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\settings.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:46:26.736628+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT7.6113453S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs\asgi.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:46:23.0307437+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT13.206904S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\templates\push\p_sse_javascript.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:45:30.4500493+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT13.3426889S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_hdrScore.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:45:17.1063617+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT20.2359108S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\partials\p_frmScoreField.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:44:56.8694507+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT15.9249307S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\leader\templates\leader\edit_equipe.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:44:40.9435198+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT13.3965644S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\core\models.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:44:27.5469554+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT11.1963697S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\admin\models.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:44:16.3480048+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT37.267323S" EditActiveTime="PT0S">
+      <ModifiedDate>0001-01-01T00:00:00</ModifiedDate>
+      <EditedCount>0</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>Debug Mode</Item>
+      <ItemType>DebugModeItem</ItemType>
+      <ProjectName />
+      <CreatedDate>2023-12-05T23:39:40.4167642+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2M19.1361134S" EditActiveTime="PT3M7.0386265S">
+      <ModifiedDate>2023-12-06T00:01:57.7245924+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>c:\users\jimmy\source\python\pyinterclubs\pyInterClubs\templates\index.html</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:36:07.7936855+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
+    <DevTrackerDataItem ViewActiveTime="PT2M44.1102589S" EditActiveTime="PT2M38.5739841S">
+      <ModifiedDate>2023-12-05T23:39:15.610566+01:00</ModifiedDate>
+      <ModifiedBy>jimmy</ModifiedBy>
+      <EditedCount>1</EditedCount>
+      <ViewedCount>1</ViewedCount>
+      <Item>C:\Users\jimmy\source\Python\pyInterClubs\push\views.py</Item>
+      <ItemType>ProjectItem</ItemType>
+      <ProjectName>C:\Users\jimmy\source\Python\pyInterClubs\pyInterClubs.pyproj</ProjectName>
+      <CreatedDate>2023-12-05T23:35:12.2752302+01:00</CreatedDate>
+      <ViewedBy>jimmy</ViewedBy>
+    </DevTrackerDataItem>
     <DevTrackerDataItem ViewActiveTime="PT3M45.6528827S" EditActiveTime="PT18.7368247S">
       <ModifiedDate>2023-12-05T20:29:04.6321322+01:00</ModifiedDate>
       <ModifiedBy>jimmy</ModifiedBy>

@@ -3,3 +3,4 @@ django-bootstrap5 ~= 22.2
 django-htmx       ~= 1.12
 fontawesomefree   ~= 6.1
 django-autocomplete-light ~= 3.9
+django-babel-transpiling ~= 0.3
