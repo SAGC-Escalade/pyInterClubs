@@ -65,6 +65,10 @@
         .game-info {
             margin-left: 20px;
         }
+
+        button.current {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body hx-boost="true" hx-ext="path-deps">
@@ -76,7 +80,7 @@
     </div>
 
     <div id="mainFragment" class="container my-3">
-        <div id="react_0HMVLSNB1HPRE"></div>
+        <div id="tictactoe"></div>
         {% block body %}{% endblock %}
     </div>
 
@@ -151,6 +155,6 @@
 
         });
     </script>
-    <script src="{% static 'js/react/hello.jsx' %}"></script>
+    <script src="{% static 'js/react/tictactoe.jsx' %}"></script>
 </body>
 </html>
