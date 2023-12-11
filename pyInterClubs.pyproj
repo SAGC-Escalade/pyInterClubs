@@ -52,6 +52,15 @@
     </Compile>
     <Compile Include="admin\views.py" />
     <Compile Include="admin\__init__.py" />
+    <Compile Include="api\apps.py" />
+    <Compile Include="api\serializers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\views.py" />
+    <Compile Include="api\__init__.py" />
     <Compile Include="core\admin.py" />
     <Compile Include="core\apps.py" />
     <Compile Include="core\migrations\0001_initial.py" />
@@ -240,6 +249,7 @@
     <Folder Include="admin\migrations\" />
     <Folder Include="admin\templates\" />
     <Folder Include="admin\templates\admin\" />
+    <Folder Include="api\" />
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
     <Folder Include="leader\" />

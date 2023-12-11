@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'admin',
     'core',
     'push',
+    'api',
     'dal',
     'dal_select2',
     'fontawesomefree',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'babel_transpiling',
+    'rest_framework',
 ]
 
 # Middleware framework

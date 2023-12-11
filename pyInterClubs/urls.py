@@ -28,6 +28,7 @@ urlpatterns = [
     path('autocomplete/niveaux', NiveauAutocomplete.as_view(), name='niveau-autocomplete'),
 
     path('debug/', admin.site.urls),
+    path('api/', include('api.urls')),
     path('', include(('push.urls', 'push'), namespace='sse')),
     path('admin/', include('admin.urls')),
     path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),
