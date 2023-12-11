@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 venv/
 /static
+/pyInterClubs.dt
