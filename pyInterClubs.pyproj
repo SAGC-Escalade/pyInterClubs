@@ -231,9 +231,15 @@
     <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react-dom.production.min.js" />
     <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react.development.js" />
     <Content Include="pyInterClubs\static\3rd\react-18.2.0-dist\react.production.min.js" />
+    <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.js" />
+    <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js" />
+    <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js.LICENSE.txt" />
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\static\js\react\hello.jsx" />
+    <Content Include="pyInterClubs\static\js\react\observer.jsx" />
+    <Content Include="pyInterClubs\static\js\react\score.jsx" />
+    <Content Include="pyInterClubs\static\js\react\scoreEnfant.jsx" />
     <Content Include="pyInterClubs\static\js\react\tictactoe.jsx" />
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
@@ -269,6 +275,7 @@
     <Folder Include="pyInterClubs\static\3rd\popperjs-2.11.7-dist\" />
     <Folder Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\" />
     <Folder Include="pyInterClubs\static\3rd\react-18.2.0-dist\" />
+    <Folder Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\" />
     <Folder Include="pyInterClubs\static\css\" />
     <Folder Include="pyInterClubs\static\img\" />
     <Folder Include="pyInterClubs\static\js\" />

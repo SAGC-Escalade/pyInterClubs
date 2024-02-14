@@ -6,10 +6,6 @@ class NiveauSerializer(serializers.ModelSerializer):
         model = Niveau
         fields = '__all__'
         exclude = ['Actif']
-class NiveauSerializerRestricted(serializers.ModelSerializer):
-    class Meta:
-        model = Niveau
-        fields = ['ID', 'NomVoie', 'NiveauVoie']
 
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,9 +16,6 @@ class GrimpeurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
         fields = '__all__'
-class GrimpeurSerializerDepth1(GrimpeurSerializer):
-    class Meta(GrimpeurSerializer.Meta):
-        depth = 1
 class GrimpeurSerializerIdentity(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
@@ -41,20 +34,25 @@ class RencontreSerializer(serializers.ModelSerializer):
 
 class ScoreSerializer(serializers.ModelSerializer):
     Grimpeur = GrimpeurSerializerIdentity()
-    IDBloc1 = NiveauSerializerRestricted()
-    IDBloc2 = NiveauSerializerRestricted()
-    IDVoie1 = NiveauSerializerRestricted()
-    IDVoie2 = NiveauSerializerRestricted()
-    IDVoie3 = NiveauSerializerRestricted()
-    IDVoie4 = NiveauSerializerRestricted()
     class Meta:
         model = Score
-        fields = ['ID', 'Bloc1', 'Bloc2', 'Voie1', 'Voie2', 'Voie3', 'Voie4', 'Vitesse', 'Ordre', 'Grimpeur', 'ClubPreteur', 'IDBloc1', 'IDBloc2', 'IDVoie1', 'IDVoie2', 'IDVoie3', 'IDVoie4', 'Points', 'PtsVitesse']
+        fields = [
+            'ID',
+            'Ordre',
+            'Grimpeur', 'ClubPreteur',
+            'Bloc1', 'Bloc2',
+            'Voie1', 'Voie2', 'Voie3', 'Voie4',
+            'Vitesse',
+            'IDBloc1', 'IDBloc2',
+            'IDVoie1', 'IDVoie2', 'IDVoie3', 'IDVoie4',
+            'PtsBloc1', 'PtsBloc2',
+            'PtsVoie1', 'PtsVoie2', 'PtsVoie3', 'PtsVoie4',
+            'PtsVitesse',
+            'Points', 'Valid',
+        ]
 
 class EquipeSerializer(serializers.ModelSerializer):
-    Scores = ScoreSerializer(many=True, read_only=True)
     class Meta:
         model = Equipe
-        fields = ['ID', 'Club', 'Numero', 'Categorie', 'Scores']
-        #exclude = ['Rencontre']
-        depth = 1
+        #fields = ['ID', 'Club', 'Numero', 'Categorie']
+        exclude = ['Rencontre']

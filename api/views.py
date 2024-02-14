@@ -25,7 +25,7 @@ class NiveauViewSet(viewsets.ModelViewSet):
         return self.request.interclub.niveaux
 
 class GrimpeurViewSet(viewsets.ModelViewSet):
-    serializer_class = GrimpeurSerializerDepth1
+    serializer_class = GrimpeurSerializer
     def get_queryset(self):
         return self.request.interclub.grimpeurs
 
