@@ -9,10 +9,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.formats import date_format
 from django.db.models import Q
+from django_eventstream import send_event
 
 from datetime import timedelta
-
-from push.models import Notification
 
 
 class Categorie(models.IntegerChoices):
@@ -271,17 +270,17 @@ class Score(models.Model):
             # On sélectionne les voies de Bloc
             self.IDBloc1 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=1,Categorie=categorie)
             self.IDBloc2 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=2,Categorie=categorie)
-            Notification.send_event(f'/score/{self.ID}/IDBloc1')
-            Notification.send_event(f'/score/{self.ID}/IDBloc2')
+            send_event('test', 'message', f'/score/{self.ID}/IDBloc1')
+            send_event('test', 'message', f'/score/{self.ID}/IDBloc2')
 
             # On sélectionne les voies 2 et 3 pour les enfants
             if categorie == Categorie.Enfants and self.IDVoie1 != None:
                 self.IDVoie2 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+1)
                 self.IDVoie3 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+2)
-                Notification.send_event(f'/score/{self.ID}/IDVoie2')
-                Notification.send_event(f'/score/{self.ID}/IDVoie3')
+                send_event('test', 'message', f'/score/{self.ID}/IDVoie2')
+                send_event('test', 'message', f'/score/{self.ID}/IDVoie3')
 
         self.Points = self.PtsBloc1 + self.PtsBloc2 + self.PtsVoie1 + self.PtsVoie2 + self.PtsVoie3 + self.PtsVoie4 + self.PtsVitesse
-        Notification.send_event(f'/score/{self.ID}/Points')
+        send_event('test', 'message', f'/score/{self.ID}/Points')
 
         return super().save(*args, **kwargs)

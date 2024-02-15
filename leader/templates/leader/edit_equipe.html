@@ -1,5 +1,5 @@
 {% extends request.htmx|yesno:"base.html,index.html" %}
-{% load static django_bootstrap5 %}
+{% load static django_bootstrap5 babel_transpiling %}
 
 {% block title %}Equipe {{ object }}{% endblock %}
 
@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="card placeholder-glow" hx-swap="outerHTML" hx-ext="sse" sse-connect="{% url 'push:events' %}">
+    <div class="card placeholder-glow">
         {% include 'partials/p_frmEquipe.html' with object=object form=form %}
         <div id="react-equipe"></div>
         <div class="accordion accordion-flush" id="equipe">
@@ -110,7 +110,7 @@
 
 {% block script %}
     <script type="module" src="{% static '3rd/react-bootstrap-2.9.1-dist/react-bootstrap.min.js' %}"></script>
-    <script type="module" src="{% static 'js/react/score.jsx' %}"></script>
+    <script type="module" src="{% url "react" "score.jsx" %}"></script>
     {{ form.media }}
     <script type="text/javascript">
         $(".vitesse button").on('click', function (e) {

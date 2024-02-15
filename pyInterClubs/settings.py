@@ -30,10 +30,11 @@ ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
 INSTALLED_APPS = [
     # Add your apps here to enable them
+    'daphne',
+    'channels',
     'leader',
     'admin',
     'core',
-    'push',
     'api',
     'dal',
     'dal_select2',
@@ -127,8 +128,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'pyInterClubs/static']
 #STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_STORAGE = 'babel_transpiling.storage.StaticFilesTranspilingStorage'
+#STATICFILES_STORAGE = 'babel_transpiling.storage.StaticFilesTranspilingStorage'
 
 # Ajout de types MIME pour les fichiers statiques
 import mimetypes
 mimetypes.add_type("application/javascript", ".js", True)
+
+# React
+REACT_APP_BUILD_PATH = "pyInterClubs/react"

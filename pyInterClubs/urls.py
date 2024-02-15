@@ -17,7 +17,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.conf import settings
 from django.views.generic import TemplateView
 
 from .views import *
@@ -29,11 +30,11 @@ urlpatterns = [
 
     path('debug/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('', include(('push.urls', 'push'), namespace='sse')),
     path('admin/', include('admin.urls')),
     path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),
     path('accounts/', include('django.contrib.auth.urls')),
 
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
+    re_path(r"^react/(?P<path>.*.jsx)$", serve_react, {"document_root": settings.REACT_APP_BUILD_PATH}, name='react'),
 ]

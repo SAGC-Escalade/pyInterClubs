@@ -8,7 +8,7 @@ var Accordion = ReactBootstrap.Accordion,
     Badge = ReactBootstrap.Badge;
 
 
-function Score({ source }) {
+export function Score({ source }) {
     const [score, setScore] = React.useState({
         Grimpeur: {},
     });
@@ -40,7 +40,7 @@ function Score({ source }) {
     );
 }
 
-function Scores() {
+export default function Scores() {
     return (
         <Accordion defaultActiveKey="876">
             <Score source="/api/scores/876/" />

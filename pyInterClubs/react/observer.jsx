@@ -1,9 +1,12 @@
-const sse = new EventSource('/events', { withCredentials: true });
+const sse = new EventSource('/events/', { withCredentials: true });
 sse.onopen = () => {
     console.log("Connexion ouverte...");
 };
 sse.onerror = () => {
     console.log("Erreur de connexion avec les events...");
+};
+sse.onmessage = (event) => {
+    console.log(event);
 };
 
 export default function Observer({ source, children, onChange, defaultData = {} }) {
@@ -24,6 +27,7 @@ export default function Observer({ source, children, onChange, defaultData = {} 
                     console.log(err.message);
                 });
         };
+        polling();
 
         // Connection au serveur d'évènements pour écouter les mises à jours
         sse.addEventListener(source, (ev) => {

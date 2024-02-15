@@ -22,7 +22,7 @@
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
-    <PythonDebugWebServerCommandArguments>runserver --nostatic --noreload --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
+    <PythonDebugWebServerCommandArguments>runserver --noreload --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonDebugWebServerCommandArguments>
     <PythonRunWebServerCommandArguments>runserver --settings $(DjangoSettingsModule) 0.0.0.0:%SERVER_PORT% $(CommandLineArguments)</PythonRunWebServerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -107,25 +107,6 @@
     <Compile Include="pyInterClubs\settings.py" />
     <Compile Include="pyInterClubs\urls.py" />
     <Compile Include="pyInterClubs\wsgi.py" />
-    <Compile Include="push\admin.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="push\apps.py" />
-    <Compile Include="push\migrations\0001_initial.py" />
-    <Compile Include="push\migrations\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="push\models.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="push\tests.py" />
-    <Compile Include="push\urls.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="push\views.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="push\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\templates\admin\rencontres-list.html" />
@@ -236,11 +217,11 @@
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js.LICENSE.txt" />
     <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
-    <Content Include="pyInterClubs\static\js\react\hello.jsx" />
-    <Content Include="pyInterClubs\static\js\react\observer.jsx" />
-    <Content Include="pyInterClubs\static\js\react\score.jsx" />
-    <Content Include="pyInterClubs\static\js\react\scoreEnfant.jsx" />
-    <Content Include="pyInterClubs\static\js\react\tictactoe.jsx" />
+    <Content Include="pyInterClubs\react\hello.jsx" />
+    <Content Include="pyInterClubs\react\observer.jsx" />
+    <Content Include="pyInterClubs\react\score.jsx" />
+    <Content Include="pyInterClubs\react\scoreEnfant.jsx" />
+    <Content Include="pyInterClubs\react\tictactoe.jsx" />
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
     <Content Include="pyInterClubs\templates\p_navbar.html" />
@@ -248,7 +229,6 @@
     <Content Include="pyInterClubs\templates\index.html" />
     <Content Include="pyInterClubs\templates\registration\login.html" />
     <Content Include="requirements.txt" />
-    <Content Include="push\templates\push\p_sse_javascript.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin\" />
@@ -279,13 +259,9 @@
     <Folder Include="pyInterClubs\static\css\" />
     <Folder Include="pyInterClubs\static\img\" />
     <Folder Include="pyInterClubs\static\js\" />
-    <Folder Include="pyInterClubs\static\js\react\" />
+    <Folder Include="pyInterClubs\react\" />
     <Folder Include="pyInterClubs\templates\" />
     <Folder Include="pyInterClubs\templates\registration\" />
-    <Folder Include="push\" />
-    <Folder Include="push\migrations\" />
-    <Folder Include="push\templates\" />
-    <Folder Include="push\templates\push\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="venv\">
