@@ -5,7 +5,7 @@ from .views import *
 __all__ = ('ClubViewSet', 'SaisonViewSet', 'RencontreViewSet', 'NiveauxViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet')
 
 router = DefaultRouter()
-#router.register('clubs', ClubViewSet, 'club')
+router.register('clubs', ClubViewSet, 'club')
 #router.register('saisons', SaisonViewSet, 'saison')
 #router.register('rencontres', RencontreViewSet, 'rencontre')
 router.register('niveaux', NiveauViewSet, 'niveau')

@@ -82,7 +82,7 @@ class DurationField(forms.DurationField):
     def to_python(self, value):
         if value == 'Chute': return timedelta(microseconds=-1)
         if value == 'Abandon': return timedelta(microsecons=-2)
-        return super().prepare_value(value)
+        return super().to_python(value)
 
 
 class ScoreUpdateForm(forms.ModelForm):

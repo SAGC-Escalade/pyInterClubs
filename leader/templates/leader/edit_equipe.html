@@ -14,7 +14,15 @@
 {% block body %}
     <div class="card placeholder-glow">
         {% include 'partials/p_frmEquipe.html' with object=object form=form %}
-        <div id="react-equipe"></div>
+        <div id="react-equipe">
+            {% for score in object.Scores.in_order %}
+                <div class="row mb-3">
+                    <div class="col-9"><span class="w-100 placeholder placeholder-lg"></span></div>
+                    <div class="col-3"><span class="w-100 placeholder placeholder-lg bg-light"></span></div>
+                </div>
+            {% endfor %}
+        </div>
+        {% comment %}
         <div class="accordion accordion-flush" id="equipe">
             {% for score in object.Scores.in_order %}
             <div class="accordion-item">
@@ -97,6 +105,7 @@
             </div>
             {% endfor %}
         </div>
+        {% endcomment %}
         <div class="card-footer">
             <div class="row g-2 justify-content-around">
                 {% if object.Scores.count < 8 %}
@@ -110,12 +119,23 @@
 
 {% block script %}
     <script type="module" src="{% static '3rd/react-bootstrap-2.9.1-dist/react-bootstrap.min.js' %}"></script>
-    <script type="module" src="{% url "react" "score.jsx" %}"></script>
     {{ form.media }}
     <script type="text/javascript">
         $(".vitesse button").on('click', function (e) {
             $(this).closest("form").find("input[name='Vitesse']").val($(this).data("value"));
             e.preventDefault();
         });
+    </script>
+    <script type="module">
+        import Score from "/react/score.jsx";
+        {% transpiling %}
+        ReactDOM.createRoot(document.querySelector('#react-equipe')).render(
+            <ReactBootstrap.Accordion {#defaultActiveKey="{{ object.Scores.in_order.first.ID }}"#} flush>
+            {% for score in object.Scores.in_order %}
+                <Score eventKey="{{ score.ID }}" source="/api/scores/{{ score.ID }}/" category={ {{ score.Equipe.Categorie }} } />
+            {% endfor %}
+            </ReactBootstrap.Accordion>
+        )
+        {% endtranspiling %}
     </script>
 {% endblock %}

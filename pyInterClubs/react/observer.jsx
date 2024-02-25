@@ -12,6 +12,7 @@ sse.onmessage = (event) => {
 export default function Observer({ source, children, onChange, defaultData = {} }) {
     const [data, setData] = React.useState(defaultData);
     // const timerId = React.useRef(null);
+    //const events = React.useRef(new EventSource(source + '/events', { withCredentials: true }));
 
     React.useEffect(() => {
         // Récupération initiales des données

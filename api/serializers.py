@@ -4,7 +4,7 @@ from core.models import Niveau, Club, Grimpeur, Saison, Rencontre, Equipe, Score
 class NiveauSerializer(serializers.ModelSerializer):
     class Meta:
         model = Niveau
-        fields = '__all__'
+        #fields = '__all__'
         exclude = ['Actif']
 
 class ClubSerializer(serializers.ModelSerializer):
@@ -29,11 +29,27 @@ class SaisonSerializer(serializers.ModelSerializer):
 class RencontreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rencontre
-        fields = '__all__'
+        #fields = '__all__'
         exclude = ['Rencontre']
+
+
+
+from datetime import timedelta
+class DurationField(serializers.DurationField):
+    def to_representation(self, value):
+        if value == timedelta(microseconds=-1): return 'Chute'
+        if value == timedelta(microseconds=-2): return 'Abandon'
+        return super().to_representation(value)
+
+    def to_internal_value(self, value):
+        if value == 'Chute': return timedelta(microseconds=-1)
+        if value == 'Abandon': return timedelta(microsecons=-2)
+        return super().to_internal_value(value)
+
 
 class ScoreSerializer(serializers.ModelSerializer):
     Grimpeur = GrimpeurSerializerIdentity()
+    Vitesse = DurationField()
     class Meta:
         model = Score
         fields = [
@@ -50,6 +66,7 @@ class ScoreSerializer(serializers.ModelSerializer):
             'PtsVitesse',
             'Points', 'Valid',
         ]
+
 
 class EquipeSerializer(serializers.ModelSerializer):
     class Meta:
