@@ -132,7 +132,7 @@
         ReactDOM.createRoot(document.querySelector('#react-equipe')).render(
             <ReactBootstrap.Accordion {#defaultActiveKey="{{ object.Scores.in_order.first.ID }}"#} flush>
             {% for score in object.Scores.in_order %}
-                <Score eventKey="{{ score.ID }}" source="/api/scores/{{ score.ID }}/" category={ {{ score.Equipe.Categorie }} } />
+                <Score eventKey="{{ score.ID }}" source="/api/scores/{{ score.ID }}/" category={ {{ score.Equipe.Categorie }} } csrf={ "{{ csrf_token }}" } />
             {% endfor %}
             </ReactBootstrap.Accordion>
         )
