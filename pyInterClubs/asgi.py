@@ -23,7 +23,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pyInterClubs.settings')
 application = ProtocolTypeRouter({
     'http': URLRouter([
         #path('api/<obj>/<id>/events', consumers.EventsConsumer.as_asgi(), {'format-channels': ['{obj}-{id}']}),
-        path('events/', consumers.EventsConsumer.as_asgi(), {'channels': ['test']}),
+        path('events/', consumers.EventsConsumer.as_asgi(), {'channels': ['events']}),
         #path('events/', AuthMiddlewareStack(URLRouter(django_eventstream.routing.urlpatterns)), { 'channels': ['test'] }),
         re_path(r'', get_asgi_application()),
     ]),

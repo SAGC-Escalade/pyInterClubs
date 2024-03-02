@@ -48,8 +48,8 @@ class DurationField(serializers.DurationField):
 
 
 class ScoreSerializer(serializers.ModelSerializer):
-    Grimpeur = GrimpeurSerializerIdentity()
-    Vitesse = DurationField()
+    Grimpeur = GrimpeurSerializerIdentity(read_only=True)
+    Vitesse = DurationField(required=False)
     class Meta:
         model = Score
         fields = [

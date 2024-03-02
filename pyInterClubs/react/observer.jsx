@@ -1,55 +1,63 @@
 const sse = new EventSource('/events/', { withCredentials: true });
-sse.onopen = () => {
-    console.log("Connexion ouverte...");
-};
-sse.onerror = () => {
-    console.log("Erreur de connexion avec les events...");
-};
-sse.onmessage = (event) => {
-    console.log(event);
-};
+sse.onerror   = ()      => { console.log("Erreur de connexion avec le canal temps réel..."); };
+sse.onmessage = (event) => { console.log("message non traité :", event); };
 
-export default function Observer({ source, children, onChange, defaultData = {} }) {
-    const [data, setData] = React.useState(defaultData);
-    // const timerId = React.useRef(null);
-    //const events = React.useRef(new EventSource(source + '/events', { withCredentials: true }));
+
+export default function Observer({ source, children, interval = 0, csrf = undefined, auto = true }) {
+    const [data, setData] = React.useState();
+    const timerId = React.useRef(null);
+
+    const readObject = () => {
+        fetch(source)
+            .then((response) => response.json())
+            .then((data) => { setData(data); })
+            .catch((err) => { console.log(err.message); });
+    };
+    const send = (method, data) => {
+        return fetch(source, {
+            method: method,
+            headers: {
+                Accept: "application/json",
+                'Content-Type': "application/json",
+                'X-CSRFToken': csrf,
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => {
+                if (response.status !== 200) {
+                    console.log(response.json());
+                    throw new Error(response.statusText);
+                }
+                //readObject();
+            })
+            .catch((err) => { console.log(err); });
+    };
+    const modifyObject = (data) => send("put", data);
+    const updateObject = (data) => send("patch", data);
+    const createObject = (data) => send("post", data);
+    const deleteObject = (data) => send("delete", data);
 
     React.useEffect(() => {
-        // Récupération initiales des données
-        const polling = () => {
-            fetch(source)
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    setData(data);
-                    onChange && onChange(data);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                });
-        };
-        polling();
-
-        // Connection au serveur d'évènements pour écouter les mises à jours
-        sse.addEventListener(source, (ev) => {
-            console.log("Réception d'un event: " + ev.data);
-            setData(ev.data);
-            onChange && onChange(data);
-        });
-        // timerId.current = setInterval(polling, 10000);
+        // Récupération initiales des données, Connection aux évènements push et Préparation du polling
+        readObject();
+        console.log('suscribing ' + source);
+        sse.addEventListener(source, (ev) => { console.log("traitement du message :", ev); readObject(); });
+        if (interval) { timerId.current = setInterval(get, interval * 1000); };
     }, []);
 
     function handleChange(ev) {
-        console.log("onChange " + source);
-    }
-    function handleSubmit(ev) {
-        console.log("onSubmit " + source);
+        if (!auto) return;
         ev.preventDefault();
+        ev.stopPropagation();
+
+        const data = { [ev.target.name]: ev.target.value || null };
+        updateObject(data);
+        return false;
     }
 
     return (
-        <form action={source} method="post" onChange={handleChange} onSubmit={handleSubmit}>
-            {React.Children.map(children, (child) => { return child; })}
+        <form onChange={handleChange}>
+            {children(data, updateObject, createObject, deleteObject)}
         </form>
     )
 }
