@@ -23,7 +23,7 @@
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
-            {% for saison in object_list|dictsort:"Annee" %}
+            {% for saison in object_list|dictsort:"saison" %}
             <tbody class="table-group-divider">
                 <tr><th colspan="7">{{ saison }}</th></tr>
                 {% for r in saison.Rencontres.all|dictsort:"Date" %}

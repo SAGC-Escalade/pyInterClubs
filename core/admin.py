@@ -4,7 +4,7 @@ from .models import *
 # Filter
 class FirstLetterFilter(admin.SimpleListFilter):
     title = 'Première lettre'
-    parameter_name = 'Nom'
+    parameter_name = 'nom'
 
     def lookups(self, request, model_admin):
         return [c+c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
@@ -13,13 +13,13 @@ class NomFirstLetterFilter(FirstLetterFilter):
     def queryset(self, request, queryset):
         if self.value() is None:
             return queryset.all()
-        return queryset.filter(Nom__startswith=self.value())
+        return queryset.filter(nom__startswith=self.value())
 
 class GrimpeurFirstLetterFilter(FirstLetterFilter):
     def queryset(self, request, queryset):
         if self.value() is None:
             return queryset.all()
-        return queryset.filter(Grimpeur__Nom__startswith=self.value())
+        return queryset.filter(grimpeur__nom__startswith=self.value())
 
 def byField(model, field, filter, title=None):
     _title = title
@@ -30,7 +30,8 @@ def byField(model, field, filter, title=None):
         parameter_name = _title
 
         def lookups(self, request, model_admin):
-            queryset = model.objects.using('interClubs').all()
+            #queryset = model.objects.using('interClubs').all()
+            queryset = model.objects.all()
             lst = []
             for o in queryset:
                 value = getattr(o, field)
@@ -38,7 +39,7 @@ def byField(model, field, filter, title=None):
                     try: value = value()
                     except e: value = None
                 value = str(value)
-                lst.append((o.ID, value))
+                lst.append((o.id, value))
             return sorted(lst, key=lambda o: o[1])
 
         def queryset(self, request, queryset):
@@ -73,102 +74,99 @@ class interclubsModelAdmin(interclubsMixin, admin.ModelAdmin):
 
 
 # Inline
-class ScoreInline(interclubsTabularInline):
+class ScoreInline(admin.TabularInline):
     model = Score
-    fields = ('Grimpeur', ('IDVoie1', 'Voie1'), ('IDVoie2', 'Voie2'), ('IDVoie3', 'Voie3'), ('IDVoie4', 'Voie4'), 'Bloc1', 'Bloc2', ('Vitesse', 'PtsVitesse'), 'Points')
-    ordering = ('Ordre',)
-    readonly_fields = ('PtsVitesse', 'Points')
+    #fields = ('Grimpeur', ('IDVoie1', 'Voie1'), ('IDVoie2', 'Voie2'), ('IDVoie3', 'Voie3'), ('IDVoie4', 'Voie4'), 'Bloc1', 'Bloc2', ('Vitesse', 'PtsVitesse'), 'Points')
+    fields = ('grimpeur', 'points', 'valide')
+    ordering = ('ordre',)
+    #readonly_fields = ('PtsVitesse', 'Points')
     max_num = 8
-    verbose_name = 'Grimpeur'
+    verbose_name = 'Participant'
 
 
 # ModelAdmin
-class NiveauAdmin(interclubsModelAdmin):
-    list_display = ('__str__', 'Categorie', 'Actif')
-    list_filter = ('Categorie', 'Actif')
+class NiveauAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'actif')
+    list_filter = ('actif',)
     fieldsets = (
         (None, {
-            'fields': (('NomVoie', 'NiveauVoie'), 'Categorie', ('PtsValorises', 'PtsVoieComplete'), 'Actif'),
+            'fields': (('nom', 'niveau', 'type', 'actif'), 'zones'),
         }),
     )
 
-class ClubAdmin(interclubsModelAdmin):
-    list_display = ('Nom', 'Localisation')
+class ClubAdmin(admin.ModelAdmin):
+    list_display = ('nom', 'ville')
     fieldsets = (
         (None, {
-            'fields': ('Nom', 'Localisation'),
+            'fields': ('nom', 'ville'),
         }),
     )
 
-class GrimpeurAdmin(interclubsModelAdmin):
-    list_display = ('__str__', 'Club', 'AnneeNaissance', 'Sexe')
-    list_filter = (NomFirstLetterFilter, byField(Club, 'Nom', 'Club'), 'AnneeNaissance', 'Sexe')
-    search_fields = ('Nom', 'Prenom', 'Club__Nom', 'Club__Localisation')
+class GrimpeurAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'club', 'anneeNaissance', 'sexe')
+    list_filter = (NomFirstLetterFilter, byField(Club, 'nom', 'club'), 'anneeNaissance', 'sexe')
+    search_fields = ('nom', 'prenom', 'club__nom', 'club__ville')
     search_help_text = "Recherchez par le nom, le prénom ou le club d'un grimpeur"
     fieldsets = (
         ('Identité', {
-            'fields': (('Nom', 'Prenom'), 'AnneeNaissance', 'Sexe'),
+            'fields': (('nom', 'prenom'), 'anneeNaissance', 'sexe'),
         }),
         ('Informations de la Fédération', {
-            'fields': ('Club', 'Licence'),
+            'fields': ('club', 'licence'),
         }),
     )
 
-class SaisonAdmin(interclubsModelAdmin):
-    pass
+class RencontreAdmin(admin.ModelAdmin):
+    list_display = ('date', 'club')
+    list_filter = (byField(Club, 'nom', 'club'), 'date')
 
-class RencontreAdmin(interclubsModelAdmin):
-    list_display = ('Date', 'Club')
-    list_filter = (byField(Club, 'Nom', 'Club'), 'Date')
-
-class EquipeAdmin(interclubsModelAdmin):
-    list_display = ('__str__', 'Rencontre', 'Categorie')
-    list_filter = (byField(Club, 'Nom', 'Club'), byField(Rencontre, '__str__', 'Rencontre'), 'Categorie')
-    search_fields = ('Club__Nom', 'Club__Localisation', 'Rencontre__Club__Nom', 'Rencontre__Club__Localisation')
+class EquipeAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'rencontre')
+    list_filter = (byField(Club, 'nom', 'club'), byField(Rencontre, '__str__', 'rencontre'))
+    search_fields = ('club__nom', 'club__ville', 'rencontre__club__nom', 'rencontre__club__ville')
     search_help_text = "Recherchez par le nom du club de l'équipe ou de la rencontre"
     fieldsets = (
         (None, {
-            'fields': (('Rencontre', 'Categorie'), ('Club', 'Numero')),
+            'fields': ('rencontre', ('club', 'numero')),
         }),
     )
-    inlines = [ScoreInline]
+    #inlines = [ScoreInline]
 
-class ScoreAdmin(interclubsModelAdmin):
-    list_display = ('Grimpeur', 'get_rencontre', 'get_categorie', 'Points')
+class ScoreAdmin(admin.ModelAdmin):
+    list_display = ('grimpeur', 'get_rencontre', 'get_categorie', 'points')
     list_filter = (
         GrimpeurFirstLetterFilter,
-        byField(Rencontre, '__str__', 'Equipe__Rencontre', 'Rencontre'),
-        'Equipe__Categorie',
-        'Grimpeur__Sexe',
+        byField(Rencontre, '__str__', 'equipe__rencontre', 'rencontre'),
+        'equipe__rencontre__categorie',
+        'grimpeur__sexe',
     )
-    search_fields = ('Grimpeur__Nom', 'Grimpeur__Prenom', 'Grimpeur__Club__Nom', 'Grimpeur__Club__Localisation')
+    search_fields = ('grimpeur__nom', 'grimpeur__prenom', 'grimpeur__club__nom', 'grimpeur__club__ville')
     search_help_text = "Recherchez par le nom, le prénom ou le club d'un grimpeur"
     fieldsets = (
         ('Grimpeur', {
-            'fields': ('Equipe', 'Grimpeur', 'ClubPreteur'),
-        }),
-        ('Résultats', {
-            'fields': (('IDBloc1', 'Bloc1'), ('IDBloc2', 'Bloc2'), ('IDVoie1', 'Voie1'), ('IDVoie2', 'Voie2'), ('IDVoie3', 'Voie3'), ('IDVoie4', 'Voie4'), ('Vitesse', 'PtsVitesse'), 'Points'),
+            'fields': ('equipe', 'grimpeur', 'clubPreteur'),
         }),
         ('Options avancées', {
             'classes': ('collapse',),
-            'fields': ('Ordre',),
+            'fields': ('ordre',),
         }),
     )
 
-    @admin.display(ordering='Equipe__Rencontre', description='Rencontre')
+    @admin.display(ordering='equipe__rencontre', description='Rencontre')
     def get_rencontre(self, obj):
-        return str(obj.Equipe.Rencontre)
-    @admin.display(ordering='Equipe__Categorie', description='Catégorie')
+        return str(obj.equipe.rencontre)
+    @admin.display(ordering='equipe__rencontre__categorie', description='Catégorie')
     def get_categorie(self, obj):
-        return Categorie(obj.Equipe.Categorie).name
+        return Categorie(obj.equipe.rencontre.categorie).name
 
+class PerformanceAdmin(admin.ModelAdmin):
+    pass
 
 # Register your models here
 admin.site.register(Niveau, NiveauAdmin)
 admin.site.register(Club, ClubAdmin)
 admin.site.register(Grimpeur, GrimpeurAdmin)
-admin.site.register(Saison, SaisonAdmin)
 admin.site.register(Rencontre, RencontreAdmin)
 admin.site.register(Equipe, EquipeAdmin)
 admin.site.register(Score, ScoreAdmin)
+admin.site.register(Performance, PerformanceAdmin)

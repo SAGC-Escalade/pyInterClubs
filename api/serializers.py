@@ -1,16 +1,18 @@
 from rest_framework import serializers
-from core.models import Niveau, Club, Grimpeur, Saison, Rencontre, Equipe, Score
+from core.models import Niveau, Club, Grimpeur, Rencontre, Equipe, Score, Performance
 
 class NiveauSerializer(serializers.ModelSerializer):
     class Meta:
         model = Niveau
         #fields = '__all__'
-        exclude = ['Actif']
+        exclude = ['actif']
+
 
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
         fields = '__all__'
+
 
 class GrimpeurSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,19 +21,21 @@ class GrimpeurSerializer(serializers.ModelSerializer):
 class GrimpeurSerializerIdentity(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
-        fields = ['ID', 'Nom', 'Prenom', 'Sexe']
+        fields = ['id', 'nom', 'prenom', 'sexe']
 
-class SaisonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Saison
-        fields = '__all__'
 
 class RencontreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rencontre
         #fields = '__all__'
-        exclude = ['Rencontre']
+        exclude = ['rencontre']
 
+
+class EquipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipe
+        #fields = ['ID', 'Club', 'Numero', 'Categorie']
+        exclude = ['rencontre']
 
 
 from datetime import timedelta
@@ -49,27 +53,18 @@ class DurationField(serializers.DurationField):
 
 class ScoreSerializer(serializers.ModelSerializer):
     Grimpeur = GrimpeurSerializerIdentity(read_only=True)
-    Vitesse = DurationField(required=False)
     class Meta:
         model = Score
         fields = [
-            'ID',
-            'Ordre',
-            'Grimpeur', 'ClubPreteur',
-            'Bloc1', 'Bloc2',
-            'Voie1', 'Voie2', 'Voie3', 'Voie4',
-            'Vitesse',
-            'IDBloc1', 'IDBloc2',
-            'IDVoie1', 'IDVoie2', 'IDVoie3', 'IDVoie4',
-            'PtsBloc1', 'PtsBloc2',
-            'PtsVoie1', 'PtsVoie2', 'PtsVoie3', 'PtsVoie4',
-            'PtsVitesse',
-            'Points', 'Valid',
+            'id',
+            'ordre',
+            'grimpeur', 'clubPreteur',
+            'points', 'valid',
         ]
 
 
-class EquipeSerializer(serializers.ModelSerializer):
+class PerformanceSerializer(serializers.ModelSerializer):
+    temps = DurationField(required=False)
     class Meta:
-        model = Equipe
-        #fields = ['ID', 'Club', 'Numero', 'Categorie']
-        exclude = ['Rencontre']
+        model = Performance
+        exclude = ['participation', 'niveau']

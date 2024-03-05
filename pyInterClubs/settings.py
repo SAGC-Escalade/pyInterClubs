@@ -64,7 +64,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'admin.middleware.pyInterClubsMiddleware',
 ]
 
 ROOT_URLCONF = 'pyInterClubs.urls'
@@ -97,12 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'django.sqlite',
     },
-    'interClubs': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'interClubs.sqlite',
-    },
 }
-DATABASE_ROUTERS = ['pyInterClubs.routers.inModelRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

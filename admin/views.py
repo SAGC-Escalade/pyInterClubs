@@ -21,7 +21,7 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
     template_name = 'admin/qrcode_club.html'
 
     def get_queryset(self):
-        return super().get_queryset().annotate(md5=MD5('Nom')).order_by('Nom')
+        return super().get_queryset().annotate(md5=MD5('nom')).order_by('nom')
 
     def get_context_data(self, **kwargs):
         import socket
