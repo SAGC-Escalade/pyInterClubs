@@ -24,10 +24,6 @@ from django.views.generic import TemplateView
 from .views import *
 
 urlpatterns = [
-    path('autocomplete/grimpeurs', GrimpeurAutocomplete.as_view(), name='grimpeur-autocomplete'),
-    path('autocomplete/clubs', ClubAutocomplete.as_view(), name='club-autocomplete'),
-    path('autocomplete/niveaux', NiveauAutocomplete.as_view(), name='niveau-autocomplete'),
-
     path('debug/', admin.site.urls),
     path('api/', include('api.urls'), name='api'),
     path('admin/', include('admin.urls')),
@@ -36,5 +32,5 @@ urlpatterns = [
 
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
-    re_path(r"^react/(?P<path>.*.jsx)$", serve_react, {"document_root": settings.REACT_APP_BUILD_PATH}, name='react'),
+    re_path(r"^react/(?P<path>.*.jsx)$", serve_react, name='react'),
 ]

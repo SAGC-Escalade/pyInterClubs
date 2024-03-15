@@ -2,13 +2,15 @@ from django.views import View
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models.functions import MD5
+from django.db.models.functions import MD5, Concat
+from django.db.models import Value as V
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 
-from core.models import Club, Saison
-from .forms import MancheSelectionForm
-from .models import Config
+from core.models import Club, Rencontre
+from .forms import *
+from .models import *
 
 
 class SuperUserRequiredMixin(UserPassesTestMixin):
@@ -21,48 +23,37 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
     template_name = 'admin/qrcode_club.html'
 
     def get_queryset(self):
-        return super().get_queryset().annotate(md5=MD5('nom')).order_by('nom')
+        return super().get_queryset().annotate(md5=MD5(Concat('nom', V(f"-{self.request.interclub.rencontre}")))).order_by('nom')
 
     def get_context_data(self, **kwargs):
         import socket
         ip = socket.gethostbyname(socket.gethostname())
         if not ip or ip == "127.0.0.1": ip = socket.gethostbyname(socket.getfqdn())
-        if 'server_ip' not in kwargs: kwargs['server_ip'] = ip
+        kwargs.setdefault('server_ip', ip)
 
         kwargs['config'] = Config
+        kwargs['environ'] = self.request.environ if hasattr(self.request, 'environ') else self.request.META
         return super().get_context_data(**kwargs)
 
 
-class RencontresListView(SuperUserRequiredMixin, ListView):
-    model = Saison
+class RencontreSelectionView(SuperUserRequiredMixin, FormView):
+    success_url = reverse_lazy('qrcode-clubs')
+    form_class = RencontreSelectionForm
     template_name = 'admin/rencontres-list.html'
 
-    def get_context_data(self, **kwargs):
-        if 'rencontre' not in kwargs: kwargs['rencontre'] = Config.get('CURRENT_RENCONTRE')
-        if 'categorie' not in kwargs: kwargs['categorie'] = Config.get('CURRENT_CATEGORIE')
-        return super().get_context_data(**kwargs)
-
-class MancheSelectionView(SuperUserRequiredMixin, FormView):
-    success_url = reverse_lazy('rencontres')
-    form_class = MancheSelectionForm
-    template_name = 'admin/form.html'
-
-    def post(self, request, *args, **kwargs):
-        post = request.POST
-        if 'selected' in post:
-            post._mutable = True
-            post['rencontre'] = post['selected'].split('-')[0]
-            post['categorie'] = post['selected'].split('-')[1]
-            post._mutable = False
-        return super().post(request, *args, **kwargs)
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.setdefault('rencontre', self.request.interclub.rencontre)
+        return initial
 
     def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+        if not hasattr(self.request.user, 'profil'):
+            Profil(user=self.request.user, rencontre=form.cleaned_data['rencontre']).save()
+        else:
+            self.request.user.profil.rencontre = form.cleaned_data['rencontre']
+            self.request.user.profil.save()
+        return HttpResponseRedirect(self.get_success_url() + f"?rencontre={form.cleaned_data['rencontre'].id}")
 
-class ManchesListView(SuperUserRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return RencontresListView.as_view()(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return MancheSelectionView.as_view()(request, *args, **kwargs)
+    #def get_success_url(self):
+    #    print(dir(self))
+    #    return self.success_url + f"?rencontre="

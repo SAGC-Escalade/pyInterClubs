@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from polymorphic.models import PolymorphicModel
 
 class Types(models.TextChoices):
     bool    = 'bool',   'Booléen'
@@ -36,3 +37,18 @@ class Config(models.Model):
         obj = self.get(key, NoEntry)
         if obj == NoEntry: raise AttributeError
         return obj
+
+
+# Profil générique
+class Profil(PolymorphicModel):
+    id = models.BigAutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rencontre = models.ForeignKey('core.Rencontre', on_delete=models.SET_NULL, null=True)
+
+# Profil coach (gestion des grimpeurs d'un même club)
+class Coach(Profil):
+    club = models.ForeignKey('core.Club', on_delete=models.CASCADE)
+
+# Profil juge (gestion des grimpeurs inscrits sur un même niveau)
+class Juge(Profil):
+    niveaux = models.ManyToManyField('core.Niveau', through='core.RencontreNiveau', related_name='juges')

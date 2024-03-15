@@ -1,5 +1,5 @@
+from django.contrib import admin
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.formats import date_format
 from django.db.models import Q
@@ -8,6 +8,7 @@ from django_eventstream import send_event
 
 from datetime import timedelta
 
+from admin.models import Juge
 
 class Categorie(models.IntegerChoices):
     __empty__   = 'Sélectionnez la catégorie'
@@ -28,8 +29,14 @@ class TypeVoie(models.IntegerChoices):
 
 
 class Niveau(models.Model):
-    id = models.AutoField(primary_key=True)
-    nom = models.CharField(max_length=10)
+    class Meta:
+        verbose_name_plural = "niveaux"
+        indexes = [
+            models.Index(fields=['type',]),
+            models.Index(fields=['actif',]),
+        ]
+    id = models.BigAutoField(primary_key=True)
+    nom = models.CharField(max_length=15)
     niveau = models.CharField(max_length=5)
     type = models.IntegerField(choices=TypeVoie.choices)
     zones = models.JSONField()
@@ -40,7 +47,7 @@ class Niveau(models.Model):
 
 
 class Club(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     ville = models.CharField(max_length=50)
 
@@ -64,13 +71,18 @@ class GrimpeurManager(models.Manager):
         return self.get_queryset().femmes()
 
 class Grimpeur(models.Model):
-    id = models.AutoField(primary_key=True)
+    class Meta:
+        indexes = [
+            models.Index(fields=['anneeNaissance',]),
+            models.Index(fields=['sexe',]),
+        ]
+    id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     anneeNaissance = models.IntegerField()
     sexe = models.IntegerField(choices=Genre.choices)
     licence = models.BigIntegerField(default=0)
-    club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='Grimpeurs')
+    club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='grimpeurs')
 
     def __str__(self):
         return f'{self.nom} {self.prenom}'
@@ -78,14 +90,14 @@ class Grimpeur(models.Model):
     objects = GrimpeurManager()
 
 
-class Saison(models.Model):
-    id = models.AutoField(primary_key=True)
-    annee = models.IntegerField()
-
-
 class Rencontre(models.Model):
-    id = models.AutoField(primary_key=True)
-    saison = models.ForeignKey(Saison, on_delete=models.CASCADE, related_name='rencontres')
+    class Meta:
+        indexes = [
+            models.Index(fields=['categorie',]),
+            models.Index(fields=['date',]),
+        ]
+    id = models.BigAutoField(primary_key=True)
+    saison = models.IntegerField()
     club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='rencontres')
     date = models.DateField()
     categorie = models.IntegerField(choices=Categorie.choices)
@@ -93,10 +105,13 @@ class Rencontre(models.Model):
     nbDiff = models.IntegerField(default=3, validators=[MinValueValidator(1)])
     nbVitesse = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     voieReutilisable = models.BooleanField(default=False)
+    niveauxGroupes = models.BooleanField(default=False)
+    niveaux = models.ManyToManyField(Niveau, through='RencontreNiveau')
 
     def __str__(self):
         date = date_format(self.date, format='SHORT_DATE_FORMAT', use_l10n=True)
         return f'{self.club.ville} le {date} - {Categorie(self.categorie).name}'
+    str = __str__
 
     @property
     def scores(self):
@@ -104,7 +119,7 @@ class Rencontre(models.Model):
 
 
 class Equipe(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.PROTECT, related_name='equipes')
     club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='equipes')
     numero = models.IntegerField(default=1, validators=[MinValueValidator(1)])
@@ -135,7 +150,7 @@ class ScoreManager(models.Manager):
         return self.get_queryset().in_order()
 
 class Score(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='participations')
     grimpeur = models.ForeignKey(Grimpeur, on_delete=models.PROTECT, related_name='participations')
     points = models.IntegerField(default=0)
@@ -147,17 +162,14 @@ class Score(models.Model):
 
     objects = ScoreManager()
 
-    @property
-    def valid(self):
-        return self.IDVoie1 != None and self.Voie1 != None \
-           and self.IDVoie2 != None and self.Voie2 != None \
-           and self.IDVoie3 != None and self.Voie3 != None \
-           and True if (self.Equipe != None and self.Equipe.Categorie == Categorie.Enfants) else \
-              (self.Voie4 != None if self.IDVoie4 != None else True) \
-           and self.IDBloc1 != None and self.Bloc1 != None \
-           and self.IDBloc2 != None and self.Bloc2 != None \
-           and self.Vitesse != timedelta()
-
+    @admin.display(boolean=True)
+    def valide(self):
+        if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
+        if self.performances.filter(niveau__type=TypeVoie.bloc).count() != self.equipe.rencontre.nbBloc: return False
+        if self.performances.filter(niveau__type=TypeVoie.diff).count() != self.equipe.rencontre.nbDiff: return False
+        if self.performances.filter(niveau__type=TypeVoie.vitesse).count() != self.equipe.rencontre.nbVitesse: return False
+        if self.performances.filter(points=None).count(): return False
+        return True
 
     @property
     def PtsVoie1(self):
@@ -213,22 +225,30 @@ class Score(models.Model):
         send_event('events', reverse("score-detail", args=[self.ID]), "updated")
         return super().save(*args, **kwargs)
 
-
+# Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
+# Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
+# - La diff n'a pas besoin du temps (quoique)
+# - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
 class Performance(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     niveau = models.ForeignKey(Niveau, on_delete=models.PROTECT)
-    score = models.ForeignKey(Score, on_delete=models.PROTECT)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
     temps = models.DurationField(null=True)
     points = models.IntegerField(default=0, null=True)
     etat = models.IntegerField()
 
 
-class Coach(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-
-class Juge(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class RencontreNiveau(models.Model):
+    class Meta:
+        verbose_name = "rencontre-niveau"
+        verbose_name_plural = "rencontres-niveaux"
+        constraints = [
+            models.UniqueConstraint(fields=['rencontre', 'niveau'], name='unique_rencontre_niveau')
+        ]
+    id = models.BigAutoField(primary_key=True)
+    rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     niveau = models.ForeignKey(Niveau, on_delete=models.CASCADE)
+    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True)#, related_name="niveaux")
+
+    def __str__(self):
+        return f"{self.rencontre} - {self.niveau}"

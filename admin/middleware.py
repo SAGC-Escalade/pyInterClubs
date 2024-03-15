@@ -4,7 +4,7 @@ from django.utils.deprecation import MiddlewareMixin
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
 from core.models import Rencontre, Equipe, Grimpeur, Categorie, Club, Niveau
-from .models import Config
+from .models import *
 
 
 class pyInterClubsMiddleware(MiddlewareMixin):
@@ -13,63 +13,49 @@ class pyInterClubsMiddleware(MiddlewareMixin):
 
 
 class pyInterclubDetails:
-    _rencontreID = None
-    _categorieID = None
+    __request = None
+    __rencontreID = None
     __rencontre = None
 
     def __init__(self, request):
-        self._request = request
-        self._rencontreID = Config.get('CURRENT_RENCONTRE')
-        self._categorieID = Config.get('CURRENT_CATEGORIE')
+        self.__request = request
+
+        self.__rencontreID = Config.get('DEFAULT_RENCONTRE')
+        if request.user and hasattr(request.user, 'profil') and request.user.profil.rencontre_id:
+            self.__rencontreID = request.user.profil.rencontre_id
+        if not request.GET.get('rencontre') is None:
+            self.__rencontreID = request.GET.get('rencontre')
+
+    @property
+    def rencontre_id(self):
+        return self.__rencontreID
 
     # Sélection de la rencontre en cours
     @property
     def rencontre(self):
-        if self.__rencontre is None:
-            self.__rencontre = Rencontre.objects.get(ID=self._rencontreID)
+        if self.__rencontre is None and not self.__rencontreID is None:
+            self.__rencontre = Rencontre.objects.get(pk=self.__rencontreID)
         return self.__rencontre
 
     # Filtre sur les grimpeurs qui correspondent à la catégorie sélectionnée
     @property
     def grimpeurs(self):
-        if self._categorieID == Categorie.Enfants: amin, amax = 8, 13
-        else:                                      amin, amax = 13, 19
-        amax, amin= map(lambda x: self.rencontre.Saison.Annee + 1 - x, (amin, amax))
-        return Grimpeur.objects.filter(Q(AnneeNaissance__gte=amin) & Q(AnneeNaissance__lte=amax))
+        if self.rencontre is None: return []
+        # TODO :
+        # On pourrait ajouter le modèle "Catégorie" en paramétrant les ages min et max
+        if self.rencontre.categorie == Categorie.enfants: amin, amax = 8, 13
+        else:                                             amin, amax = 13, 19
+        amax, amin= map(lambda x: self.rencontre.saison.annee + 1 - x, (amin, amax))
+        return Grimpeur.objects.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
 
     # Filtre sur les équipes appartenant au club en cours
     @property
     def equipes(self):
-        qs = self.rencontre.Equipes.filter(Categorie=self._categorieID)
-        if self._request.user is not None and self._request.user.username and not self._request.user.is_staff:
-            qs = qs.annotate(md5=MD5('Club__Nom')).filter(md5=self._request.user.username)
+        if self.rencontre is None: return []
+        qs = self.rencontre.equipes.all()
+        # On filtre uniquement les équipes du club pour les coachs
+        #if Coach.objects.filter(user=self.__request.user).exists():
+        if hasattr(self.__request.user, 'profil') and hasattr(self.__request.user.profil, 'club'):
+            #qs = qs.filter(club__nom=self.__request.user.profil.club.nom)
+            qs = qs.filter(club_id=self.__request.user.profil.club_id)
         return qs
-
-    # Filtre sur tous les scores de la rencontre pour la catégorie sélectionnée
-    @property
-    def scores(self):
-        return self.rencontre.Scores.filter(Equipe__Categorie=self._categorieID)
-
-    # Filtre sur les niveaux pour la catégorie sélectionnée
-    @property
-    def niveaux(self):
-        return Niveau.objects.filter(Categorie=self._categorieID, Actif=True).exclude(NomVoie='Bloc')
-
-
-    @property
-    def is_enfants(self):
-        return self._categorieID == Categorie.Enfants
-
-    @property
-    def is_adolescents(self):
-        return self._categorieID == Categorie.Adolescents
-
-    # Méthode d'initialisation des éléments statiques des formulaires
-    def get_initial(self, initial):
-        if not 'Categorie' in initial: initial['Categorie'] = self._categorieID
-        if not 'Rencontre' in initial: initial['Rencontre'] = self._rencontreID
-        if not 'Club' in initial:
-            try:
-                initial['Club'] = Club.objects.annotate(md5=MD5('Nom')).get(md5=self._request.user.username)
-            except Club.DoesNotExist: pass
-        return initial

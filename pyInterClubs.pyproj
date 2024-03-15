@@ -43,11 +43,8 @@
     <Compile Include="admin\forms.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="admin\middleware.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="admin\middleware.py" />
     <Compile Include="admin\migrations\0001_initial.py" />
-    <Compile Include="admin\migrations\0002_config_type_alter_config_value.py" />
     <Compile Include="admin\migrations\__init__.py" />
     <Compile Include="admin\models.py" />
     <Compile Include="admin\tests.py" />
@@ -104,6 +101,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\templates\admin\rencontres-list.html" />
+    <Content Include="admin\templates\widgets\rencontre-option.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="admin\templates\widgets\rencontre.html" />
     <Content Include="leader\templates\leader\add_equipe.html" />
     <Content Include="leader\templates\leader\add_score.html" />
     <Content Include="leader\templates\leader\edit_score.html" />
@@ -157,28 +158,6 @@
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.js.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.min.js" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\bootstrap.min.js.map" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\ajax-header.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\alpine-morph.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\class-tools.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\client-side-templates.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\debug.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\disable-element.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\event-header.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\include-vals.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\json-enc.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\loading-states.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\method-override.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\morphdom-swap.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\path-deps.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\preload.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\rails-method.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\remove-me.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\restored.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\sse.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\ws.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.min.js" />
-    <Content Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\htmx.min.js.gz" />
     <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.js" />
     <Content Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\jquery-3.6.0.min.js" />
     <Content Include="pyInterClubs\static\3rd\popperjs-2.11.7-dist\enums.js" />
@@ -210,11 +189,10 @@
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.js" />
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js" />
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js.LICENSE.txt" />
-    <Content Include="pyInterClubs\static\css\ourse.old.css" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\react\hello.jsx" />
-    <Content Include="pyInterClubs\react\observer.jsx" />
-    <Content Include="pyInterClubs\react\score.jsx" />
+    <Content Include="leader\react\observer.jsx" />
+    <Content Include="leader\react\score.jsx" />
     <Content Include="pyInterClubs\react\scoreEnfant.jsx" />
     <Content Include="pyInterClubs\react\tictactoe.jsx" />
     <Content Include="pyInterClubs\templates\base.html" />
@@ -230,12 +208,14 @@
     <Folder Include="admin\migrations\" />
     <Folder Include="admin\management\commands\" />
     <Folder Include="admin\management\" />
+    <Folder Include="admin\templates\widgets\" />
     <Folder Include="admin\templates\" />
     <Folder Include="admin\templates\admin\" />
     <Folder Include="api\" />
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
     <Folder Include="leader\" />
+    <Folder Include="leader\react\" />
     <Folder Include="leader\templates\" />
     <Folder Include="leader\templates\leader\" />
     <Folder Include="leader\templates\partials\" />
@@ -246,8 +226,6 @@
     <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\" />
     <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\" />
     <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\js\" />
-    <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\" />
-    <Folder Include="pyInterClubs\static\3rd\htmx-1.8.0-dist\ext\" />
     <Folder Include="pyInterClubs\static\3rd\jquery-3.6.0-dist\" />
     <Folder Include="pyInterClubs\static\3rd\popperjs-2.11.7-dist\" />
     <Folder Include="pyInterClubs\static\3rd\qrcode-2015.11.25-dist\" />

@@ -1,0 +1,29 @@
+{% with id=widget.attrs.id %}
+<div{% if id %} id="{{ id }}"{% endif %} class="mb-3 border border-top-0 border-start-0 border-end-0 {% if widget.attrs.class %} {{ widget.attrs.class }}{% endif %}">
+    <div class="row mx-0 my-2">
+        <div class="col text-muted">Liste des rencontres par saisons</div>
+    </div>
+    <div class="row mx-0 p-1 bg-light fw-bold border border-start-0 border-end-0 border-top-0">
+        <div class="col-1"></div>
+        <div class="col-1"><i class="fa-solid fa-child fa-sm" title="Enfants"></i> / <i class="fa-solid fa-person" title="Adolescents"></i></div>
+        <div class="col-3">Date</div>
+        <div class="col-2">Lieu</div>
+        <div class="col">Equipes</div>
+        <div class="col">Participants</div>
+        <div class="col-2">Actions</div>
+    </div>
+    {% for group, options, index in widget.optgroups %}
+    {% if group %}
+    <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
+        <div class="col">{{ group }}</div>
+        <div class="col-2">
+            <button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    <div id="{{id}}_{{index}}" class="collapse{% if index == 0 %} show{% endif %}">
+        {% for option in options %}{% include option.template_name with widget=option %}{% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endwith %}

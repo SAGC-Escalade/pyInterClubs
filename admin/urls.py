@@ -5,5 +5,6 @@ from .views import *
 
 urlpatterns = [
     path('clubs', ClubQRCodesView.as_view(), name='qrcode-clubs'),
-    path('', ManchesListView.as_view(), name='rencontres'),
+    path('', RencontreSelectionView.as_view(), name='rencontres'),
+    #path('', ManchesListView.as_view(), name='rencontres'),
 ]

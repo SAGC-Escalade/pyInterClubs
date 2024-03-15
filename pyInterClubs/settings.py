@@ -36,10 +36,7 @@ INSTALLED_APPS = [
     'admin',
     'core',
     'api',
-    'dal',
-    'dal_select2',
     'fontawesomefree',
-    'django_htmx',
     'django_bootstrap5',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,10 +57,10 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django_htmx.middleware.HtmxMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin.middleware.pyInterClubsMiddleware',
 ]
 
 ROOT_URLCONF = 'pyInterClubs.urls'
@@ -122,11 +119,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'pyInterClubs/static']
 #STATIC_ROOT = BASE_DIR / 'static'
-#STATICFILES_STORAGE = 'babel_transpiling.storage.StaticFilesTranspilingStorage'
 
 # Ajout de types MIME pour les fichiers statiques
 import mimetypes
 mimetypes.add_type("application/javascript", ".js", True)
 
-# React
-REACT_APP_BUILD_PATH = "pyInterClubs/react"
+# React configuration
+#REACT_URL = "react"

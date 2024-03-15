@@ -1,6 +1,5 @@
-{% extends request.htmx|yesno:"base.html,index.html" %}
-{% load static %}
-{% load django_bootstrap5 %}
+{% extends "index.html" %}
+{% load static django_bootstrap5 %}
 
 {% block title %}QRCode des clubs{% endblock %}
 
@@ -24,7 +23,7 @@
                             <span>SSID : {{ config.WIFI_SSID|default:'Interclubs' }}</span>
                             <span>Clé de sécurité : {{ config.WIFI_KEY|default:'ffme2022!' }}</span>
                             <span>Type de sécurité : {{ config.WIFI_KEY_TYPE|default:'WPA' }}</span>
-                            <span>Adresse du serveur : <a href="http://{{ server_ip }}:{{ request.environ.SERVER_PORT }}">http://{{ server_ip }}:{{ request.environ.SERVER_PORT }}</a></span>
+                            <span>Adresse du serveur : <a href="http://{{ server_ip }}:{{ environ.SERVER_PORT }}">http://{{ server_ip }}:{{ environ.SERVER_PORT }}</a></span>
                         </div>
                     </div>
                 </div>
@@ -32,22 +31,22 @@
         </div>
         {% for o in object_list %}
         <div class="accordion-item">
-            <h2 class="accordion-header" id="hdr{{ o.ID }}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.ID }}" aria-expanded="true" aria-controls="bdy{{ o.ID }}">
+            <h2 class="accordion-header" id="hdr{{ o.id }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.id }}" aria-expanded="true" aria-controls="bdy{{ o.id }}">
                     <i class="fa-solid fa-fw me-2"></i>
-                    {{ o.Nom }} ({{ o.Localisation }})
+                    {{ o.nom }} ({{ o.ville }})
                 </button>
             </h2>
-            <div id="bdy{{ o.ID }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.ID }}" data-bs-parent="#qrcodes">
+            <div id="bdy{{ o.id }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.id }}" data-bs-parent="#qrcodes">
                 <div class="accordion-body row row-cols-1 row-cols-md-2">
                     <div class="col d-flex justify-content-center">
-                        <div qrcode="http://{{ server_ip }}:{{ request.environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}"></div>
+                        <div qrcode="http://{{ server_ip }}:{{ environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}&rencontre={{ request.GET.rencontre }}"></div>
                     </div>
                     <div class="col">
                         <div class="vstack gap-1">
-                            <span>Nom : {{ o.Nom }}</span>
-                            <span>Ville : {{ o.Localisation }}</span>
-                            <span>Nombre de grimpeurs : {{ o.Grimpeurs.count }}</span>
+                            <span>Nom : {{ o.nom }}</span>
+                            <span>Ville : {{ o.ville }}</span>
+                            <span>Nombre de grimpeurs : {{ o.grimpeurs.count }}</span>
                             <span>MD5 : {{ o.md5 }}</span>
                             <form method="post" action="{% url 'auth-club' %}">
                                 {% csrf_token %}

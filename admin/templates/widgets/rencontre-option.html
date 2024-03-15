@@ -1,0 +1,21 @@
+{% with widget.value.instance as r %}
+<div class="row mx-0 p-1 border border-start-0 border-end-0 border-bottom-0 bg-light-hover">
+    <div class="col-1">{% include "django/forms/widgets/input.html" %}</div>
+    <div class="col-1">{% if r.categorie == 1 %}<i class="fa-solid fa-child fa-sm" title="Enfants"></i>{% elif r.categorie == 2 %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-person" title="Adolescents"></i>{% endif %}</div>
+    <div class="col-3">{{ r.date }}</div>
+    <div class="col-2">{{ r.club.ville }}</div>
+    <div class="col">{{ r.equipes.count }}</div>
+    <div class="col">{{ r.scores.count }}</div>
+    <div class="col-2">
+        <button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button>
+        {% if r.profil_set.count %}
+        <a href="{% url 'qrcode-clubs' %}" class="btn btn-link btn-sm py-0">
+            <i class="fa-solid fa-stop"></i>
+        </a>
+        {% endif %}
+        <a href="{% url 'qrcode-clubs' %}?rencontre={{ r.id }}" class="btn btn-link btn-sm py-0">
+            <i class="fa-solid {% if r.profil_set.count %}fa-qrcode{% else %}fa-play{% endif %}"></i>
+        </a>
+    </div>
+</div>
+{% endwith %}

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from .models import *
 
 # Filter
@@ -30,7 +31,6 @@ def byField(model, field, filter, title=None):
         parameter_name = _title
 
         def lookups(self, request, model_admin):
-            #queryset = model.objects.using('interClubs').all()
             queryset = model.objects.all()
             lst = []
             for o in queryset:
@@ -47,61 +47,48 @@ def byField(model, field, filter, title=None):
                 return queryset.filter(**{filter: self.value()})
     return byFieldFilter
 
-# Using Database
-class interclubsMixin:
-    using = 'interClubs'
-
-    def save_model(self, request, obj, form, change):
-        obj.save(using=self.using)
-
-    def delete_model(self, request, obj):
-        obj.delete(using=self.using)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).using(self.using)
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        return super().formfield_for_foreignkey(db_field, request, using=self.using, **kwargs)
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
-
-
-class interclubsTabularInline(interclubsMixin, admin.TabularInline):
-    pass
-class interclubsModelAdmin(interclubsMixin, admin.ModelAdmin):
-    pass
-
 
 # Inline
 class ScoreInline(admin.TabularInline):
     model = Score
-    #fields = ('Grimpeur', ('IDVoie1', 'Voie1'), ('IDVoie2', 'Voie2'), ('IDVoie3', 'Voie3'), ('IDVoie4', 'Voie4'), 'Bloc1', 'Bloc2', ('Vitesse', 'PtsVitesse'), 'Points')
-    fields = ('grimpeur', 'points', 'valide')
+    fk_name = 'equipe'
+    show_change_link = True
+    fields = ('grimpeur', 'points', 'valide', 'clubPreteur')
     ordering = ('ordre',)
-    #readonly_fields = ('PtsVitesse', 'Points')
+    readonly_fields = ('grimpeur', 'valide', 'clubPreteur')
     max_num = 8
     verbose_name = 'Participant'
 
 
 # ModelAdmin
+@admin.register(Niveau)
 class NiveauAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'actif')
+    list_display = ('nom', 'niveau', 'type', 'actif')
     list_filter = ('actif',)
+    search_fields = ('nom', 'niveau')
+    search_help_text = "Recherchez par le nom ou la difficultée de l'épreuve"
     fieldsets = (
         (None, {
-            'fields': (('nom', 'niveau', 'type', 'actif'), 'zones'),
+            'fields': (('type', 'actif'), ('nom', 'niveau'), 'zones'),
         }),
     )
 
+@admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'ville')
+    list_display = ('nom', 'ville', 'grimpeurs_count')
+    search_fields = ('nom', 'ville')
+    search_help_text = "Recherchez par le nom du club ou de la ville"
     fieldsets = (
         (None, {
             'fields': ('nom', 'ville'),
         }),
     )
 
+    @admin.display(description="Nb de grimpeurs")
+    def grimpeurs_count(self, obj):
+        return obj.grimpeurs.count()
+
+@admin.register(Grimpeur)
 class GrimpeurAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'club', 'anneeNaissance', 'sexe')
     list_filter = (NomFirstLetterFilter, byField(Club, 'nom', 'club'), 'anneeNaissance', 'sexe')
@@ -116,10 +103,23 @@ class GrimpeurAdmin(admin.ModelAdmin):
         }),
     )
 
-class RencontreAdmin(admin.ModelAdmin):
-    list_display = ('date', 'club')
-    list_filter = (byField(Club, 'nom', 'club'), 'date')
+#@admin.register(Saison)
+#class SaisonAdmin(admin.ModelAdmin):
+#    pass
 
+@admin.register(Rencontre)
+class RencontreAdmin(admin.ModelAdmin):
+    date_hierarchy = 'date'
+    list_display = ('saison', 'date', 'club_ville', 'categorie')
+    list_filter = (byField(Club, 'ville', 'club__ville'), 'saison', 'categorie')
+    search_fields = ('saison', 'date', 'club__ville')
+    search_help_text = "Recherchez par le nom du club acceuillant, la date ou la saison"
+
+    @admin.display(description="Lieu")
+    def club_ville(self, obj):
+        return obj.club.ville
+
+@admin.register(Equipe)
 class EquipeAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'rencontre')
     list_filter = (byField(Club, 'nom', 'club'), byField(Rencontre, '__str__', 'rencontre'))
@@ -130,10 +130,11 @@ class EquipeAdmin(admin.ModelAdmin):
             'fields': ('rencontre', ('club', 'numero')),
         }),
     )
-    #inlines = [ScoreInline]
+    inlines = [ScoreInline]
 
+@admin.register(Score)
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = ('grimpeur', 'get_rencontre', 'get_categorie', 'points')
+    list_display = ('grimpeur', 'get_rencontre', 'get_equipe', 'points')
     list_filter = (
         GrimpeurFirstLetterFilter,
         byField(Rencontre, '__str__', 'equipe__rencontre', 'rencontre'),
@@ -144,29 +145,53 @@ class ScoreAdmin(admin.ModelAdmin):
     search_help_text = "Recherchez par le nom, le prénom ou le club d'un grimpeur"
     fieldsets = (
         ('Grimpeur', {
-            'fields': ('equipe', 'grimpeur', 'clubPreteur'),
+            'fields': ('equipe', 'grimpeur', 'points'),
         }),
         ('Options avancées', {
             'classes': ('collapse',),
-            'fields': ('ordre',),
+            'fields': ('clubPreteur', 'ordre'),
         }),
     )
+    readonly_fields = ('equipe',)
 
     @admin.display(ordering='equipe__rencontre', description='Rencontre')
     def get_rencontre(self, obj):
         return str(obj.equipe.rencontre)
-    @admin.display(ordering='equipe__rencontre__categorie', description='Catégorie')
-    def get_categorie(self, obj):
-        return Categorie(obj.equipe.rencontre.categorie).name
+    @admin.display(ordering='equipe__club_id', description='Equipe')
+    def get_equipe(self, obj):
+        return str(obj.equipe)
 
+
+class PerformanceForm(forms.ModelForm):
+    class Meta:
+        model = Performance
+        fields = '__all__'
+    etat = forms.ChoiceField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance is None or instance.niveau_id is None: return
+        self.fields['etat'].choices = enumerate(instance.niveau.zones.keys())
+
+@admin.register(Performance)
 class PerformanceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('score_grimpeur', 'niveau', 'etat', 'temps', 'points')
+    list_filter = ('etat',)
+    search_fields = ('score__grimpeur__nom', 'score__grimpeur__prenom')
+    search_help_text = "Recherchez par le nom du grimpeur"
+    fieldsets = (
+        (None, {
+            'fields': ('niveau', 'temps', 'points', 'etat'),
+        }),
+    )
+    form = PerformanceForm
 
-# Register your models here
-admin.site.register(Niveau, NiveauAdmin)
-admin.site.register(Club, ClubAdmin)
-admin.site.register(Grimpeur, GrimpeurAdmin)
-admin.site.register(Rencontre, RencontreAdmin)
-admin.site.register(Equipe, EquipeAdmin)
-admin.site.register(Score, ScoreAdmin)
-admin.site.register(Performance, PerformanceAdmin)
+    @admin.display(description="Grimpeur")
+    def score_grimpeur(self, obj):
+        return obj.score.grimpeur
+
+@admin.register(RencontreNiveau)
+class RencontreNiveauAdmin(admin.ModelAdmin):
+    list_display = ('rencontre', 'niveau', 'juge')
+    list_filter = ('rencontre',)
