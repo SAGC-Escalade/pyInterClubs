@@ -8,7 +8,7 @@ from api.serializers import RencontreSerializer
 
 class EquipeUpdateView(DetailView):
     model = Equipe
-    template_name = 'leader/edit_equipe.html'
+    template_name = 'leader/equipe.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
