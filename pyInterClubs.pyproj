@@ -109,15 +109,7 @@
     <Content Include="core\react\perf-input.jsx" />
     <Content Include="core\react\voie-input.jsx" />
     <Content Include="leader\react\equipe.jsx" />
-    <Content Include="leader\templates\leader\add_equipe.html" />
-    <Content Include="leader\templates\leader\add_score.html" />
-    <Content Include="leader\templates\leader\edit_score.html" />
-    <Content Include="leader\templates\leader\edit_equipe.html" />
-    <Content Include="leader\templates\leader\list_equipes.html" />
-    <Content Include="leader\templates\partials\p_frmEquipe.html" />
-    <Content Include="leader\templates\partials\p_hdrScore.html" />
-    <Content Include="leader\templates\partials\p_frmScoreField.html" />
-    <Content Include="pyInterClubs\react\utils.jsx" />
+    <Content Include="leader\templates\leader\equipe.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css.map" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.min.css" />
@@ -194,11 +186,8 @@
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js" />
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js.LICENSE.txt" />
     <Content Include="pyInterClubs\static\img\user.png" />
-    <Content Include="pyInterClubs\react\hello.jsx" />
     <Content Include="api\react\observer.jsx" />
     <Content Include="leader\react\score.jsx" />
-    <Content Include="pyInterClubs\react\scoreEnfant.jsx" />
-    <Content Include="pyInterClubs\react\tictactoe.jsx" />
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
     <Content Include="pyInterClubs\templates\p_navbar.html" />
@@ -224,7 +213,6 @@
     <Folder Include="leader\react\" />
     <Folder Include="leader\templates\" />
     <Folder Include="leader\templates\leader\" />
-    <Folder Include="leader\templates\partials\" />
     <Folder Include="pyInterClubs\" />
     <Folder Include="leader\templatetags\" />
     <Folder Include="pyInterClubs\static\" />
