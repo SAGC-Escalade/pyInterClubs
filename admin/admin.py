@@ -23,7 +23,7 @@ class JugeConfig(admin.ModelAdmin):
     list_filter = ('rencontre',)
     #fieldsets = (
     #    (None, {
-    #        'fields': ('user', 'niveaux'),
+    #        'fields': ('user', 'voies'),
     #    }),
     #)
-    #filter_horizontal = ('niveaux',)
+    #filter_horizontal = ('voies',)

@@ -61,8 +61,8 @@ class ScoreInline(admin.TabularInline):
 
 
 # ModelAdmin
-@admin.register(Niveau)
-class NiveauAdmin(admin.ModelAdmin):
+@admin.register(Voie)
+class VoieAdmin(admin.ModelAdmin):
     list_display = ('nom', 'niveau', 'type', 'actif')
     list_filter = ('actif',)
     search_fields = ('nom', 'niveau')
@@ -171,18 +171,18 @@ class PerformanceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get('instance')
-        if instance is None or instance.niveau_id is None: return
-        self.fields['etat'].choices = enumerate(instance.niveau.zones.keys())
+        if instance is None or instance.voie_id is None: return
+        self.fields['etat'].choices = enumerate(instance.voie.zones.keys())
 
 @admin.register(Performance)
 class PerformanceAdmin(admin.ModelAdmin):
-    list_display = ('score_grimpeur', 'niveau', 'etat', 'temps', 'points')
+    list_display = ('score_grimpeur', 'voie', 'etat', 'temps', 'points')
     list_filter = ('etat',)
     search_fields = ('score__grimpeur__nom', 'score__grimpeur__prenom')
     search_help_text = "Recherchez par le nom du grimpeur"
     fieldsets = (
         (None, {
-            'fields': ('niveau', 'temps', 'points', 'etat'),
+            'fields': ('voie', 'temps', 'points', 'etat'),
         }),
     )
     form = PerformanceForm
@@ -191,7 +191,7 @@ class PerformanceAdmin(admin.ModelAdmin):
     def score_grimpeur(self, obj):
         return obj.score.grimpeur
 
-@admin.register(RencontreNiveau)
-class RencontreNiveauAdmin(admin.ModelAdmin):
-    list_display = ('rencontre', 'niveau', 'juge')
+@admin.register(RencontreVoie)
+class RencontreVoieAdmin(admin.ModelAdmin):
+    list_display = ('rencontre', 'voie', 'juge')
     list_filter = ('rencontre',)

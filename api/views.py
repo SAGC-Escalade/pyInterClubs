@@ -1,18 +1,20 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from core.models import *
 from .serializers import *
 
-__all__ = ('ClubViewSet', 'RencontreViewSet', 'NiveauViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet', 'PerformanceViewSet')
+__all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet', 'PerformanceViewSet')
 
 
 class ClubViewSet(viewsets.ModelViewSet):
     serializer_class = ClubSerializer
     queryset = Club.objects.all()
 
-class NiveauViewSet(viewsets.ModelViewSet):
-    serializer_class = NiveauSerializer
-    queryset = Niveau.objects.all()
+class VoieViewSet(viewsets.ModelViewSet):
+    serializer_class = VoieSerializer
+    queryset = Voie.objects.all()
 
 class GrimpeurViewSet(viewsets.ModelViewSet):
     serializer_class = GrimpeurSerializer
@@ -25,12 +27,25 @@ class RencontreViewSet(viewsets.ModelViewSet):
 
 class EquipeViewSet(viewsets.ModelViewSet):
     serializer_class = EquipeSerializer
-    queryset = Equipe.objects.all()
+    #queryset = Equipe.objects.all()
+    def get_queryset(self):
+        return self.request.interclub.equipes
 
 class ScoreViewSet(viewsets.ModelViewSet):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
 
+    @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
+    def set_ordre(self, request, pk=None, cmd=None):
+        if not cmd in ('up', 'down'): return Response({'no_field_errors': ["command not found"]}, status=status.HTTP_400_BAD_REQUEST)
+        if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
+        score = self.get_object()
+        if cmd == 'up': score.ordre_up()
+        else:           score.ordre_down()
+        send_event('events', reverse("equipe-detail", args=[score.equipe_id]), EquipeSerializer(score.equipe).data)
+        return Response()
+
+
 class PerformanceViewSet(viewsets.ModelViewSet):
-    serializers_class = PerformanceSerializer
+    serializer_class = PerformanceSerializer
     queryset = Performance.objects.all()

@@ -1,31 +1,16 @@
-from django.views.generic import DetailView, ListView, FormView
-from django.http import Http404
-#from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
-from django.views.generic.edit import CreateView, UpdateView # BaseFormView, FormMixin, ProcessFormView
-from django.forms.models import inlineformset_factory
-from django.urls import reverse_lazy
-from dal import autocomplete
-from datetime import timedelta
-from django_eventstream import send_event
+from django.views.generic import DetailView #, ListView, FormView
 
-from core.models import Equipe, Score
-from admin.models import Config
+from core.models import *
+from admin.models import *
+
+from api.serializers import RencontreSerializer
 
 
-class SelfRedirectedViewMixin:
-    def form_valid(self, form):
-        self.object = form.save()
-        return self.render_to_response(self.get_context_data(form=form))
-
-class HTMXCreateView(SelfRedirectedViewMixin, CreateView): pass
-class HTMXUpdateView(SelfRedirectedViewMixin, UpdateView):
-    def form_valid(self, form):
-        self.object = form.save()
-        send_event('test', 'message', self.request.path)
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-class EquipeUpdateView(HTMXUpdateView):
+class EquipeUpdateView(DetailView):
     model = Equipe
-    fields = ['numero']
     template_name = 'leader/edit_equipe.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault('rencontre', RencontreSerializer(self.object.rencontre).data)
+        return context

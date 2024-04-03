@@ -3,7 +3,7 @@ from django.db.models.functions import MD5
 from django.utils.deprecation import MiddlewareMixin
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
-from core.models import Rencontre, Equipe, Grimpeur, Categorie, Club, Niveau
+from core.models import *
 from .models import *
 
 

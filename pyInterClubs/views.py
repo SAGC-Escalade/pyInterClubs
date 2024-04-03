@@ -10,7 +10,7 @@ from babel_transpiling.utils import get_options, get_file_content, get_transpile
 import os.path
 from pathlib import Path
 
-from core.models import Club, Grimpeur, Niveau
+from core.models import *
 from .forms import TokenAuthenticationForm
 
 

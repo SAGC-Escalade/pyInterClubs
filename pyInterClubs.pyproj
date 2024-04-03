@@ -105,6 +105,10 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="admin\templates\widgets\rencontre.html" />
+    <Content Include="core\react\form-input.jsx" />
+    <Content Include="core\react\perf-input.jsx" />
+    <Content Include="core\react\voie-input.jsx" />
+    <Content Include="leader\react\equipe.jsx" />
     <Content Include="leader\templates\leader\add_equipe.html" />
     <Content Include="leader\templates\leader\add_score.html" />
     <Content Include="leader\templates\leader\edit_score.html" />
@@ -191,7 +195,7 @@
     <Content Include="pyInterClubs\static\3rd\react-bootstrap-2.9.1-dist\react-bootstrap.min.js.LICENSE.txt" />
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="pyInterClubs\react\hello.jsx" />
-    <Content Include="leader\react\observer.jsx" />
+    <Content Include="api\react\observer.jsx" />
     <Content Include="leader\react\score.jsx" />
     <Content Include="pyInterClubs\react\scoreEnfant.jsx" />
     <Content Include="pyInterClubs\react\tictactoe.jsx" />
@@ -212,8 +216,10 @@
     <Folder Include="admin\templates\" />
     <Folder Include="admin\templates\admin\" />
     <Folder Include="api\" />
+    <Folder Include="api\react\" />
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
+    <Folder Include="core\react\" />
     <Folder Include="leader\" />
     <Folder Include="leader\react\" />
     <Folder Include="leader\templates\" />

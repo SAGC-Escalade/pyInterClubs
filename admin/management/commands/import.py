@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
-from core.models import *
 import sqlite3
 from datetime import timedelta, date
+
+from core.models import *
 
 def clubTranslation(row):
     id, nom, ville = row
@@ -47,12 +48,12 @@ def rencontreTranslation(row):
         'date': date,
         'nbBloc': 2,
         'nbVitesse': 1,
-        'voieReutilisable': False,
+        'voiesReutilisables': False,
     }
     vieuxReglement = saison <= 2018
     return [
-        (id, dict(**fields, categorie=Categorie.enfants, nbDiff=3, niveauxGroupes=True)),
-        (id, dict(**fields, categorie=Categorie.adolescents, nbDiff=3 if vieuxReglement else 4, niveauxGroupes=vieuxReglement))
+        (id, dict(**fields, categorie=Categorie.enfants, nbDiff=3, voiesGroupees=True)),
+        (id, dict(**fields, categorie=Categorie.adolescents, nbDiff=3 if vieuxReglement else 4, voiesGroupees=vieuxReglement))
     ]
 def equipeTranslation(row):
     id, idrencontre, idclub, numero, categorie = row
@@ -76,69 +77,69 @@ def performanceTranslation(row):
     id, *perf, vitesse, ptsvitesse = row
     perf = zip(perf[0::2], perf[1::2])
     score = Score.objects.get(pk=relations[Score][id])
-    niveaux = list(score.equipe.rencontre.niveaux.all())
+    voies = list(score.equipe.rencontre.voies.all())
     ret = []
     # Traitement des bloc et des voies
-    for idniveau,etat in perf:
-        if idniveau == 44 or idniveau is None:
+    for idvoie,etat in perf:
+        if idvoie == 44 or idvoie is None:
             ret.append((None, False))
             continue
-        niveau = Niveau.objects.get(pk=relations[Niveau][idniveau])
-        if not niveau in niveaux:
-           print(f"Pb avec le score {id}, il essaye d'utiliser un niveau non permit: {niveau}")
+        voie = Voie.objects.get(pk=relations[Voie][idvoie])
+        if not voie in voies:
+           print(f"Pb avec le score {id}, il essaye d'utiliser une voie inexistante dans la rencontre: {voie}")
         etat = ['A réaliser', 'Réussie', 'Valorisée', 'Chute', 'Interdite'][etat]
         if etat == 'Interdite':
-            niveau.zones['Interdite'] = 0
-            niveau.save()
-        points = niveau.zones.get(etat)
-        etat = list(niveau.zones.keys()).index(etat)
-        ret.append((id, dict(score=score, niveau=niveau, etat=etat, points=points)))
+            voie.zones['Interdite'] = 0
+            voie.save()
+        points = voie.zones.get(etat)
+        etat = list(voie.zones.keys()).index(etat)
+        ret.append((id, dict(score=score, voie=voie, etat=etat, points=points)))
     # Traitement de la vitesse
     annee = min(2019,score.equipe.rencontre.saison)
-    niveau = Niveau.objects.get(pk=relations[Niveau][f"v{annee}"])
+    voie = Voie.objects.get(pk=relations[Voie][f"v{annee}"])
     if   ptsvitesse is None:             etat = 0 # A réaliser (normalement inexistant dans la base de données)
     elif ptsvitesse > (annee==2019)*5+5: etat = 5 # rank <= 5
     elif ptsvitesse > (annee==2019)+1:   etat = 4 # rank <= 25 ou 45 (suivant l'année)
     elif vitesse == -1:                  etat = 2 # Chute
     elif vitesse == -2:                  etat = 1 # Abandon
     else:                                etat = 3 # rank >= 25 ou 45 (suivant l'année)
-    ret.append((id, dict(score=score, niveau=niveau, etat=etat, points=ptsvitesse, temps=timedelta(milliseconds=vitesse/10000))))
+    ret.append((id, dict(score=score, voie=voie, etat=etat, points=ptsvitesse, temps=timedelta(milliseconds=vitesse/10000))))
     return ret
-def rencontreNiveauVitesseTranslation(row):
-    id, *niveaux = row
+def rencontreVoieVitesseTranslation(row):
+    id, *voies = row
     rencontres = Rencontre.objects.filter(pk__in=relations[Rencontre][id])
     ret = []
     for rencontre in rencontres:
         annee = min(2019, rencontre.saison)
-        # Les ID des niveaux coorespondants aux différentes rencontres sont inscrits en dur...
+        # Les ID des voies correspondantes aux différentes rencontres sont inscrits en dur...
         # Je n'aime pas ça mais je n'ai pas le choix.
         if rencontre.categorie == Categorie.enfants:
-            niveaux = [1,2,3,4,5,6,7,8,9,10]                            # M1->T7 enfants
-            if rencontre.date > date(2019,1,1): niveaux += [21,22,24]   # Ajout de T8,T9 et T10
-            niveaux += [26,27]                                          # Blocs enfants
+            voies = [1,2,3,4,5,6,7,8,9,10]                            # M1->T7 enfants
+            if rencontre.date > date(2019,1,1): voies += [21,22,24]   # Ajout de T8,T9 et T10
+            voies += [26,27]                                          # Blocs enfants
         else:
-            niveaux = [11,12,13,14,15,16,17,18,19,20]                   # T1->T10 ados
-            if rencontre.date > date(2019,1,1): niveaux += [23,25]      # Ajout T11 et T12
-            niveaux += [28,29]                                          # Blocs ados
+            voies = [11,12,13,14,15,16,17,18,19,20]                   # T1->T10 ados
+            if rencontre.date > date(2019,1,1): voies += [23,25]      # Ajout T11 et T12
+            voies += [28,29]                                          # Blocs ados
             if rencontre.date > date(2019,9,1):
-                niveaux = [30,31,32,33,34,35,36,37,38,39,40,41,42,43]   # 2019: nouveau set ados
-        for idniveau in niveaux:
-            niveau = Niveau.objects.get(pk=relations[Niveau][idniveau])
-            ret.append((id, dict(rencontre=rencontre, niveau=niveau)))
+                voies = [30,31,32,33,34,35,36,37,38,39,40,41,42,43]   # 2019: nouveau set ados
+        for idvoie in voies:
+            voie = Voie.objects.get(pk=relations[Voie][idvoie])
+            ret.append((id, dict(rencontre=rencontre, voie=voie)))
         # Vitesse
-        niveau = Niveau.objects.get(pk=relations[Niveau][f"v{annee}"])
-        ret.append((id, dict(rencontre=rencontre, niveau=niveau)))
+        voie = Voie.objects.get(pk=relations[Voie][f"v{annee}"])
+        ret.append((id, dict(rencontre=rencontre, voie=voie)))
     return ret
 
 TRANSLATIONS = [
     (Club, 'SELECT ID, Nom, Localisation FROM Clubs', clubTranslation),
-    (Niveau, 'SELECT ID, PtsValorises, PtsVoieComplete, NomVoie, NiveauVoie, Categorie, Actif FROM Niveaux', niveauTranslation),
-    (Niveau, 'SELECT ID, Annee FROM Saisons', niveauVitesseTranslation),
+    (Voie, 'SELECT ID, PtsValorises, PtsVoieComplete, NomVoie, NiveauVoie, Categorie, Actif FROM Niveaux', niveauTranslation),
+    (Voie, 'SELECT ID, Annee FROM Saisons', niveauVitesseTranslation),
     (Grimpeur, 'SELECT ID, IDClub, Nom, Prenom, AnneeNaissance, Licence, Sexe FROM Grimpeurs', grimpeurTranslation),
     (Rencontre, 'SELECT Rencontres.ID, IDClub, Date, Annee FROM Rencontres LEFT JOIN Saisons ON Rencontres.IDSaison = Saisons.ID', rencontreTranslation),
     (Equipe, 'SELECT ID, IDRencontre, IDClub, Numero, Categorie FROM Equipes', equipeTranslation),
     (Score, 'SELECT ID, IDEquipe, IDGrimpeur, IDClubPreteur, Points, Ordre FROM Scores', scoreTranslation),
-    (RencontreNiveau, 'SELECT ID FROM Rencontres', rencontreNiveauVitesseTranslation),
+    (RencontreVoie, 'SELECT ID FROM Rencontres', rencontreVoieVitesseTranslation),
     (Performance, 'SELECT ID, IDBloc1, Bloc1, IDBloc2, Bloc2, IDVoie1, Voie1, IDVoie2, Voie2, IDVoie3, Voie3, IDVoie4, Voie4, Vitesse, PtsVitesse FROM Scores', performanceTranslation),
 ]
 relations = {k:{} for k,_,_ in TRANSLATIONS}

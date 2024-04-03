@@ -49,6 +49,6 @@ class Profil(PolymorphicModel):
 class Coach(Profil):
     club = models.ForeignKey('core.Club', on_delete=models.CASCADE)
 
-# Profil juge (gestion des grimpeurs inscrits sur un même niveau)
+# Profil juge (gestion des grimpeurs inscrits sur une même voie)
 class Juge(Profil):
-    niveaux = models.ManyToManyField('core.Niveau', through='core.RencontreNiveau', related_name='juges')
+    voies = models.ManyToManyField('core.Voie', through='core.RencontreVoie', related_name='juges')

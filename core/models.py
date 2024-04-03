@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from django.db.models import Q
 from django.urls import reverse
-from django_eventstream import send_event
 
 from datetime import timedelta
 
 from admin.models import Juge
+
 
 class Categorie(models.IntegerChoices):
     __empty__   = 'Sélectionnez la catégorie'
@@ -28,9 +29,8 @@ class TypeVoie(models.IntegerChoices):
     vitesse   = 3, 'Vitesse'
 
 
-class Niveau(models.Model):
+class Voie(models.Model):
     class Meta:
-        verbose_name_plural = "niveaux"
         indexes = [
             models.Index(fields=['type',]),
             models.Index(fields=['actif',]),
@@ -45,6 +45,8 @@ class Niveau(models.Model):
     def __str__(self):
         return f'{self.nom}/{self.niveau}'
 
+    def points(self, index):
+        return list(self.zones.values())[index]
 
 class Club(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -104,9 +106,9 @@ class Rencontre(models.Model):
     nbBloc = models.IntegerField(default=2, validators=[MinValueValidator(1)])
     nbDiff = models.IntegerField(default=3, validators=[MinValueValidator(1)])
     nbVitesse = models.IntegerField(default=1, validators=[MinValueValidator(1)])
-    voieReutilisable = models.BooleanField(default=False)
-    niveauxGroupes = models.BooleanField(default=False)
-    niveaux = models.ManyToManyField(Niveau, through='RencontreNiveau')
+    voiesReutilisables = models.BooleanField(default=False)
+    voiesGroupees = models.BooleanField(default=False)
+    voies = models.ManyToManyField(Voie, through='RencontreVoie')
 
     def __str__(self):
         date = date_format(self.date, format='SHORT_DATE_FORMAT', use_l10n=True)
@@ -151,61 +153,44 @@ class ScoreManager(models.Manager):
 
 class Score(models.Model):
     id = models.BigAutoField(primary_key=True)
-    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='participations')
+    equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='membres')
     grimpeur = models.ForeignKey(Grimpeur, on_delete=models.PROTECT, related_name='participations')
     points = models.IntegerField(default=0)
     ordre = models.IntegerField(default=1, validators=[MaxValueValidator(8), MinValueValidator(1)])
     clubPreteur = models.ForeignKey(Club, on_delete=models.PROTECT, blank=True, null=True)
+
+    @admin.display(boolean=True)
+    def valide(self):
+        if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
+        if self.performances.filter(voie__type=TypeVoie.bloc).count() != self.equipe.rencontre.nbBloc: return False
+        if self.performances.filter(voie__type=TypeVoie.diff).count() != self.equipe.rencontre.nbDiff: return False
+        if self.performances.filter(voie__type=TypeVoie.vitesse).count() != self.equipe.rencontre.nbVitesse: return False
+        if self.performances.filter(points=None).count(): return False
+        return True
 
     def __str__(self):
         return f'{self.equipe.rencontre} - {self.grimpeur}'
 
     objects = ScoreManager()
 
-    @admin.display(boolean=True)
-    def valide(self):
-        if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
-        if self.performances.filter(niveau__type=TypeVoie.bloc).count() != self.equipe.rencontre.nbBloc: return False
-        if self.performances.filter(niveau__type=TypeVoie.diff).count() != self.equipe.rencontre.nbDiff: return False
-        if self.performances.filter(niveau__type=TypeVoie.vitesse).count() != self.equipe.rencontre.nbVitesse: return False
-        if self.performances.filter(points=None).count(): return False
-        return True
+    def clean(self):
+        super().clean()
+        if self.equipe_id is not None and self.equipe.membres.count() >= 8:
+            raise ValidationError("Une équipe ne peut pas avoir plus de 8 membres.")
 
-    @property
-    def PtsVoie1(self):
-        return self.PtsVoie(self.Voie1, self.IDVoie1)
-    @property
-    def PtsVoie2(self):
-        return self.PtsVoie(self.Voie2, self.IDVoie2)
-    @property
-    def PtsVoie3(self):
-        return self.PtsVoie(self.Voie3, self.IDVoie3)
-    @property
-    def PtsVoie4(self):
-        return self.PtsVoie(self.Voie4, self.IDVoie4)
-    @property
-    def PtsBloc1(self):
-        return self.PtsVoie(self.Bloc1, self.IDBloc1)
-    @property
-    def PtsBloc2(self):
-        return self.PtsVoie(self.Bloc2, self.IDBloc2)
 
-    def PtsVoie(self, result, niveau):
-        if result is None or niveau is None: return 0
-        if result == EtatVoie.Valorisee: return niveau.PtsValorises
-        if result == EtatVoie.Reussie: return niveau.PtsVoieComplete
-        return 0
-
-    @property
-    def NiveauxPossibles(self):
-        qs = Q(Actif=True) & (~Q(NomVoie='Bloc'))
-        if self.Equipe  != None: qs &= Q(Categorie=self.Equipe.Categorie)
-        if self.IDVoie1 != None and not self.IDVoie1.Actif: qs = qs | Q(pk=self.IDVoie1.ID)
-        if self.IDVoie2 != None and not self.IDVoie2.Actif: qs = qs | Q(pk=self.IDVoie2.ID)
-        if self.IDVoie3 != None and not self.IDVoie3.Actif: qs = qs | Q(pk=self.IDVoie3.ID)
-        if self.IDVoie4 != None and not self.IDVoie4.Actif: qs = qs | Q(pk=self.IDVoie4.ID)
-        return Niveau.objects.filter(qs)
-
+    def ordre_up(self):
+        prev = self.equipe.membres.filter(ordre__lt=self.ordre).order_by('ordre').last()
+        prev.ordre += 1
+        self.ordre -= 1
+        prev.save()
+        self.save()
+    def ordre_down(self):
+        next = self.equipe.membres.filter(ordre__gt=self.ordre).order_by('ordre').first()
+        next.ordre -= 1
+        self.ordre += 1
+        next.save()
+        self.save()
 
     def _save(self, *args, **kwargs):
         if self.Equipe != None:
@@ -222,7 +207,7 @@ class Score(models.Model):
 
         self.Points = self.PtsBloc1 + self.PtsBloc2 + self.PtsVoie1 + self.PtsVoie2 + self.PtsVoie3 + self.PtsVoie4 + self.PtsVitesse
 
-        send_event('events', reverse("score-detail", args=[self.ID]), "updated")
+        #send_event('events', reverse("score-detail", args=[self.ID]), "updated")
         return super().save(*args, **kwargs)
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
@@ -231,24 +216,32 @@ class Score(models.Model):
 # - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
 class Performance(models.Model):
     id = models.BigAutoField(primary_key=True)
-    niveau = models.ForeignKey(Niveau, on_delete=models.PROTECT)
+    voie = models.ForeignKey(Voie, on_delete=models.PROTECT)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
     temps = models.DurationField(null=True)
     points = models.IntegerField(default=0, null=True)
     etat = models.IntegerField()
 
+    def save(self, *args, **kwargs):
+        if self.voie != None:
+            zone = None
+            if self.etat is not None and self.etat in range(len(self.voie.zones)):
+                #self.points = list(self.voie.zones.values())[self.etat]
+                self.points = self.voie.points(self.etat)
+        #send_event('events', reverse("perf-detail", args=[self.id]), "updated")
+        return super().save(*args, **kwargs)
 
-class RencontreNiveau(models.Model):
+class RencontreVoie(models.Model):
     class Meta:
-        verbose_name = "rencontre-niveau"
-        verbose_name_plural = "rencontres-niveaux"
+        verbose_name = "rencontre-voie"
+        verbose_name_plural = "rencontres-voies"
         constraints = [
-            models.UniqueConstraint(fields=['rencontre', 'niveau'], name='unique_rencontre_niveau')
+            models.UniqueConstraint(fields=['rencontre', 'voie'], name='unique_rencontre_voie')
         ]
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
-    niveau = models.ForeignKey(Niveau, on_delete=models.CASCADE)
-    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True)#, related_name="niveaux")
+    voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
+    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True)#, related_name="voies")
 
     def __str__(self):
-        return f"{self.rencontre} - {self.niveau}"
+        return f"{self.rencontre} - {self.voie}"
