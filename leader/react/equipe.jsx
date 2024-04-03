@@ -61,7 +61,7 @@ function EquipeForm({ equipe }) {
 
             <div className="card-footer">
                 <div className="row g-2 justify-content-around">
-                    <a className="btn btn-primary col-12 col-md-5 col-lg-3" href="{% url 'equipe:add-score' object.id %}"><i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>
+                    {equipe.membres.length < 8 && <a className="btn btn-primary col-12 col-md-5 col-lg-3" href="{% url 'equipe:add-score' object.id %}"><i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>}
                     <a className="btn btn-danger col-12 col-md-5 col-lg-3" href=""><i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe</a>
                 </div>
             </div>
@@ -77,6 +77,32 @@ export default function Equipe({ source }) {
                 if (equipe !== undefined)
                     return (<EquipeForm equipe={equipe} />);
                 return (<EquipePlaceholder />);
+            }}
+        </Observer>
+    );
+}
+
+export function ListEquipe({ source, flush = true }) {
+    return (
+        <Observer source={source}>
+            {(equipes) => {
+                return (
+                    <ul className={"list-group" + (flush ? " list-group-flush" : "")}>
+                        {equipes === undefined
+                        ?
+                            <ul className={"list-group" + (flush ? " list-group-flush" : "")}>
+                                <li className="list-group-item">Aucune équipe</li>
+                            </ul>
+                        : equipes.map(function (equipe, index) {
+                            return (
+                                <a key={equipe.id} href={"/leader/" + equipe.id} className="list-group-item list-group-item-action d-flex align-items-center">
+                                    <i className="fa-solid fa-fw me-2"></i>
+                                    {equipe.club.nom} {equipe.numero}
+                                </a>
+                            );
+                        })}
+                    </ul>
+                );
             }}
         </Observer>
     );

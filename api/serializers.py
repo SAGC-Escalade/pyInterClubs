@@ -6,7 +6,7 @@ from operator import itemgetter
 
 from core.models import *
 
-# Serializer spécial permettant d'être 
+# Serializer spécial permettant d'être notifié des modifications sur le modèle
 class SSESerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         ret = super().save(**kwargs)
