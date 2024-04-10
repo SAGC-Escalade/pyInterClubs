@@ -27,14 +27,13 @@ class RencontreViewSet(viewsets.ModelViewSet):
 
 class EquipeViewSet(viewsets.ModelViewSet):
     serializer_class = EquipeSerializer
-    #queryset = Equipe.objects.all()
     def get_queryset(self):
         return self.request.interclub.equipes
 
 class ScoreViewSet(viewsets.ModelViewSet):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
-
+    
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
     def set_ordre(self, request, pk=None, cmd=None):
         if not cmd in ('up', 'down'): return Response({'no_field_errors': ["command not found"]}, status=status.HTTP_400_BAD_REQUEST)

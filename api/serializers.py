@@ -10,9 +10,15 @@ from core.models import *
 class SSESerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         ret = super().save(**kwargs)
-        url = self.context['view'].basename + "-detail"
-        send_event('events', reverse(url, args=[self.instance.id]), self.data)
+        send_event('events', self.url_detail, self.data)
         return ret
+
+    @property
+    def url_detail(self):
+        return reverse(self.context['view'].basename + "-detail", args=[self.instance.pk])
+    @property
+    def url_list(self):
+        return reverse(self.context['view'].basename + "-list")
 
 class ForeignKeyField(serializers.Field):
     def __init__(self, model_class, serializer, **kwargs):
@@ -67,6 +73,11 @@ class EquipeSerializer(SSESerializer):
         #fields = ['ID', 'Club', 'Numero', 'Categorie']
         exclude = ['rencontre']
 
+    def save(self, **kwargs):
+        ret = super().save(**kwargs)
+        if any(e in ('numero', 'club') for e in self.validated_data.keys()):
+            send_event('events', self.url_list, None)
+        return ret
 
 from datetime import timedelta
 class DurationField(serializers.DurationField):
