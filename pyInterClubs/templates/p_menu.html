@@ -56,9 +56,13 @@
 
 <script type="module">
     import { ListEquipe } from "/react/equipe.jsx";
+    const { QueryClient, QueryClientProvider } = window.ReactQuery;
+    const queryClient = new QueryClient();
     {% transpiling %}
     ReactDOM.createRoot(document.querySelector('#react-list-equipe')).render(
-        <ListEquipe source="/api/equipes/" />
+        <QueryClientProvider client={queryClient}>
+            <ListEquipe source="equipes" />
+        </QueryClientProvider>
     )
     {% endtranspiling %}
 </script>

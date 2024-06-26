@@ -15,10 +15,10 @@ class SSESerializer(serializers.ModelSerializer):
 
     @property
     def url_detail(self):
-        return reverse(self.context['view'].basename + "-detail", args=[self.instance.pk])
+        return f"{self.context['view'].basename}s/{self.instance.pk}"
     @property
     def url_list(self):
-        return reverse(self.context['view'].basename + "-list")
+        return f"{self.context['view'].basename}s"
 
 class ForeignKeyField(serializers.Field):
     def __init__(self, model_class, serializer, **kwargs):
@@ -78,6 +78,7 @@ class EquipeSerializer(SSESerializer):
         if any(e in ('numero', 'club') for e in self.validated_data.keys()):
             send_event('events', self.url_list, None)
         return ret
+
 
 from datetime import timedelta
 class DurationField(serializers.DurationField):

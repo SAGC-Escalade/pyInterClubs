@@ -1,7 +1,6 @@
 import Observer from "./observer.jsx";
 import Score, { ScoreItemPlaceholder } from "./score.jsx";
 
-
 function EquipePlaceholder() {
     return (
         <div className="card placeholder-glow">
@@ -34,28 +33,35 @@ function EquipePlaceholder() {
         </div>
     );
 }
-function EquipeForm({ equipe }) {
+function EquipeForm({ equipe, patch, errors }) {
     return (
         <div className="card placeholder-glow">
             <div className="card-header">
-                {/* Il faut mettre les non_fields_errors ici */}
                 <div className="row">
-                    <label className="col-9 col-sm-8 col-xl-10 col-form-label" htmlFor="id_numero">
+                    <label className="col-7 col-md-8 col-lg-9 col-xxl-10 col-form-label" htmlFor="id_numero">
                         {equipe.club.nom}
                     </label>
-                    <label className="d-none col-2 d-sm-inline col-xl-1 col-form-label" htmlFor="id_numero">
-                        Numéro
-                    </label>
-                    <div className="col-3 col-sm-2 col-xl-1">
-                        <ReactBootstrap.FormControl name="numero" type="number" defaultValue={equipe.numero} />
+                    <div className={"col row" + (errors ? " is-invalid" : "")}>
+                        <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">Numéro</label>
+                        <div className="col-12 col-sm-6">
+                            <ReactBootstrap.FormControl name="numero" type="number" value={equipe.numero}
+                                onChange={(e) => patch(equipe.id, { numero: e.target.value })}
+                                className={(errors && errors.numero) ? " is-invalid" : ""}
+                            />
+                        </div>
                     </div>
-                    {/* Il faut mettre les numero.errors ici */}
+                    {
+                        errors && <div className="col-12 invalid-feedback">
+                            {errors.non_field_errors && <span>{errors.non_field_errors}</span>}
+                            {errors.numero && <span className="float-end">{errors.numero}</span>}
+                        </div>
+                    }
                 </div>
             </div>
 
             <ReactBootstrap.Accordion flush>
                 {equipe.membres.map(function (id, index) {
-                    return (<Score key={id} eventKey={id} source={"/api/scores/" + id} />);
+                    return (<Score key={id} eventKey={id} source={"scores/" + id} />);
                 })}
             </ReactBootstrap.Accordion>
 
@@ -72,10 +78,10 @@ function EquipeForm({ equipe }) {
 
 export default function Equipe({ source }) {
     return (
-        <Observer source={source} csrf={csrf}>
-            {(equipe, updateEquipe, addEquipe, deleteEquipe) => {
+        <Observer endpoint={source} csrf={csrf}>
+            {({ data: equipe, patch, errors }) => {
                 if (equipe !== undefined)
-                    return (<EquipeForm equipe={equipe} />);
+                    return (<EquipeForm equipe={equipe} patch={patch} errors={errors} />);
                 return (<EquipePlaceholder />);
             }}
         </Observer>
@@ -84,8 +90,8 @@ export default function Equipe({ source }) {
 
 export function ListEquipe({ source, flush = true }) {
     return (
-        <Observer source={source}>
-            {(equipes) => {
+        <Observer endpoint={source}>
+            {({ data: equipes }) => {
                 return (
                     <ul className={"list-group" + (flush ? " list-group-flush" : "")}>
                         {equipes === undefined
@@ -101,6 +107,10 @@ export function ListEquipe({ source, flush = true }) {
                                 </a>
                             );
                         })}
+                        <a key={0} href={"/api/equipes/add"} className="list-group-item list-group-item-action d-flex align-items-center">
+                            <i className="fa-solid fa-add fa-fw me-2"></i>
+                            Nouvelle équipe
+                        </a>
                     </ul>
                 );
             }}

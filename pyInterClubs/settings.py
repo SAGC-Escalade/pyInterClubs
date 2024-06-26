@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'babel_transpiling',
     'rest_framework',
+    'django_js_reverse',
 ]
 
 # Middleware framework

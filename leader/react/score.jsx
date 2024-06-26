@@ -124,8 +124,8 @@ function ScoreItem({ eventKey, score }) {
 export default function Score({ eventKey, source }) {
     return (
         <ReactBootstrap.AccordionItem eventKey={eventKey}>
-            <Observer source={source} csrf={csrf}>
-                {(score, updateScore, addScore, deleteScore) => {
+            <Observer endpoint={source} csrf={csrf}>
+                {({ data: score }) => {
                     if (score !== undefined)
                         return (<ScoreItem eventKey={eventKey} score={score} />);
                     return (<ScoreItemPlaceholder eventKey={eventKey} score={score} />);

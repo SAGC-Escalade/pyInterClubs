@@ -21,11 +21,12 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.generic import TemplateView
 
+from django_js_reverse.views import urls_js
 from .views import *
 
 urlpatterns = [
     path('debug/', admin.site.urls),
-    path('api/', include('api.urls'), name='api'),
+    path('api/', include(('api.urls', 'api'), namespace='api'), name='api'),
     path('admin/', include('admin.urls')),
     path('leader/', include(('leader.urls', 'leader'), namespace='equipe')),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
     re_path(r"^react/(?P<path>.*.jsx)$", serve_react, name='react'),
+    re_path(r'^js/reverse/$', urls_js, name='js_reverse'),
 ]

@@ -30,6 +30,11 @@ class EquipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.interclub.equipes
 
+    @action(detail=False, url_path='add', permission_classes=[])
+    def add(self, request):
+        return Response({'no_field_errors': ["Not Implemented Yet"]}, status=status.HTTP_400_BAD_REQUEST)
+        #request.user.equipes.create()
+
 class ScoreViewSet(viewsets.ModelViewSet):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
