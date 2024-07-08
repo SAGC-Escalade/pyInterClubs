@@ -47,6 +47,10 @@
                         <div id="bdyEquipes" class="accordion-collapse collapse show" aria-labelledby="hdrEquipes">
                             <div id="react-list-equipe"></div>
                         </div>
+                        <a class="list-group-item list-group-item-action d-flex align-items-center border-start-0 border-end-0 border-bottom-0" href="{% url 'equipe:create' %}">
+                            <i class="fa-solid fa-fw fa-plus me-2"></i>
+                            Ajouter une équipe
+                        </a>
                     </div>
                 </div>
             {% endif %}

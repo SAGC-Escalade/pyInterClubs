@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'admin.context_processor.get_rencontre',
             ],
         },
     },
@@ -106,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = ['pyInterClubs.backends.ClubBackend', 'django.contrib.auth.backends.ModelBackend']
+LOGIN_REDIRECT_URL  = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -127,3 +130,6 @@ mimetypes.add_type("application/javascript", ".js", True)
 
 # React configuration
 #REACT_URL = "react"
+
+# JS-Reverse configuration
+JS_REVERSE_EXCLUDE_NAMESPACES = ['admin']

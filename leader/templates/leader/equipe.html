@@ -16,11 +16,6 @@
 {% endblock %}
 
 {% block script %}
-    {{ rencontre|json_script:"rencontre" }}
-    <script type="text/javascript">
-        var rencontre = JSON.parse($("#rencontre").text());
-        var csrf = "{{ csrf_token }}";
-    </script>
     <script type="module">
         import Equipe from "/react/equipe.jsx";
         const { QueryClient, QueryClientProvider } = window.ReactQuery;

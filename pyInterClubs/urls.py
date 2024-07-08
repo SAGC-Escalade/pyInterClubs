@@ -33,6 +33,7 @@ urlpatterns = [
 
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
+
     re_path(r"^react/(?P<path>.*.jsx)$", serve_react, name='react'),
     re_path(r'^js/reverse/$', urls_js, name='js_reverse'),
 ]

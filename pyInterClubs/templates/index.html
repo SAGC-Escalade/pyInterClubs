@@ -22,12 +22,14 @@
     <script src="{% static '3rd/react-query-3.39.3-dist/react-query.production.min.js' %}"></script>
     <script type="module" src="{% static '3rd/react-bootstrap-2.9.1-dist/react-bootstrap.min.js' %}"></script>
 </head>
-<body>
+<body class="placeholder-glow">
     {% include 'p_navbar.html' %}
     {% include 'p_menu.html' %}
 
     <div id="mainFragment" class="container my-3">
-        {% block body %}{% endblock %}
+        {% block body %}
+            {% include 'p_index.html' %}
+        {% endblock %}
     </div>
 
     <div id="messagesFragment" class="toast-container position-fixed top-0 end-0 m-2">
@@ -56,6 +58,11 @@
     </div>
 
     {% block script %}{% endblock %}
+    {{ rencontre|json_script:"rencontre" }}
+    <script type="text/javascript">
+        var rencontre = JSON.parse($("#rencontre").text());
+        var csrf = "{{ csrf_token }}";
+    </script>
     <script>
         function Toast(id, classes, message, title) {
             toast = $("#genericMessages").children(".toast").eq(id).clone();

@@ -1,0 +1,41 @@
+{% load static babel_transpiling %}
+{% if not user.is_authenticated %}
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">pyInterClubs</h1>
+        <p class="col-md-8 fs-4">
+            Bienvenue dans le logiciel de gestion des rencontres des clubs d'escalade de la Gironde.
+            Connectez-vous en tant que club afin de créer vos équipes et entrer les résultats des grimpeurs.
+            Connectez-vous en tant que jury afin d'entrer les résultats des grimpeurs sur une voie en particulier.
+        </p>
+        <a role="button" class="btn btn-primary btn-lg" href="{% url 'login' %}" title="S'authentifier">S'authentifier <i class="fa-solid fa-right-to-bracket ms-1"></i></a>
+    </div>
+{% else %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-users me-2"></i>
+                <span class="">Mes équipes</span>
+            </div>
+            <div id="react-list-equipe-index"></div>
+            <div class="card-footer">
+                <a class="list-group-item list-group-item-action d-flex align-items-center" href="{% url 'equipe:create' %}">
+                    <i class="fa-solid fa-fw fa-plus me-2"></i>
+                    Ajouter une équipe
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<script type="module">
+    import { ListEquipe } from "/react/equipe.jsx";
+    const { QueryClient, QueryClientProvider } = window.ReactQuery;
+    const queryClient = new QueryClient();
+    {% transpiling %}
+    ReactDOM.createRoot(document.querySelector('#react-list-equipe-index')).render(
+        <QueryClientProvider client={queryClient}>
+            <ListEquipe source="equipes" />
+        </QueryClientProvider>
+    )
+    {% endtranspiling %}
+</script>

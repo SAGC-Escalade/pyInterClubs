@@ -129,6 +129,16 @@ class Equipe(models.Model):
     def __str__(self):
         return f'{self.club.nom} {self.numero}'
 
+    @admin.display(boolean=True)
+    def valide(self):
+        if self.pk is None or self.rencontre_id is None: return None
+        if self.membres.count() == 0: return False
+        return all([m.valide for m in self.membres.all()])
+
+    @property
+    def points(self):
+        return sum([m.points for m in self.membres.all()])
+
 
 class ScoreQuerySet(models.QuerySet):
     def hommes(self):

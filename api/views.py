@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from core.models import *
 from .serializers import *
@@ -30,9 +31,12 @@ class EquipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.interclub.equipes
 
-    @action(detail=False, url_path='add', permission_classes=[])
-    def add(self, request):
-        return Response({'no_field_errors': ["Not Implemented Yet"]}, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=True, permission_classes=[])
+    def add(self, request, pk=None):
+        equipe = get_object_or_404(Equipe, pk=pk)
+        equipe.membres.create()
+        #return Response({'non_field_errors': ["Not Implemented Yet"]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return EquipeSerializer(equipe).data
         #request.user.equipes.create()
 
 class ScoreViewSet(viewsets.ModelViewSet):

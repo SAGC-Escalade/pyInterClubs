@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Ajouter une équipe{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="card-header">
+                    <span class="{% if form.non_field_errors or form.club.errors %}is-invalid{% endif %}">Ajouter une équipe</span>
+                    {% if form.non_field_errors %}
+                        <span class="invalid-feedback">{{ form.non_field_errors }}</span>
+                    {% endif %}
+                    {% if form.club.errors %}
+                        <span class="invalid-feedback">{{ form.club.errors }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-0">
+                    {# bootstrap_form form layout='horizontal' #}
+                    {{ form.club }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

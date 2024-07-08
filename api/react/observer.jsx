@@ -12,73 +12,60 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     const [errors, setErrors] = useState(null);
 
     async function send(config) {
-        try {
-            const url = (!isSingleInstance && config.id) ? `${config.url}${config.id}/` : config.url;
-            const options = {
-                method: config.method,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrf,
-                },
-                body: JSON.stringify(config.item),
-            };
-            if (config.method === 'GET') {
-                delete options.body;
-            }
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(JSON.stringify(errorData));
-            }
-            const responseData = await response.json();
-            return responseData;
-        } catch (error) {
-            throw new Error(error.message);
+        const url = config.url + ((!isSingleInstance && config.id) ? `${config.id}/` : '') + (config.action || '');
+        const options = {
+            method: config.method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf,
+            },
+            body: JSON.stringify(config.item),
+        };
+        if (config.method === 'GET') {
+            delete options.body;
         }
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            if (response.status == 400) {
+                throw new Error(JSON.stringify(await response.json()));
+            } else {
+                throw new Error(JSON.stringify({
+                    non_field_errors: "Une erreur est survenue, réessayez ou contactez un administrateur.",
+                    message: "Erreur " + response.status + ": " + response.statusText,
+                    debug: await response.text(),
+                }));
+            }
+        }
+        let responseData = null;
+        if (config.method !== 'DELETE') responseData = await response.json();
+        return responseData;
     }
 
+    // Initialisation
     const { data, error: queryError, isLoading } = useQuery(endpoint, () => send({ method: 'GET', url: apiEndpoint }), {
         onError: (error) => {
             setErrors(JSON.parse(error.message));
         },
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
     });
 
+    // Gestion des mise à jour (utilisateur => modèle)
     const mutateData = useMutation(
-        async ({ method, item, id }) => {
-            const responseData = await send({ method, item, id, url: apiEndpoint });
-
-            queryClient.setQueryData(endpoint, (oldData) => {
-                if (Array.isArray(oldData)) {
-                    if (method === 'POST') {
-                        return [...oldData, { ...item, id: responseData.id }];
-                    } else if (method === 'PUT' || method === 'PATCH') {
-                        return oldData.map((oldItem) => (oldItem.id === responseData.id ? responseData : oldItem));
-                    } else if (method === 'DELETE') {
-                        return oldData.filter((oldItem) => oldItem.id !== id);
-                    }
-                } else {
-                    if (method === 'PUT' || method === 'PATCH') {
-                        return { ...oldData, ...responseData };
-                    } else if (method === 'DELETE') {
-                        return null;
-                    }
-                }
-                return responseData;
-            });
-
-            return responseData;
+        async ({ method, item, id, action }) => {
+            setErrors(undefined);
+            return send({ method, id, action, item, url: apiEndpoint });
         },
         {
             onMutate: async ({ method, item, id }) => {
                 await queryClient.cancelQueries(endpoint);
                 const previousData = queryClient.getQueryData(endpoint);
 
+                // Optimistic update
                 queryClient.setQueryData(endpoint, (oldData) => {
                     if (Array.isArray(oldData)) {
                         if (method === 'POST') {
-                            return [...oldData, { ...item, id: Date.now() }];
+                            return [...oldData, { ...item, id: 0 }];
                         } else if (method === 'PUT' || method === 'PATCH') {
                             return oldData.map((oldItem) => (oldItem.id === id ? { ...oldItem, ...item } : oldItem));
                         } else if (method === 'DELETE') {
@@ -97,15 +84,49 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 return { previousData };
             },
             onError: (error, variables, context) => {
-                setErrors(JSON.parse(error.message));
+                // Display error
+                try {
+                    error = JSON.parse(error.message);
+                } catch (error) {
+                    error = { message: error.message };
+                }
+                if (error.message) {
+                    if (error.debug)
+                        Toast(0, "text-bg-danger", error.debug, error.message);
+                    else
+                        Toast(1, "text-bg-danger", error.message);
+                }
+                setErrors(error);
+                // Rollback
                 queryClient.setQueryData(endpoint, context.previousData);
             },
-            onSettled: () => {
-                queryClient.invalidateQueries(endpoint, { refetchInactive: false });
+            onSuccess: (responseData, { method, item, id }, context) => {
+                // Real update
+                queryClient.setQueryData(endpoint, (oldData) => {
+                    if (Array.isArray(oldData)) {
+                        if (method === 'POST') {
+                            return oldData.map((oldItem) => (oldItem.id === 0 ? responseData : oldItem));
+                        } else if (method === 'PUT' || method === 'PATCH') {
+                            return oldData.map((oldItem) => (oldItem.id === responseData.id ? responseData : oldItem));
+                        } else if (method === 'DELETE') {
+                            return oldData.filter((oldItem) => oldItem.id !== id);
+                        }
+                    } else {
+                        if (method === 'PUT' || method === 'PATCH') {
+                            return { ...oldData, ...responseData };
+                        } else if (method === 'DELETE') {
+                            return null;
+                        }
+                    }
+                    return responseData;
+                });
+
+                //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
         }
     );
 
+    // Gestion des mise à jour (modèle => utilisateur)
     useEffect(() => {
         const handleSSEMessage = (event) => {
             if (event.type === endpoint) {
@@ -132,7 +153,6 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
             }
         };
 
-        console.log("Abonnement au flux " + endpoint);
         eventSource.addEventListener(endpoint, handleSSEMessage);
 
         return () => {
@@ -140,16 +160,18 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
         };
     }, [endpoint, queryClient]);
 
+    // Gestion du rendu
     if (queryError) return <div>Error: {queryError.message}</div>;
 
     if (isLoading) return children({ data: undefined, errors: undefined });
 
     return children({
         data,
-        create: (item) => mutateData.mutate({ method: 'POST', item }),
-        patch: (id, updatedItem) => mutateData.mutate({ method: 'PATCH', id, item: updatedItem }),
-        update: (id, updatedItem) => mutateData.mutate({ method: 'PUT', id, item: updatedItem }),
-        remove: (id) => mutateData.mutate({ method: 'DELETE', id }),
-        errors
+        errors,
+        action: (action) => mutateData.mutateAsync({ method: 'GET', action }),
+        create: (item) => mutateData.mutateAsync({ method: 'POST', item }),
+        partial_update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PATCH', id, item: updatedItem }),
+        update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PUT', id, item: updatedItem }),
+        destroy: (id) => mutateData.mutateAsync({ method: 'DELETE', id }),
     });
-};
+}

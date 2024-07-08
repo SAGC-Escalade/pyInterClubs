@@ -1,0 +1,5 @@
+<ul class="list-group list-group-flush rounded">
+    {% for group, options, index in widget.optgroups %}
+        {% for option in options %}{% include option.template_name with widget=option %}{% endfor %}
+    {% endfor %}
+</ul>

@@ -33,7 +33,7 @@ function EquipePlaceholder() {
         </div>
     );
 }
-function EquipeForm({ equipe, patch, errors }) {
+function EquipeForm({ equipe, patch, remove, action, errors }) {
     return (
         <div className="card placeholder-glow">
             <div className="card-header">
@@ -67,8 +67,17 @@ function EquipeForm({ equipe, patch, errors }) {
 
             <div className="card-footer">
                 <div className="row g-2 justify-content-around">
-                    {equipe.membres.length < 8 && <a className="btn btn-primary col-12 col-md-5 col-lg-3" href="{% url 'equipe:add-score' object.id %}"><i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur</a>}
-                    <a className="btn btn-danger col-12 col-md-5 col-lg-3" href=""><i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe</a>
+                    {equipe.membres.length < 8 && (
+                        <a className="btn btn-primary col-12 col-md-5 col-lg-3"
+                            onClick={() => action('add')}>
+                            <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur
+                        </a>
+                    )}
+                    <a className="btn btn-danger col-12 col-md-5 col-lg-3"
+                        onClick={() => remove(equipe.id).then(() => window.location.href = '/')}
+                    >
+                        <i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe
+                    </a>
                 </div>
             </div>
         </div>
@@ -79,10 +88,11 @@ function EquipeForm({ equipe, patch, errors }) {
 export default function Equipe({ source }) {
     return (
         <Observer endpoint={source} csrf={csrf}>
-            {({ data: equipe, patch, errors }) => {
-                if (equipe !== undefined)
-                    return (<EquipeForm equipe={equipe} patch={patch} errors={errors} />);
-                return (<EquipePlaceholder />);
+            {({ data: equipe, partial_update, destroy, action, errors }) => {
+                if (equipe === undefined || equipe === null)
+                    return (<EquipePlaceholder />);
+
+                return (<EquipeForm equipe={equipe} patch={partial_update} remove={destroy} action={action} errors={errors} />);
             }}
         </Observer>
     );
@@ -90,27 +100,33 @@ export default function Equipe({ source }) {
 
 export function ListEquipe({ source, flush = true }) {
     return (
-        <Observer endpoint={source}>
-            {({ data: equipes }) => {
+        <Observer endpoint={source} csrf={csrf}>
+            {({ data: equipes, create }) => {
+                if (equipes === undefined)
+                    return (
+                        <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i><span className="placeholder w-75"></span></li>
+                        </ul>
+                    );
+                if (equipes.length == 0)
+                    return (
+                        <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i> Aucune équipe</li>
+                        </ul>
+                    );
+
                 return (
-                    <ul className={"list-group" + (flush ? " list-group-flush" : "")}>
-                        {equipes === undefined
-                        ?
-                            <ul className={"list-group" + (flush ? " list-group-flush" : "")}>
-                                <li className="list-group-item">Aucune équipe</li>
-                            </ul>
-                        : equipes.map(function (equipe, index) {
+                    <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+                        { equipes.map(function (equipe, index) {
                             return (
-                                <a key={equipe.id} href={"/leader/" + equipe.id} className="list-group-item list-group-item-action d-flex align-items-center">
+                                <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center">
                                     <i className="fa-solid fa-fw me-2"></i>
-                                    {equipe.club.nom} {equipe.numero}
+                                    {equipe.club?.nom || 'Nouvelle équipe'} {equipe.numero}
+                                    <sup><span className="badge text-bg-light text-muted">{equipe.membres?.length || 0}</span></sup>
+                                    <span className={"badge ms-auto " + (equipe.valide ? "text-bg-success" : "text-bg-primary")}>{equipe.points || 0} pts</span>
                                 </a>
                             );
                         })}
-                        <a key={0} href={"/api/equipes/add"} className="list-group-item list-group-item-action d-flex align-items-center">
-                            <i className="fa-solid fa-add fa-fw me-2"></i>
-                            Nouvelle équipe
-                        </a>
                     </ul>
                 );
             }}

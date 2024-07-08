@@ -71,13 +71,23 @@ class EquipeSerializer(SSESerializer):
     class Meta:
         model = Equipe
         #fields = ['ID', 'Club', 'Numero', 'Categorie']
-        exclude = ['rencontre']
+        fields = ['id', 'membres', 'club', 'numero', 'valide', 'points']
+        #exclude = ['rencontre']
 
     def save(self, **kwargs):
         ret = super().save(**kwargs)
         if any(e in ('numero', 'club') for e in self.validated_data.keys()):
             send_event('events', self.url_list, None)
         return ret
+
+    def create(self, validated_data):
+        context = {}
+        user = None
+        if self.context.get('request'): user = self.context['request'].user
+        if hasattr(user.profil, 'club'): context['club'] = user.profil.club
+        if hasattr(user.profil, 'rencontre'): context['rencontre'] = user.profil.rencontre
+        context.update(validated_data)
+        return super().create(context)
 
 
 from datetime import timedelta
