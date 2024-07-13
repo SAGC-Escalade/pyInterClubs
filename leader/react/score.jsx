@@ -1,4 +1,5 @@
 import Observer from "./observer.jsx";
+import Autocomplete from "./autocomplete.jsx";
 import PerfInput from "./perf-input.jsx";
 import FormInput from "./form-input.jsx";
 import VoieInput from "./voie-input.jsx";
@@ -36,12 +37,7 @@ function ScoreForm({ score }) {
             <li id={"bdyOptions" + score.id} className="list-group-item collapse border-bottom">
                 {rencontre.voiesGroupees && <FormInput label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies} /></FormInput>}
                 <FormInput label="Club prêteur">
-                    <ReactBootstrap.FormSelect name="clubPreteur" defaultValue={score.clubPreteur}>
-                        <option value="">Aucun</option>
-                        {clubs.map(function (club) {
-                            return (<option key={club.id} value={club.id}>{club.nom}</option>);
-                        })}
-                    </ReactBootstrap.FormSelect>
+                    <Autocomplete endpoint="clubs" defaultValue={score.clubPreteur} label="nom" nullable={true} />
                 </FormInput>
                 <FormInput label="Actions">
                     <ReactBootstrap.ButtonToolbar>
@@ -73,7 +69,7 @@ function ScoreForm({ score }) {
             </ReactBootstrap.ListGroupItem>
             <ReactBootstrap.ListGroupItem>
                 <h5>Difficulté</h5>
-                {score.performances.Difficulté.map(function (id, index) {
+                {score.performances["Difficulté"].map(function (id, index) {
                     return (<PerfInput key={id} id={id} index={index + 1} />);
                 })}
             </ReactBootstrap.ListGroupItem>

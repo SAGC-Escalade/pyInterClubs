@@ -82,25 +82,31 @@ export default function PerfInput({ id, index }) {
                     valide = (perf.voie && perf.etat);
                     return (
                         <FormInput label={"Bloc " + index}>
-                            <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
-                            <Points value={perf.points} valid={valide} />
+                            <ReactBootstrap.InputGroup>
+                                <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
+                                <Points value={perf.points} valid={valide} />
+                            </ReactBootstrap.InputGroup>
                         </FormInput>
                     );
                 } else if (perf.voie.type == 2) { // Diff
                     valide = (perf.voie && perf.etat);
                     return (
                         <FormInput label={"Voie " + index}>
-                            {!rencontre.voiesGroupees && <VoieInput name="voie" value={perf.voie.id} choices={rencontre.voies} />}
-                            <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
-                            <Points value={perf.points} valid={valide} />
+                            <ReactBootstrap.InputGroup>
+                                {!rencontre.voiesGroupees && <VoieInput name="voie" value={perf.voie.id} choices={rencontre.voies} />}
+                                <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
+                                <Points value={perf.points} valid={valide} />
+                            </ReactBootstrap.InputGroup>
                         </FormInput>
                     );
                 } else if (perf.voie.type == 3) {// Vitesse
                     valide = (perf.voie && perf.temps);
                     return (
                         <FormInput label={"Temps " + index}>
-                            <Vitesse name="temps" value={perf.temps} />
-                            <Points value={perf.points} valid={valide} />
+                            <ReactBootstrap.InputGroup>
+                                <Vitesse name="temps" value={perf.temps} />
+                                <Points value={perf.points} valid={valide} />
+                            </ReactBootstrap.InputGroup>
                         </FormInput>
                     );
                 } else {

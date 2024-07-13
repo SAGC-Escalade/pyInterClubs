@@ -11,7 +11,12 @@ __all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 
 
 class ClubViewSet(viewsets.ModelViewSet):
     serializer_class = ClubSerializer
-    queryset = Club.objects.all()
+
+    def get_queryset(self):
+        queryset = Club.objects.all()
+        filter = self.request.query_params.get('q')
+        if filter: queryset = queryset.filter(nom__icontains=filter)
+        return queryset
 
 class VoieViewSet(viewsets.ModelViewSet):
     serializer_class = VoieSerializer

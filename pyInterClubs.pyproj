@@ -111,6 +111,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="admin\templates\widgets\rencontre.html" />
+    <Content Include="api\react\autocomplete.jsx">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="core\react\form-input.jsx" />
     <Content Include="core\react\perf-input.jsx" />
     <Content Include="core\react\voie-input.jsx" />
