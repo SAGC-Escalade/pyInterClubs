@@ -1,7 +1,7 @@
 import Observer from "./observer.jsx";
 import Score, { ScoreItemPlaceholder } from "./score.jsx";
 
-function EquipePlaceholder() {
+function EquipePlaceholder({ deleting = false }) {
     return (
         <div className="card placeholder-glow">
             <div className="card-header">
@@ -27,7 +27,9 @@ function EquipePlaceholder() {
             <div className="card-footer">
                 <div className="row g-2 justify-content-around">
                     <a className="btn btn-primary disabled placeholder col-12 col-md-5 col-lg-3"></a>
-                    <a className="btn btn-danger disabled placeholder col-12 col-md-5 col-lg-3"></a>
+                    <a className="btn btn-danger disabled placeholder col-12 col-md-5 col-lg-3">
+                        {deleting && <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>}
+                    </a>
                 </div>
             </div>
         </div>
@@ -90,7 +92,7 @@ export default function Equipe({ source }) {
         <Observer endpoint={source} csrf={csrf}>
             {({ data: equipe, partial_update, destroy, action, errors }) => {
                 if (equipe === undefined || equipe === null)
-                    return (<EquipePlaceholder />);
+                    return (<EquipePlaceholder deleting={equipe === null} />);
 
                 return (<EquipeForm equipe={equipe} patch={partial_update} remove={destroy} action={action} errors={errors} />);
             }}
