@@ -226,18 +226,19 @@ class Score(models.Model):
 # - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
 class Performance(models.Model):
     id = models.BigAutoField(primary_key=True)
-    voie = models.ForeignKey(Voie, on_delete=models.PROTECT)
+    voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
     temps = models.DurationField(null=True)
     points = models.IntegerField(default=0, null=True)
-    etat = models.IntegerField()
+    etat = models.IntegerField(null=True)
 
     def save(self, *args, **kwargs):
-        if self.voie != None:
+        if self.voie_id != None:
             zone = None
             if self.etat is not None and self.etat in range(len(self.voie.zones)):
-                #self.points = list(self.voie.zones.values())[self.etat]
-                self.points = self.voie.points(self.etat)
+                points = self.voie.points(self.etat)
+                if type(points) == int: self.points = self.voie.points(self.etat)
+                # TODO: Si les points sont une str, il faut les calculer...
         #send_event('events', reverse("perf-detail", args=[self.id]), "updated")
         return super().save(*args, **kwargs)
 

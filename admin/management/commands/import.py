@@ -38,6 +38,8 @@ def grimpeurTranslation(row):
     id, idclub, *row = row
     fields = {'club': Club.objects.get(pk=relations[Club][idclub])}
     fields.update(dict(zip(['nom', 'prenom', 'anneeNaissance', 'licence', 'sexe'], row)))
+    fields['nom'] = fields['nom'].upper()
+    fields['prenom'] = fields['prenom'].capitalize()
     return [(id, fields)]
 def rencontreTranslation(row):
     id, idclub, date, saison = row
