@@ -10,15 +10,18 @@ from core.models import *
 class SSESerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         ret = super().save(**kwargs)
-        send_event('events', self.url_detail, self.data)
+        self.notify()
         return ret
 
     @property
     def url_detail(self):
-        return f"{self.context['view'].basename}s/{self.instance.pk}"
+        return f"{self.url_list}/{self.instance.pk}"
     @property
     def url_list(self):
         return f"{self.context['view'].basename}s"
+
+    def notify(self):
+        send_event('events', self.url_detail, self.data)
 
 class ForeignKeyField(serializers.Field):
     def __init__(self, model_class, serializer, **kwargs):
@@ -66,6 +69,7 @@ class RencontreSerializer(SSESerializer):
 
 
 class EquipeSerializer(SSESerializer):
+    url_list = 'equipes'
     membres = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     club = ClubSerializer(read_only=True)
     class Meta:
@@ -104,9 +108,20 @@ class DurationField(serializers.DurationField):
 
 
 class ScoreSerializer(SSESerializer):
+    class EquipeField(serializers.PrimaryKeyRelatedField):
+        def get_queryset(self):
+            interclub = getattr(self.context.get('request', {}), 'interclub')
+            if interclub is None: return None
+            return interclub.equipes
+
+    url_list = 'scores'
     __perfs = None
     __groupe = None
-    grimpeur = GrimpeurSerializerIdentity(read_only=True)
+
+    equipe = EquipeField()
+    grimpeur = ForeignKeyField(model_class=Grimpeur, serializer=GrimpeurSerializerIdentity)
+    clubPreteur = ForeignKeyField(model_class=Club, serializer=ClubSerializer, required=False)
+    #grimpeur = GrimpeurSerializerIdentity(read_only=True)
     performances = serializers.SerializerMethodField('get_performances')
     groupe = serializers.SerializerMethodField('get_groupe')
     class Meta:
@@ -114,6 +129,7 @@ class ScoreSerializer(SSESerializer):
         fields = [
             'id',
             'ordre',
+            'equipe',
             'grimpeur', 'clubPreteur',
             'points', 'valide',
             'performances', 'groupe',
@@ -122,13 +138,14 @@ class ScoreSerializer(SSESerializer):
         if self.__perfs is None:
             # TODO : grouper les performances par type de voie
             perfs = instance.performances.order_by('voie__type', 'voie__niveau').values('id', 'voie__type')
-            perfs = {TypeVoie(k).label:list(v['id'] for v in l) for k,l in groupby(perfs, itemgetter('voie__type'))}
+            perfs = {TypeVoie(k or TypeVoie.diff).label:list(v['id'] for v in l) for k,l in groupby(perfs, itemgetter('voie__type'))}
             self.__perfs = perfs
         return self.__perfs
     def get_groupe(self, instance):
         if self.__groupe is None:
             if not instance.equipe.rencontre.voiesGroupees: return None
-            groupe = self.get_performances(instance)[TypeVoie.diff.label][0]
+            groupe = self.get_performances(instance).get(TypeVoie.diff.label, [None])[0]
+            if groupe is None: return None
             groupe = instance.performances.get(pk=groupe).voie_id
             self.__groupe = groupe
         return self.__groupe

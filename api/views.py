@@ -2,11 +2,16 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from core.models import *
 from .serializers import *
 
 __all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet', 'PerformanceViewSet')
+
+
+def Response400(data):
+    return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClubViewSet(viewsets.ModelViewSet):
@@ -24,7 +29,20 @@ class VoieViewSet(viewsets.ModelViewSet):
 
 class GrimpeurViewSet(viewsets.ModelViewSet):
     serializer_class = GrimpeurSerializer
-    queryset = Grimpeur.objects.all()
+
+    def get_queryset(self):
+        if hasattr(self.request, 'interclub'):
+            queryset = self.request.interclub.grimpeurs
+        else:
+            queryset = Grimpeur.objects.all()
+
+        filter = self.request.query_params.get('q')
+        if filter:
+            queryset = queryset.filter(
+                Q(nom__icontains=filter) |
+                Q(prenom__icontains=filter)
+            )
+        return queryset.order_by('nom', 'prenom')
 
 
 class RencontreViewSet(viewsets.ModelViewSet):
@@ -33,20 +51,43 @@ class RencontreViewSet(viewsets.ModelViewSet):
 
 class EquipeViewSet(viewsets.ModelViewSet):
     serializer_class = EquipeSerializer
+
     def get_queryset(self):
         return self.request.interclub.equipes
 
-    @action(detail=True, permission_classes=[])
+
+    @action(detail=True, methods=['post'], permission_classes=[])
     def add(self, request, pk=None):
-        equipe = get_object_or_404(Equipe, pk=pk)
-        equipe.membres.create()
-        #return Response({'non_field_errors': ["Not Implemented Yet"]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return EquipeSerializer(equipe).data
-        #request.user.equipes.create()
+        equipe = self.get_object()
+        grimpeur = get_object_or_404(Grimpeur, pk=request.data.get('grimpeur'))
+        data = dict(**request.data, equipe=equipe.id)
+        if equipe.club_id != grimpeur.club_id: data.update({'clubPreteur': grimpeur.club_id })
+
+        score = ScoreSerializer(data=data, context={'request':request})
+        if not score.is_valid():
+            return Response400(score.errors)
+        score = score.save()
+
+        rencontre = equipe.rencontre
+        voies = rencontre.voies
+        blocs = [Performance(voie=v, score=score) for v in voies.filter(type=TypeVoie.bloc)][:rencontre.nbBloc]
+        diffs = [Performance(score=score) for i in range(rencontre.nbDiff)]
+        vitesse = [Performance(voie=v, score=score) for v in voies.filter(type=TypeVoie.vitesse)][:rencontre.nbVitesse]
+        perfs = [p.save() for p in blocs + diffs + vitesse]
+
+        return Response(EquipeSerializer(equipe).data, status=status.HTTP_201_CREATED)
+
 
 class ScoreViewSet(viewsets.ModelViewSet):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
+
+    def destroy(self, request, pk=None):
+        score = self.get_object()
+        equipe = score.equipe
+        response = super().destroy(request, pk)
+        EquipeSerializer(equipe).notify()
+        return response
     
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
     def set_ordre(self, request, pk=None, cmd=None):

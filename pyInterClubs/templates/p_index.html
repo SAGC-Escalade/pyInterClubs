@@ -12,13 +12,12 @@
 {% else %}
     <div class="container">
         <div class="card">
-            <div class="card-header">
-                <i class="fa-solid fa-users me-2"></i>
-                <span class="">Mes équipes</span>
+            <div class="card-header p-3">
+                <i class="fa-solid fa-users me-2"></i>Mes équipes
             </div>
             <div id="react-list-equipe-index"></div>
-            <div class="card-footer">
-                <a class="list-group-item list-group-item-action d-flex align-items-center" href="{% url 'equipe:create' %}">
+            <div class="card-footer hstack">
+                <a class="btn d-flex align-items-center" href="{% url 'equipe:create' %}">
                     <i class="fa-solid fa-fw fa-plus me-2"></i>
                     Ajouter une équipe
                 </a>

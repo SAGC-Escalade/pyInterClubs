@@ -38,15 +38,22 @@ class pyInterclubDetails:
         return self.__rencontre
 
     # Filtre sur les grimpeurs qui correspondent à la catégorie sélectionnée
+    # et au club de l'utilisateur
     @property
     def grimpeurs(self):
-        if self.rencontre is None: return []
-        # TODO :
-        # On pourrait ajouter le modèle "Catégorie" en paramétrant les ages min et max
+        user = self.__request.user
+        if user.is_superuser:
+            return Grimpeur.objects.all()
+        if self.rencontre is None:
+            return Grimpeur.objects.none()
+        queryset = Grimpeur.objects.all()
+        if hasattr(user, 'profil') and hasattr(user.profil, 'club'):
+            queryset = queryset.filter(club=user.profil.club)
+        # TODO : On pourrait ajouter le modèle "Catégorie" en paramétrant les ages min et max
         if self.rencontre.categorie == Categorie.enfants: amin, amax = 8, 13
         else:                                             amin, amax = 13, 19
-        amax, amin= map(lambda x: self.rencontre.saison.annee + 1 - x, (amin, amax))
-        return Grimpeur.objects.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
+        amax, amin= map(lambda x: self.rencontre.saison + 1 - x, (amin, amax))
+        return queryset.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
 
     # Filtre sur les équipes appartenant au club en cours
     @property

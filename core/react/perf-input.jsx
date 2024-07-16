@@ -3,11 +3,6 @@ import FormInput from "./form-input.jsx";
 import VoieInput from "./voie-input.jsx";
 
 
-let voies = [];
-fetch('/api/voies/')
-    .then((res) => { return res.json(); })
-    .then((data) => { voies = data; });
-
 function EtatInput({ name, value, choices = undefined }) {
     if (choices === undefined)
         choices = { "A réaliser": null, "Réussie": 1, "Valorisée": 2, "Echouée": 3 }
@@ -78,22 +73,22 @@ export default function PerfInput({ id, index }) {
                             <span className="placeholder col-4" />
                         </FormInput>
                     );
+                } else if (perf.voie === null || perf.voie.type == 2) { // Diff
+                    valide = (perf.voie && perf.etat);
+                    return (
+                        <FormInput label={"Voie " + index}>
+                            <ReactBootstrap.InputGroup>
+                                {!rencontre.voiesGroupees && <VoieInput name="voie" value={perf.voie?.id} choices={rencontre.voies} />}
+                                <EtatInput name="etat" value={perf.etat} choices={perf.voie?.zones} />
+                                <Points value={perf.points} valid={valide} />
+                            </ReactBootstrap.InputGroup>
+                        </FormInput>
+                    );
                 } else if (perf.voie.type == 1) { // Bloc
                     valide = (perf.voie && perf.etat);
                     return (
                         <FormInput label={"Bloc " + index}>
                             <ReactBootstrap.InputGroup>
-                                <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
-                                <Points value={perf.points} valid={valide} />
-                            </ReactBootstrap.InputGroup>
-                        </FormInput>
-                    );
-                } else if (perf.voie.type == 2) { // Diff
-                    valide = (perf.voie && perf.etat);
-                    return (
-                        <FormInput label={"Voie " + index}>
-                            <ReactBootstrap.InputGroup>
-                                {!rencontre.voiesGroupees && <VoieInput name="voie" value={perf.voie.id} choices={rencontre.voies} />}
                                 <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
                                 <Points value={perf.points} valid={valide} />
                             </ReactBootstrap.InputGroup>

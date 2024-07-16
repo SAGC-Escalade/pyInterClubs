@@ -1,4 +1,4 @@
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 const { useQuery, useMutation, useQueryClient, QueryClient } = window.ReactQuery;
 
 const eventSource = new EventSource('/events/', { withCredentials: true });
@@ -10,9 +10,10 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     const isSingleInstance = endpoint.includes('/');
     const apiEndpoint = `/api/${endpoint}/`;
     const [errors, setErrors] = useState(null);
+    const isDeleting = useRef(false);
 
     async function send(config) {
-        const url = config.url + ((!isSingleInstance && config.id) ? `${config.id}/` : '') + (config.action || '');
+        const url = config.url + ((!isSingleInstance && config.id) ? `${config.id}/` : '') + (config.action ? `${config.action}/` : '');
         const options = {
             method: config.method,
             headers: {
@@ -43,7 +44,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     }
 
     // Initialisation
-    const { data, error: queryError, isLoading } = useQuery(endpoint, () => send({ method: 'GET', url: apiEndpoint }), {
+    const { data, error: queryError, status, isFetching } = useQuery(endpoint, () => send({ method: 'GET', url: apiEndpoint }), {
         onError: (error) => {
             setErrors(JSON.parse(error.message));
         },
@@ -54,6 +55,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     const mutateData = useMutation(
         async ({ method, item, id, action }) => {
             setErrors(undefined);
+            isDeleting.current = (method === 'DELETE');
             return send({ method, id, action, item, url: apiEndpoint });
         },
         {
@@ -62,24 +64,26 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 const previousData = queryClient.getQueryData(endpoint);
 
                 // Optimistic update
-                queryClient.setQueryData(endpoint, (oldData) => {
-                    if (Array.isArray(oldData)) {
-                        if (method === 'POST') {
-                            return [...oldData, { ...item, id: 0 }];
-                        } else if (method === 'PUT' || method === 'PATCH') {
-                            return oldData.map((oldItem) => (oldItem.id === id ? { ...oldItem, ...item } : oldItem));
-                        } else if (method === 'DELETE') {
-                            return oldData.filter((oldItem) => oldItem.id !== id);
+                if (method !== 'DELETE') {
+                    queryClient.setQueryData(endpoint, (oldData) => {
+                        if (Array.isArray(oldData)) {
+                            if (method === 'POST') {
+                                return [...oldData, { ...item, id: 0 }];
+                            } else if (method === 'PUT' || method === 'PATCH') {
+                                return oldData.map((oldItem) => (oldItem.id === id ? { ...oldItem, ...item } : oldItem));
+                            //} else if (method === 'DELETE') {
+                            //    return oldData.filter((oldItem) => oldItem.id !== id);
+                            }
+                        } else {
+                            if (method === 'PUT' || method === 'PATCH') {
+                                return { ...oldData, ...item };
+                            //} else if (method === 'DELETE') {
+                            //    return null;
+                            }
                         }
-                    } else {
-                        if (method === 'PUT' || method === 'PATCH') {
-                            return { ...oldData, ...item };
-                        } else if (method === 'DELETE') {
-                            return null;
-                        }
-                    }
-                    return oldData;
-                });
+                        return oldData;
+                    });
+                }
 
                 return { previousData };
             },
@@ -123,6 +127,9 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
 
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
+            onSettled: () => {
+                isDeleting.current = false
+            },
         }
     );
 
@@ -163,12 +170,19 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     // Gestion du rendu
     if (queryError) return <div>Error: {queryError.message}</div>;
 
-    if (isLoading) return children({ data: undefined, errors: undefined });
+    //if (isLoading) return children({ data: undefined, errors: undefined });
+    const statuses = {
+        isLoading: status === 'loading' || mutateData.isLoading || isFetching,
+        isError: status === 'error' || mutateData.isError,
+        isSuccess: status === 'success' || mutateData.isSuccess,
+        isDeleting: isDeleting.current,
+    }
 
     return children({
         data,
         errors,
-        action: (action) => mutateData.mutateAsync({ method: 'GET', action }),
+        status: statuses,
+        action: (action, item) => mutateData.mutateAsync({ method: item?'POST':'GET', action, item }),
         create: (item) => mutateData.mutateAsync({ method: 'POST', item }),
         partial_update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PATCH', id, item: updatedItem }),
         update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PUT', id, item: updatedItem }),

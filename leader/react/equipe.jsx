@@ -1,100 +1,197 @@
+const { useState } = React;
+const { Button, FormControl } = ReactBootstrap;
+const { Accordion, AccordionItem, AccordionHeader, Collapse } = ReactBootstrap;
+const { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } = ReactBootstrap;
+
 import Observer from "./observer.jsx";
-import Score, { ScoreItemPlaceholder } from "./score.jsx";
+import Autocomplete from "./autocomplete.jsx";
+import FormInput from "./form-input.jsx";
+import Score from "./score.jsx";
 
-function EquipePlaceholder({ deleting = false }) {
+export function AddScore({ equipe, action }) {
+    const [grimpeur, setGrimpeur] = useState(null);
+
+    function handleAdd() {
+        if (grimpeur)
+            return action('add', {
+                grimpeur: grimpeur,
+            });
+    }
+
     return (
-        <div className="card placeholder-glow">
-            <div className="card-header">
-                <div className="row">
-                    <span className="placeholder col-4" />
-                    <span className="col-5 col-sm-3" />
-                    <span className="placeholder col-2 d-none d-sm-inline" />
-                    <span className="placeholder col-3" />
-                </div>
+        <FormInput label="Grimpeur" className="">
+            <div className="d-flex">
+                <Autocomplete className="w-100" endpoint="grimpeurs" onChange={(g) => setGrimpeur(g)}>
+                    {({ nom, prenom }) => {
+                        return `${nom} ${prenom}`;
+                    }}
+                </Autocomplete>
+                <Button className="text-nowrap ms-3" onClick={handleAdd}>
+                    <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter le grimpeur
+                </Button>
             </div>
-
-            <ReactBootstrap.Accordion flush>
-                <ScoreItemPlaceholder eventKey={1} />
-                <ScoreItemPlaceholder eventKey={2} />
-                <ScoreItemPlaceholder eventKey={3} />
-                <ScoreItemPlaceholder eventKey={4} />
-                <ScoreItemPlaceholder eventKey={5} />
-                <ScoreItemPlaceholder eventKey={6} />
-                <ScoreItemPlaceholder eventKey={7} />
-                <ScoreItemPlaceholder eventKey={8} />
-            </ReactBootstrap.Accordion>
-
-            <div className="card-footer">
-                <div className="row g-2 justify-content-around">
-                    <a className="btn btn-primary disabled placeholder col-12 col-md-5 col-lg-3"></a>
-                    <a className="btn btn-danger disabled placeholder col-12 col-md-5 col-lg-3">
-                        {deleting && <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>}
-                    </a>
-                </div>
-            </div>
-        </div>
+        </FormInput>
     );
 }
-function EquipeForm({ equipe, patch, remove, action, errors }) {
-    return (
-        <div className="card placeholder-glow">
-            <div className="card-header">
-                <div className="row">
-                    <label className="col-7 col-md-8 col-lg-9 col-xxl-10 col-form-label" htmlFor="id_numero">
-                        {equipe.club.nom}
-                    </label>
-                    <div className={"col row" + (errors ? " is-invalid" : "")}>
-                        <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">Numéro</label>
-                        <div className="col-12 col-sm-6">
-                            <ReactBootstrap.FormControl name="numero" type="number" value={equipe.numero}
-                                onChange={(e) => patch(equipe.id, { numero: e.target.value })}
-                                className={(errors && errors.numero) ? " is-invalid" : ""}
-                            />
-                        </div>
-                    </div>
-                    {
-                        errors && <div className="col-12 invalid-feedback">
-                            {errors.non_field_errors && <span>{errors.non_field_errors}</span>}
-                            {errors.numero && <span className="float-end">{errors.numero}</span>}
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <ReactBootstrap.Accordion flush>
-                {equipe.membres.map(function (id, index) {
-                    return (<Score key={id} eventKey={id} source={"scores/" + id} />);
-                })}
-            </ReactBootstrap.Accordion>
-
-            <div className="card-footer">
-                <div className="row g-2 justify-content-around">
-                    {equipe.membres.length < 8 && (
-                        <a className="btn btn-primary col-12 col-md-5 col-lg-3"
-                            onClick={() => action('add')}>
-                            <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter un grimpeur
-                        </a>
-                    )}
-                    <a className="btn btn-danger col-12 col-md-5 col-lg-3"
-                        onClick={() => remove(equipe.id).then(() => window.location.href = '/')}
-                    >
-                        <i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer l'équipe
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 
 export default function Equipe({ source }) {
+    const [showDelete, setShowDelete] = useState(false);
+    const [showAdd, setShowAdd] = useState(false);
+
     return (
         <Observer endpoint={source} csrf={csrf}>
-            {({ data: equipe, partial_update, destroy, action, errors }) => {
-                if (equipe === undefined || equipe === null)
-                    return (<EquipePlaceholder deleting={equipe === null} />);
+            {({ data:equipe, errors, status, partial_update:patch, destroy, action }) => {
+                if (equipe === null) return (
+                    <div className="hstack gap-1">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Chargement...</span>
+                        </div>
+                        <span>Chargement...</span>
+                    </div>
+                );
 
-                return (<EquipeForm equipe={equipe} patch={partial_update} remove={destroy} action={action} errors={errors} />);
+                return (
+                    <>
+                        <div className={"card" + (status.isDeleting ? " opacity-50" : "")}>
+                            <div className="card-header">
+                                <div className="row">
+                                    {!equipe ? (
+                                        <>
+                                            <span className="placeholder col-4" />
+                                            <span className="col-5 col-sm-3" />
+                                            <span className="placeholder col-2 d-none d-sm-inline" />
+                                            <span className="placeholder col-3" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <label className="col-7 col-md-8 col-lg-9 col-xxl-10 col-form-label" htmlFor="id_numero">
+                                                {equipe.club.nom}
+                                                {status.isLoading && <div className="spinner-border spinner-border-sm text-primary ms-1"></div>}
+                                            </label>
+                                            <div className={"col row" + (errors ? " is-invalid" : "")}>
+                                                <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">Numéro</label>
+                                                <div className="col-12 col-sm-6">
+                                                    <FormControl name="numero" type="number" value={equipe.numero}
+                                                        onChange={(e) => patch(equipe.id, { numero: e.target.value })}
+                                                        isInvalid={errors && errors.numero}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {
+                                                errors && <div className="col-12 invalid-feedback">
+                                                    {errors.non_field_errors && <span>{errors.non_field_errors}</span>}
+                                                    {errors.numero && <span className="float-end">{errors.numero}</span>}
+                                                </div>
+                                            }
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <Accordion flush>
+                                {!equipe && (
+                                    <>
+                                        <AccordionItem eventKey={1}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={2}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={3}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={4}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={5}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={6}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={7}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                        <AccordionItem eventKey={8}>
+                                            <AccordionHeader>
+                                                <span className="w-100 d-flex">
+                                                    <span className="placeholder col-6" />
+                                                </span>
+                                            </AccordionHeader>
+                                        </AccordionItem>
+                                    </>
+                                )}
+                                {equipe?.membres.map((id, index) => (
+                                    <Score key={id} eventKey={id} source={"scores/" + id} />
+                                ))}
+                            </Accordion>
+
+                            {equipe?.membres.length < 8 && (
+                                <Collapse in={showAdd || (equipe?.membres.length == 0)}>
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item">
+                                            <AddScore equipe={equipe} action={action} />
+                                        </li>
+                                    </ul>
+                                </Collapse>
+                            )}
+
+                            <div className="card-footer hstack gap-3">
+                                <Button variant="none" disabled={!(equipe?.membres.length < 8)} onClick={() => setShowAdd(!showAdd)}>
+                                    <i className="fa-solid fa-plus fa-fw"></i><span className="d-none d-md-inline ms-2">Ajouter un grimpeur</span>
+                                </Button>
+                                <Button className="ms-auto" variant="danger" disabled={!equipe} onClick={() => setShowDelete(true)}>
+                                    <i className="fa-solid fa-trash fa-fw"></i><span className="d-none d-md-inline ms-2">Supprimer l'équipe</span>
+                                </Button>
+                            </div>
+                        </div>
+
+                        {equipe && (
+                            <Modal show={showDelete} onHide={() => setShowDelete(false)}>
+                                <ModalHeader closeButton>
+                                    <ModalTitle>Supprimer l'équipe ?</ModalTitle>
+                                </ModalHeader>
+                                <ModalBody>Voulez-vous vraiment supprimer l'équipe {equipe.numero} ?</ModalBody>
+                                <ModalFooter>
+                                    <Button variant="secondary" onClick={() => setShowDelete(false)}>
+                                        <i className="fa-solid fa-arrow-left fa-fw"></i>Annuler
+                                    </Button>
+                                    <Button variant="danger" onClick={() => destroy(equipe.id).then(() => window.location.href = '/')}>
+                                        <i className="fa-solid fa-trash fa-fw"></i>Supprimer
+                                    </Button>
+                                </ModalFooter>
+                            </Modal>
+                        )}
+                    </>
+                );
             }}
         </Observer>
     );
@@ -103,8 +200,8 @@ export default function Equipe({ source }) {
 export function ListEquipe({ source, flush = true }) {
     return (
         <Observer endpoint={source} csrf={csrf}>
-            {({ data: equipes, create }) => {
-                if (equipes === undefined)
+            {({ data: equipes = [], status }) => {
+                if (status.isLoading)
                     return (
                         <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
                             <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i><span className="placeholder w-75"></span></li>

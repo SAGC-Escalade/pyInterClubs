@@ -1,5 +1,6 @@
-const { useState, useEffect } = React;
-const { useQuery } = window.ReactQuery;
+const { useState, useEffect, useRef } = React;
+const { useQuery } = ReactQuery;
+const { InputGroup } = ReactBootstrap;
 
 /*
  * Autocomplete
@@ -15,9 +16,13 @@ export default function Autocomplete({
     minLength = 3,
     nullable = true,
     id,
+    isInvalid = false,
+    isValid = false,
     onChange,
     placeholder = "Rechercher...",
+    className = "",
     helptext,
+    children,
     size = null,
 }) {
     async function fetchItems(query) {
@@ -38,8 +43,8 @@ export default function Autocomplete({
         return await response.json();
     }
 
-
-    const [query, setQuery] = useState(defaultValue || "");
+    const inputRef = useRef(null);
+    const [query, setQuery] = useState(defaultValue ?? "");
     const [isFocused, setIsFocused] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const { data, error, isLoading } = useQuery(
@@ -55,38 +60,35 @@ export default function Autocomplete({
         }
     }, [data]);
 
-    const handleSelect = (item) => {
+    const handleSelect = (item, input="") => {
         setSelectedItem(item);
-        setQuery(item ? item[label] : "");
-        if (onChange) { onChange(item); }
+        setQuery(item ? item[label] : input);
+        if (onChange) { onChange(item ? item[key] : null); }
     }
 
     const show = isFocused && (data || error || isLoading) && !selectedItem;
 
-
     return (
-        <div className="position-relative">
-            <ReactBootstrap.InputGroup>
+        <div className={`position-relative ${className}` + (isValid?" is-valid":"") + (isInvalid?" is-invalid":"")}>
+            <InputGroup hasValidation={isValid || isInvalid} size={size}>
                 <input
-                    id={id || `id_${name}`}
+                    ref={inputRef}
+                    id={id ?? `id_${name}`}
                     type="text"
                     name={name}
-                    value={selectedItem ? selectedItem[label] : (query || "")}
+                    value={selectedItem ? (!!children ? children(selectedItem) : selectedItem[label]) : (query ?? "")}
                     placeholder={placeholder}
-                    className={"form-control" + (size ? `form-control-${size}` : "")}
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                        setSelectedItem(null);
-                    }}
-                    onFocus={(e) => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
+                    className={"form-control" + (size?`form-control-${size}`:"") + (isValid?" is-valid":"") + (isInvalid?" is-invalid":"")}
+                    onChange={(e) => handleSelect(null, e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setTimeout(() => setIsFocused(false), 500)}
                 />
                 {nullable && (
-                    <button className="btn btn-outline-secondary" type="button" onClick={() => handleSelect(null)}>
+                    <button className={"btn btn-outline-secondary" + (size ? ` btn-${size}` : "")} type="button" onClick={() => handleSelect(null)}>
                         <i className="fa-solid fa-eraser"></i>
                     </button>
                 )}
-            </ReactBootstrap.InputGroup>
+            </InputGroup>
             {helptext && <div className="form-text">{helptext}</div>}
             {show && (
                 <ul className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
@@ -100,7 +102,7 @@ export default function Autocomplete({
                     {data && data.length === 0 && <li className="list-group-item">Aucun résultat trouvé</li>}
                     {data && Array.isArray(data) && data.map((item) => (
                         <li key={item[key]} className="list-group-item list-group-item-action" onClick={() => handleSelect(item)}>
-                            {item[label]}
+                            {!!children ? children(item) : item[label]}
                         </li>
                     ))}
                 </ul>
