@@ -57,6 +57,9 @@
     <Compile Include="admin\views.py" />
     <Compile Include="admin\__init__.py" />
     <Compile Include="api\apps.py" />
+    <Compile Include="api\exceptions.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="api\serializers.py">
       <SubType>Code</SubType>
     </Compile>
@@ -114,7 +117,7 @@
     <Content Include="api\react\autocomplete.jsx">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="core\react\form-input.jsx" />
+    <Content Include="core\react\horizontal-form-group.jsx" />
     <Content Include="core\react\perf-input.jsx" />
     <Content Include="core\react\voie-input.jsx" />
     <Content Include="leader\react\equipe.jsx" />

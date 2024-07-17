@@ -59,6 +59,10 @@ class ScoreInline(admin.TabularInline):
     max_num = 8
     verbose_name = 'Participant'
 
+    @admin.display(boolean=True)
+    def valide(self, obj):
+        return obj.valide
+
 
 # ModelAdmin
 @admin.register(Voie)

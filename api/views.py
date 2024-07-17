@@ -12,6 +12,8 @@ __all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 
 
 def Response400(data):
     return Response(data, status=status.HTTP_400_BAD_REQUEST)
+def Response204():
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ClubViewSet(viewsets.ModelViewSet):
@@ -59,13 +61,13 @@ class EquipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[])
     def add(self, request, pk=None):
         equipe = self.get_object()
-        grimpeur = get_object_or_404(Grimpeur, pk=request.data.get('grimpeur'))
         data = dict(**request.data, equipe=equipe.id)
-        if equipe.club_id != grimpeur.club_id: data.update({'clubPreteur': grimpeur.club_id })
 
         score = ScoreSerializer(data=data, context={'request':request})
         if not score.is_valid():
             return Response400(score.errors)
+        if score.validated_data['grimpeur'].club_id != equipe.id:
+            score.validated_data['clubPreteur'] = score.validated_data['grimpeur'].club
         score = score.save()
 
         rencontre = equipe.rencontre
@@ -75,7 +77,8 @@ class EquipeViewSet(viewsets.ModelViewSet):
         vitesse = [Performance(voie=v, score=score) for v in voies.filter(type=TypeVoie.vitesse)][:rencontre.nbVitesse]
         perfs = [p.save() for p in blocs + diffs + vitesse]
 
-        return Response(EquipeSerializer(equipe).data, status=status.HTTP_201_CREATED)
+        EquipeSerializer(equipe).notify()
+        return Response204()
 
 
 class ScoreViewSet(viewsets.ModelViewSet):
@@ -96,8 +99,8 @@ class ScoreViewSet(viewsets.ModelViewSet):
         score = self.get_object()
         if cmd == 'up': score.ordre_up()
         else:           score.ordre_down()
-        send_event('events', reverse("equipe-detail", args=[score.equipe_id]), EquipeSerializer(score.equipe).data)
-        return Response()
+        EquipeSerializer(score.equipe).notify()
+        return Response204()
 
 
 class PerformanceViewSet(viewsets.ModelViewSet):

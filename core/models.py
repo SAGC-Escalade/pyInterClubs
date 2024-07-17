@@ -129,7 +129,7 @@ class Equipe(models.Model):
     def __str__(self):
         return f'{self.club.nom} {self.numero}'
 
-    @admin.display(boolean=True)
+    @property
     def valide(self):
         if self.pk is None or self.rencontre_id is None: return None
         if self.membres.count() == 0: return False
@@ -169,7 +169,7 @@ class Score(models.Model):
     ordre = models.IntegerField(default=1, validators=[MaxValueValidator(8), MinValueValidator(1)])
     clubPreteur = models.ForeignKey(Club, on_delete=models.PROTECT, blank=True, null=True)
 
-    @admin.display(boolean=True)
+    @property
     def valide(self):
         if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
         if self.performances.filter(voie__type=TypeVoie.bloc).count() != self.equipe.rencontre.nbBloc: return False

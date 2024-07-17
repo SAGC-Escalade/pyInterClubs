@@ -39,7 +39,7 @@ export default function Equipe({ source }) {
 
     return (
         <Observer endpoint={source} csrf={csrf}>
-            {({ data:equipe, errors, status, partial_update:patch, destroy, action, setErrors }) => {
+            {({ data:equipe, errors, status, partial_update:patch, destroy, action, resetErrors }) => {
                 if (equipe === null) return (
                     <div className="hstack gap-1">
                         <div className="spinner-border text-primary" role="status">
@@ -174,7 +174,7 @@ export default function Equipe({ source }) {
                         </div>
 
                         {equipe && (
-                            <Modal show={showDelete} onHide={() => { setShowDelete(false); setErrors(undefined); }}>
+                            <Modal show={showDelete} onHide={() => { setShowDelete(false); resetErrors(); }}>
                                 <ModalHeader closeButton>
                                     <ModalTitle>Supprimer l'équipe ?</ModalTitle>
                                 </ModalHeader>
@@ -183,7 +183,7 @@ export default function Equipe({ source }) {
                                     {errors?.delete && <span className="invalid-feedback">{errors.delete}</span>}
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button variant="secondary" onClick={() => { setShowDelete(false); setErrors(undefined); }}>
+                                    <Button variant="secondary" onClick={() => { setShowDelete(false); resetErrors(); }}>
                                         <i className="fa-solid fa-arrow-left fa-fw"></i>Annuler
                                     </Button>
                                     <Button variant="danger" onClick={() => destroy(equipe.id).then(() => window.location.href = '/')}>

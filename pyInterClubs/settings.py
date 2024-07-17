@@ -133,3 +133,8 @@ mimetypes.add_type("application/javascript", ".js", True)
 
 # JS-Reverse configuration
 JS_REVERSE_EXCLUDE_NAMESPACES = ['admin']
+
+# REST configuration
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler'
+}
