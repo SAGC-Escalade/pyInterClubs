@@ -65,18 +65,19 @@ class RencontreSerializer(SSESerializer):
     class Meta:
         model = Rencontre
         fields = '__all__'
-        #exclude = ['rencontre']
 
 
 class EquipeSerializer(SSESerializer):
     url_list = 'equipes'
-    membres = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    membres = serializers.SerializerMethodField()
     club = ClubSerializer(read_only=True)
     class Meta:
         model = Equipe
-        #fields = ['ID', 'Club', 'Numero', 'Categorie']
         fields = ['id', 'membres', 'club', 'numero', 'valide', 'points']
-        #exclude = ['rencontre']
+
+    def get_membres(self, obj):
+        membres = obj.membres.all().order_by('ordre')
+        return list(m.id for m in membres)
 
     def save(self, **kwargs):
         ret = super().save(**kwargs)
@@ -94,20 +95,18 @@ class EquipeSerializer(SSESerializer):
         return super().create(context)
 
 
-from datetime import timedelta
-class DurationField(serializers.DurationField):
-    def to_representation(self, value):
-        if value == timedelta(microseconds=-1): return 'Chute'
-        if value == timedelta(microseconds=-2): return 'Abandon'
-        return super().to_representation(value)
-
-    def to_internal_value(self, value):
-        if value == 'Chute': return timedelta(microseconds=-1)
-        if value == 'Abandon': return timedelta(microsecons=-2)
-        return super().to_internal_value(value)
-
-
 class ScoreSerializer(SSESerializer):
+    class Meta:
+        model = Score
+        fields = [
+            'id',
+            'ordre',
+            'equipe',
+            'grimpeur', 'clubPreteur',
+            'points', 'valide',
+            'performances', 'groupe',
+        ]
+
     class EquipeField(serializers.PrimaryKeyRelatedField):
         def get_queryset(self):
             interclub = getattr(self.context.get('request', {}), 'interclub')
@@ -121,24 +120,13 @@ class ScoreSerializer(SSESerializer):
     equipe = EquipeField()
     grimpeur = ForeignKeyField(model_class=Grimpeur, serializer=GrimpeurSerializerIdentity)
     clubPreteur = ForeignKeyField(model_class=Club, serializer=ClubSerializer, required=False)
-    #grimpeur = GrimpeurSerializerIdentity(read_only=True)
     performances = serializers.SerializerMethodField('get_performances')
     groupe = serializers.SerializerMethodField('get_groupe')
-    class Meta:
-        model = Score
-        fields = [
-            'id',
-            'ordre',
-            'equipe',
-            'grimpeur', 'clubPreteur',
-            'points', 'valide',
-            'performances', 'groupe',
-        ]
+
     def get_performances(self, instance):
         if self.__perfs is None:
-            # TODO : grouper les performances par type de voie
-            perfs = instance.performances.order_by('voie__type', 'voie__niveau').values('id', 'voie__type')
-            perfs = {TypeVoie(k or TypeVoie.diff).label:list(v['id'] for v in l) for k,l in groupby(perfs, itemgetter('voie__type'))}
+            perfs = instance.performances.values('id', 'voie__type')
+            perfs = {k:list(v['id'] for v in perfs if TypeVoie(v['voie__type'] or TypeVoie.diff).label == k) for k in ('Bloc', 'Difficulté', 'Vitesse')}
             self.__perfs = perfs
         return self.__perfs
     def get_groupe(self, instance):
@@ -150,7 +138,20 @@ class ScoreSerializer(SSESerializer):
             self.__groupe = groupe
         return self.__groupe
 
+
+from datetime import timedelta
 class PerformanceSerializer(SSESerializer):
+    class DurationField(serializers.DurationField):
+        def to_representation(self, value):
+            if value == timedelta(microseconds=-1): return 'Chute'
+            if value == timedelta(microseconds=-2): return 'Abandon'
+            return super().to_representation(value)
+
+        def to_internal_value(self, value):
+            if value == 'Chute': return timedelta(microseconds=-1)
+            if value == 'Abandon': return timedelta(microsecons=-2)
+            return super().to_internal_value(value)
+
     temps = DurationField(required=False)
     voie = ForeignKeyField(model_class=Voie, serializer=VoieSerializer)
     class Meta:
