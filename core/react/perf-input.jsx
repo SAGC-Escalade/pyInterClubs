@@ -1,5 +1,5 @@
 import Observer from "./observer.jsx";
-import FormInput from "./form-input.jsx";
+import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import VoieInput from "./voie-input.jsx";
 
 
@@ -69,48 +69,48 @@ export default function PerfInput({ id, index }) {
                 var valide = false;
                 if (perf === undefined) {
                     return (
-                        <FormInput label="Chargement">
+                        <HorizontalFormGroup label="Chargement">
                             <span className="placeholder col-4" />
-                        </FormInput>
+                        </HorizontalFormGroup>
                     );
                 } else if (perf.voie === null || perf.voie.type == 2) { // Diff
                     valide = (perf.voie && perf.etat);
                     return (
-                        <FormInput label={"Voie " + index}>
+                        <HorizontalFormGroup label={"Voie " + index}>
                             <ReactBootstrap.InputGroup>
                                 {!rencontre.voiesGroupees && <VoieInput name="voie" value={perf.voie?.id} choices={rencontre.voies} />}
                                 <EtatInput name="etat" value={perf.etat} choices={perf.voie?.zones} />
                                 <Points value={perf.points} valid={valide} />
                             </ReactBootstrap.InputGroup>
-                        </FormInput>
+                        </HorizontalFormGroup>
                     );
                 } else if (perf.voie.type == 1) { // Bloc
                     valide = (perf.voie && perf.etat);
                     return (
-                        <FormInput label={"Bloc " + index}>
+                        <HorizontalFormGroup label={"Bloc " + index}>
                             <ReactBootstrap.InputGroup>
                                 <EtatInput name="etat" value={perf.etat} choices={perf.voie.zones} />
                                 <Points value={perf.points} valid={valide} />
                             </ReactBootstrap.InputGroup>
-                        </FormInput>
+                        </HorizontalFormGroup>
                     );
                 } else if (perf.voie.type == 3) {// Vitesse
                     valide = (perf.voie && perf.temps);
                     return (
-                        <FormInput label={"Temps " + index}>
+                        <HorizontalFormGroup label={"Temps " + index}>
                             <ReactBootstrap.InputGroup>
                                 <Vitesse name="temps" value={perf.temps} />
                                 <Points value={perf.points} valid={valide} />
                             </ReactBootstrap.InputGroup>
-                        </FormInput>
+                        </HorizontalFormGroup>
                     );
                 } else {
                     return (
-                        <FormInput label="Erreur">
+                        <HorizontalFormGroup label="Erreur">
                             <span className="hstack">
                                 <i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Type inconnu : {perf.type.toString()}
                             </span>
-                        </FormInput>
+                        </HorizontalFormGroup>
                     );
                 }
             }}

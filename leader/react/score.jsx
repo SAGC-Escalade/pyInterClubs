@@ -4,8 +4,8 @@ const { AccordionItem, AccordionHeader, AccordionCollapse, Collapse } = ReactBoo
 
 import Observer from "./observer.jsx";
 import Autocomplete from "./autocomplete.jsx";
+import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import PerfInput from "./perf-input.jsx";
-import FormInput from "./form-input.jsx";
 import VoieInput from "./voie-input.jsx";
 
 
@@ -58,20 +58,21 @@ export default function Score({ eventKey, source }) {
                                         <Collapse in={showParameters}>
                                             <ListGroupItem className="border-bottom">
                                                 {rencontre.voiesGroupees && <FormInput label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies} /></FormInput>}
-                                                <FormInput label="Club prêteur">
+                                                <HorizontalFormGroup label="Club prêteur">
                                                     <Autocomplete endpoint="clubs" defaultValue={score.clubPreteur} label="nom" />
-                                                </FormInput>
-                                                <FormInput label="Actions">
+                                                </HorizontalFormGroup>
+                                                <HorizontalFormGroup label="Actions">
                                                     <ButtonToolbar>
-                                                        <ButtonGroup className="me-3">
-                                                            <Button><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
-                                                            <Button><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
+                                                        <ButtonGroup className={"me-3" + (errors?.ordre ? " is-invalid" : "")}>
+                                                            <Button onClick={() => action("ordre/up")}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
+                                                            <Button onClick={() => action("ordre/down")}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
                                                         </ButtonGroup>
                                                         <ButtonGroup>
                                                             <Button variant="danger" onClick={() => destroy(score.id)}><i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer</Button>
                                                         </ButtonGroup>
+                                                        {errors?.ordre && <div className="invalid-feedback">{errors.ordre}</div>}
                                                     </ButtonToolbar>
-                                                </FormInput>
+                                                </HorizontalFormGroup>
                                             </ListGroupItem>
                                         </Collapse>
                                         {Object.keys(score.performances).map((t, index) => (

@@ -5,32 +5,31 @@ const { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } = ReactBootstra
 
 import Observer from "./observer.jsx";
 import Autocomplete from "./autocomplete.jsx";
-import FormInput from "./form-input.jsx";
+import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import Score from "./score.jsx";
 
-export function AddScore({ equipe, action }) {
+export function AddScore({ equipe, action, errors }) {
     const [grimpeur, setGrimpeur] = useState(null);
 
     function handleAdd() {
-        if (grimpeur)
-            return action('add', {
-                grimpeur: grimpeur,
-            });
+        return action('add', { grimpeur: grimpeur })
+            .then(setGrimpeur(null));
     }
 
     return (
-        <FormInput label="Grimpeur" className="">
-            <div className="d-flex">
-                <Autocomplete className="w-100" endpoint="grimpeurs" onChange={(g) => setGrimpeur(g)}>
+        <HorizontalFormGroup label="Grimpeur" className="">
+            <div className={"hstack" + (errors?.grimpeur ? " is-invalid" : "")}>
+                <Autocomplete className="w-100" endpoint="grimpeurs" value={grimpeur} onChange={(g) => setGrimpeur(g)}>
                     {({ nom, prenom }) => {
                         return `${nom} ${prenom}`;
                     }}
                 </Autocomplete>
-                <Button className="text-nowrap ms-3" onClick={handleAdd}>
+                <Button className="text-nowrap ms-3" onClick={handleAdd} disabled={!grimpeur}>
                     <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter le grimpeur
                 </Button>
             </div>
-        </FormInput>
+            {errors?.grimpeur && <div className="invalid-feedback">{errors.grimpeur}</div>}
+        </HorizontalFormGroup>
     );
 }
 
@@ -40,7 +39,7 @@ export default function Equipe({ source }) {
 
     return (
         <Observer endpoint={source} csrf={csrf}>
-            {({ data:equipe, errors, status, partial_update:patch, destroy, action }) => {
+            {({ data:equipe, errors, status, partial_update:patch, destroy, action, setErrors }) => {
                 if (equipe === null) return (
                     <div className="hstack gap-1">
                         <div className="spinner-border text-primary" role="status">
@@ -77,12 +76,12 @@ export default function Equipe({ source }) {
                                                     />
                                                 </div>
                                             </div>
-                                            {
-                                                errors && <div className="col-12 invalid-feedback">
+                                            {errors && (
+                                                <div className="col-12 invalid-feedback">
                                                     {errors.non_field_errors && <span>{errors.non_field_errors}</span>}
                                                     {errors.numero && <span className="float-end">{errors.numero}</span>}
                                                 </div>
-                                            }
+                                            )}
                                         </>
                                     )}
                                 </div>
@@ -158,7 +157,7 @@ export default function Equipe({ source }) {
                                 <Collapse in={showAdd || (equipe?.membres.length == 0)}>
                                     <ul className="list-group list-group-flush">
                                         <li className="list-group-item">
-                                            <AddScore equipe={equipe} action={action} />
+                                            <AddScore equipe={equipe} action={action} errors={errors} />
                                         </li>
                                     </ul>
                                 </Collapse>
@@ -175,13 +174,16 @@ export default function Equipe({ source }) {
                         </div>
 
                         {equipe && (
-                            <Modal show={showDelete} onHide={() => setShowDelete(false)}>
+                            <Modal show={showDelete} onHide={() => { setShowDelete(false); setErrors(undefined); }}>
                                 <ModalHeader closeButton>
                                     <ModalTitle>Supprimer l'équipe ?</ModalTitle>
                                 </ModalHeader>
-                                <ModalBody>Voulez-vous vraiment supprimer l'équipe {equipe.numero} ?</ModalBody>
+                                <ModalBody>
+                                    <span className={errors?.delete ? "is-invalid" : ""}>Voulez-vous vraiment supprimer l'équipe {equipe.numero} ?</span>
+                                    {errors?.delete && <span className="invalid-feedback">{errors.delete}</span>}
+                                </ModalBody>
                                 <ModalFooter>
-                                    <Button variant="secondary" onClick={() => setShowDelete(false)}>
+                                    <Button variant="secondary" onClick={() => { setShowDelete(false); setErrors(undefined); }}>
                                         <i className="fa-solid fa-arrow-left fa-fw"></i>Annuler
                                     </Button>
                                     <Button variant="danger" onClick={() => destroy(equipe.id).then(() => window.location.href = '/')}>
