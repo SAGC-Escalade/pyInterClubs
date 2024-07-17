@@ -10,7 +10,7 @@ const { InputGroup } = ReactBootstrap;
 export default function Autocomplete({
     endpoint,
     name,
-    defaultValue,
+    value,
     key = "id",
     label = "label",
     minLength = 3,
@@ -44,9 +44,9 @@ export default function Autocomplete({
     }
 
     const inputRef = useRef(null);
-    const [query, setQuery] = useState(defaultValue ?? "");
+    const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(value ?? null);
     const { data, error, isLoading } = useQuery(
         ['search', query],
         () => fetchItems(query),
@@ -60,7 +60,18 @@ export default function Autocomplete({
         }
     }, [data]);
 
-    const handleSelect = (item, input="") => {
+    useEffect(() => {
+        if (value && data) {
+            const selected = data.find(item => item[key] === value);
+            if (selected) {
+                handleSelect(selected);
+            }
+        } else if (!value) {
+            handleSelect(null, query);
+        }
+    }, [value, data]);
+
+    const handleSelect = (item, input = "") => {
         setSelectedItem(item);
         setQuery(item ? item[label] : input);
         if (onChange) { onChange(item ? item[key] : null); }
