@@ -29,7 +29,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
         const response = await fetch(url, options);
         if (!response.ok) {
             if (response.status == 400) {
-                throw new Error(JSON.stringify(await response.json()));
+                throw new Error(await response.text());
             } else {
                 throw new Error(JSON.stringify({
                     non_field_errors: "Une erreur est survenue, réessayez ou contactez un administrateur.",
@@ -38,18 +38,34 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 }));
             }
         }
-        let responseData = null;
-        if (config.method !== 'DELETE') responseData = await response.json();
+        let responseData = config.method === 'DELETE' ? null : undefined;
+        if (response.status !== 204) responseData = await response.json();
         return responseData;
     }
 
+    function handleErrors(error) {
+        try {
+            error = JSON.parse(error.message);
+        } catch (error) {
+            error = { message: error.message };
+        }
+        if (error.message) {
+            if (error.debug)
+                Toast(0, "text-bg-danger", error.debug, error.message);
+            else
+                Toast(1, "text-bg-danger", error.message);
+        }
+        setErrors(error);
+    }
+
     // Initialisation
-    const { data, error: queryError, status, isFetching } = useQuery(endpoint, () => send({ method: 'GET', url: apiEndpoint }), {
-        onError: (error) => {
-            setErrors(JSON.parse(error.message));
-        },
-        refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
-    });
+    const { data, error: queryError, status, isFetching } = useQuery(
+        endpoint,
+        () => send({ method: 'GET', url: apiEndpoint }),
+        {
+            onError: (error) => { handleErrors(error) },
+            refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
+        });
 
     // Gestion des mise à jour (utilisateur => modèle)
     const mutateData = useMutation(
@@ -88,19 +104,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 return { previousData };
             },
             onError: (error, variables, context) => {
-                // Display error
-                try {
-                    error = JSON.parse(error.message);
-                } catch (error) {
-                    error = { message: error.message };
-                }
-                if (error.message) {
-                    if (error.debug)
-                        Toast(0, "text-bg-danger", error.debug, error.message);
-                    else
-                        Toast(1, "text-bg-danger", error.message);
-                }
-                setErrors(error);
+                handleErrors(error);
                 // Rollback
                 queryClient.setQueryData(endpoint, context.previousData);
             },
@@ -122,7 +126,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                             return null;
                         }
                     }
-                    return responseData;
+                    return responseData !== undefined ? responseData : oldData;
                 });
 
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
@@ -187,5 +191,6 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
         partial_update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PATCH', id, item: updatedItem }),
         update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PUT', id, item: updatedItem }),
         destroy: (id) => mutateData.mutateAsync({ method: 'DELETE', id }),
+        resetErrors: () => setErrors(undefined),
     });
 }
