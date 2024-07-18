@@ -60,6 +60,9 @@
     <Compile Include="api\exceptions.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="api\models.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="api\serializers.py">
       <SubType>Code</SubType>
     </Compile>

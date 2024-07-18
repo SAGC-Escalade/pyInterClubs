@@ -9,6 +9,19 @@ from django.urls import reverse
 from datetime import timedelta
 
 from admin.models import Juge
+from api.models import CleanModel
+
+__all__ = [
+    "Categorie", "Genre", "TypeVoie",
+    "Voie",
+    "Club",
+    "GrimpeurQuerySet", "GrimpeurManager", "Grimpeur",
+    "Rencontre",
+    "Equipe",
+    "ScoreQuerySet", "ScoreManager", "Score",
+    "Performance",
+    "RencontreVoie",
+]
 
 
 class Categorie(models.IntegerChoices):
@@ -29,7 +42,7 @@ class TypeVoie(models.IntegerChoices):
     vitesse   = 3, 'Vitesse'
 
 
-class Voie(models.Model):
+class Voie(CleanModel):
     class Meta:
         indexes = [
             models.Index(fields=['type',]),
@@ -48,7 +61,7 @@ class Voie(models.Model):
     def points(self, index):
         return list(self.zones.values())[index]
 
-class Club(models.Model):
+class Club(CleanModel):
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     ville = models.CharField(max_length=50)
@@ -72,7 +85,7 @@ class GrimpeurManager(models.Manager):
     def femmes(self):
         return self.get_queryset().femmes()
 
-class Grimpeur(models.Model):
+class Grimpeur(CleanModel):
     class Meta:
         indexes = [
             models.Index(fields=['anneeNaissance',]),
@@ -92,7 +105,7 @@ class Grimpeur(models.Model):
     objects = GrimpeurManager()
 
 
-class Rencontre(models.Model):
+class Rencontre(CleanModel):
     class Meta:
         indexes = [
             models.Index(fields=['categorie',]),
@@ -120,7 +133,7 @@ class Rencontre(models.Model):
         return Score.objects.filter(equipe__rencontre__pk=self.pk)
 
 
-class Equipe(models.Model):
+class Equipe(CleanModel):
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.PROTECT, related_name='equipes')
     club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='equipes')
@@ -161,7 +174,7 @@ class ScoreManager(models.Manager):
     def in_order(self):
         return self.get_queryset().in_order()
 
-class Score(models.Model):
+class Score(CleanModel):
     id = models.BigAutoField(primary_key=True)
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='membres')
     grimpeur = models.ForeignKey(Grimpeur, on_delete=models.PROTECT, related_name='participations')
@@ -224,7 +237,7 @@ class Score(models.Model):
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
 # - La diff n'a pas besoin du temps (quoique)
 # - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
-class Performance(models.Model):
+class Performance(CleanModel):
     id = models.BigAutoField(primary_key=True)
     voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
@@ -242,7 +255,7 @@ class Performance(models.Model):
         #send_event('events', reverse("perf-detail", args=[self.id]), "updated")
         return super().save(*args, **kwargs)
 
-class RencontreVoie(models.Model):
+class RencontreVoie(CleanModel):
     class Meta:
         verbose_name = "rencontre-voie"
         verbose_name_plural = "rencontres-voies"

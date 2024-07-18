@@ -7,6 +7,11 @@ from core.models import *
 from .models import *
 
 
+def get_queryset(request, attr, default):
+    interclub = getattr(request, 'interclub', None)
+    return getattr(interclub, attr, default)
+
+
 class pyInterClubsMiddleware(MiddlewareMixin):
     def process_request(self, request):
         request.interclub = pyInterclubDetails(request)
@@ -53,8 +58,6 @@ class pyInterclubDetails:
             else:                                             amin, amax = 13, 19
             amax, amin= map(lambda x: self.rencontre.saison + 1 - x, (amin, amax))
             queryset = queryset.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
-        alreadyRegistered = self.rencontre.scores.values('grimpeur_id')
-        queryset = queryset.exclude(id__in=alreadyRegistered)
         return queryset
 
     # Filtre sur les équipes appartenant au club en cours
@@ -67,4 +70,14 @@ class pyInterclubDetails:
         if hasattr(self.__request.user, 'profil') and hasattr(self.__request.user.profil, 'club'):
             #qs = qs.filter(club__nom=self.__request.user.profil.club.nom)
             qs = qs.filter(club_id=self.__request.user.profil.club_id)
+        return qs
+
+    # Filtre sur les scores appartenant au club en cours
+    @property
+    def scores(self):
+        if self.rencontre is None: return []
+        qs = self.rencontre.scores
+        # On filtre uniquement les scores du club pour les coachs
+        if hasattr(self.__request.user, 'profil') and hasattr(self.__request.user.profil, 'club'):
+            qs = qs.filter(equipe__club_id=self.__request.user.profil.club_id)
         return qs
