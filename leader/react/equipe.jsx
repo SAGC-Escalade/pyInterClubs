@@ -8,38 +8,46 @@ import Autocomplete from "./autocomplete.jsx";
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import Score from "./score.jsx";
 
-export function AddScore({ equipe, action, errors }) {
+export function AddScore({ equipe }) {
     const [grimpeur, setGrimpeur] = useState(null);
 
-    function handleAdd() {
-        return action('add', { grimpeur: grimpeur })
-            .then(setGrimpeur(null));
-    }
-
     return (
-        <HorizontalFormGroup label="Grimpeur" className="">
-            <div className={"hstack" + (errors?.grimpeur ? " is-invalid" : "")}>
-                <Autocomplete className="w-100" endpoint="grimpeurs" value={grimpeur} onChange={(g) => setGrimpeur(g)}>
-                    {({ nom, prenom }) => {
-                        return `${nom} ${prenom}`;
-                    }}
-                </Autocomplete>
-                <Button className="text-nowrap ms-3" onClick={handleAdd} disabled={!grimpeur}>
-                    <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter le grimpeur
-                </Button>
-            </div>
-            {errors?.grimpeur && <div className="invalid-feedback">{errors.grimpeur}</div>}
-        </HorizontalFormGroup>
+        <Observer endpoint="scores" csrf={csrf}>
+            {({ data: score, status, action, errors }) => {
+                return (
+                    <HorizontalFormGroup label="Grimpeur" className="">
+                        <div className={"hstack" + (status.isError ? " is-invalid" : "")}>
+                            <Autocomplete className="w-100" endpoint="grimpeurs" value={grimpeur} onChange={(g) => setGrimpeur(g)}>
+                                {({ nom, prenom }) => {
+                                    return `${nom} ${prenom}`;
+                                }}
+                            </Autocomplete>
+                            <Button className="text-nowrap ms-3" disabled={!grimpeur}
+                                onClick={() => action('create', { equipe: equipe.id, grimpeur: grimpeur }).then(setGrimpeur(null))}
+                            >
+                                <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter le grimpeur
+                            </Button>
+                        </div>
+                        {status.isError && (
+                            <div className="invalid-feedback">
+                                {errors.grimpeur && <span>{errors.grimpeur}</span>}
+                                {errors.non_field_errors && <span>{errors.non_field_errors}</span>}
+                            </div>
+                        )}
+                    </HorizontalFormGroup>
+                );
+            }}
+        </Observer>
     );
 }
 
-export default function Equipe({ source }) {
+export default function Equipe({ id }) {
     const [showDelete, setShowDelete] = useState(false);
     const [showAdd, setShowAdd] = useState(false);
 
     return (
-        <Observer endpoint={source} csrf={csrf}>
-            {({ data:equipe, errors, status, partial_update:patch, destroy, action, resetErrors }) => {
+        <Observer endpoint='equipes' id={id} csrf={csrf}>
+            {({ data:equipe, errors, status, action, resetErrors }) => {
                 if (equipe === null) return (
                     <div className="hstack gap-1">
                         <div className="spinner-border text-primary" role="status">
@@ -71,7 +79,7 @@ export default function Equipe({ source }) {
                                                 <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">Numéro</label>
                                                 <div className="col-12 col-sm-6">
                                                     <FormControl name="numero" type="number" value={equipe.numero}
-                                                        onChange={(e) => patch(equipe.id, { numero: e.target.value })}
+                                                        onChange={(e) => action('patch', { numero: e.target.value })}
                                                         isInvalid={errors && errors.numero}
                                                     />
                                                 </div>
@@ -149,7 +157,7 @@ export default function Equipe({ source }) {
                                     </>
                                 )}
                                 {equipe?.membres.map((id, index) => (
-                                    <Score key={id} eventKey={id} source={"scores/" + id} />
+                                    <Score key={id} id={id} />
                                 ))}
                             </Accordion>
 
@@ -157,7 +165,7 @@ export default function Equipe({ source }) {
                                 <Collapse in={showAdd || (equipe?.membres.length == 0)}>
                                     <ul className="list-group list-group-flush">
                                         <li className="list-group-item">
-                                            <AddScore equipe={equipe} action={action} errors={errors} />
+                                            <AddScore equipe={equipe} />
                                         </li>
                                     </ul>
                                 </Collapse>
@@ -186,7 +194,7 @@ export default function Equipe({ source }) {
                                     <Button variant="secondary" onClick={() => { setShowDelete(false); resetErrors(); }}>
                                         <i className="fa-solid fa-arrow-left fa-fw"></i>Annuler
                                     </Button>
-                                    <Button variant="danger" onClick={() => destroy(equipe.id).then(() => window.location.href = '/')}>
+                                    <Button variant="danger" onClick={() => action('delete').then(() => window.location.href = '/')}>
                                         <i className="fa-solid fa-trash fa-fw"></i>Supprimer
                                     </Button>
                                 </ModalFooter>
@@ -199,9 +207,9 @@ export default function Equipe({ source }) {
     );
 }
 
-export function ListEquipe({ source, flush = true }) {
+export function ListEquipe({ flush = true }) {
     return (
-        <Observer endpoint={source} csrf={csrf}>
+        <Observer endpoint='equipes' id={null} csrf={csrf}>
             {({ data: equipes = [], status }) => {
                 if (status.isLoading)
                     return (

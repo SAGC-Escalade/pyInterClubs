@@ -215,23 +215,15 @@ class Score(CleanModel):
         next.save()
         self.save()
 
-    def _save(self, *args, **kwargs):
-        if self.Equipe != None:
-            categorie = self.Equipe.Categorie
-
-            # On sélectionne les voies de Bloc
-            self.IDBloc1 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=1,Categorie=categorie)
-            self.IDBloc2 = Niveau.objects.get(Actif=True,NomVoie="Bloc",NiveauVoie=2,Categorie=categorie)
-
-            # On sélectionne les voies 2 et 3 pour les enfants
-            if categorie == Categorie.Enfants and self.IDVoie1 != None:
-                self.IDVoie2 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+1)
-                self.IDVoie3 = self.NiveauxPossibles.get(PtsVoieComplete=self.IDVoie1.PtsVoieComplete+2)
-
-        self.Points = self.PtsBloc1 + self.PtsBloc2 + self.PtsVoie1 + self.PtsVoie2 + self.PtsVoie3 + self.PtsVoie4 + self.PtsVitesse
-
-        #send_event('events', reverse("score-detail", args=[self.ID]), "updated")
+    def save(self, *args, **kwargs):
+        creating = self._state.adding
+        if creating:
+            if self.grimpeur.club_id != self.equipe_id:
+                self.clubPreteur = self.grimpeur.club
+        else:
+            self.points = sum(self.performances.values_list('points', flat=True))
         return super().save(*args, **kwargs)
+
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
@@ -239,11 +231,11 @@ class Score(CleanModel):
 # - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
 class Performance(CleanModel):
     id = models.BigAutoField(primary_key=True)
-    voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True)
+    voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True, blank=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
-    temps = models.DurationField(null=True)
-    points = models.IntegerField(default=0, null=True)
-    etat = models.IntegerField(null=True)
+    temps = models.DurationField(null=True, blank=True)
+    points = models.IntegerField(default=0, null=True, blank=True)
+    etat = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.voie_id != None:
@@ -265,7 +257,7 @@ class RencontreVoie(CleanModel):
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
-    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True)#, related_name="voies")
+    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True, blank=True)#, related_name="voies")
 
     def __str__(self):
         return f"{self.rencontre} - {self.voie}"

@@ -78,9 +78,9 @@ class SSESerializer(serializers.ModelSerializer):
     def url_list(self):
         return f"{self.context['view'].basename}s"
 
-    def notify(self, all=False):
-        if all:
-            send_event('events', self.url_list)
+    def notify(self, all_objects=False):
+        if all_objects:
+            send_event('events', self.url_list, None)
         else:
             send_event('events', self.url_detail, self.data)
 
@@ -219,6 +219,23 @@ class ScoreSerializer(SSESerializer):
         if instance.clubPreteur:
             ret['clubPreteur'] = ClubSerializer(instance.clubPreteur, context=self.context).data
         return ret
+
+    def create(self, validated_data):
+        if not 'ordre' in validated_data:
+            # On cherche le premier ordre libre
+            ordre = validated_data['equipe'].membres.all().values('ordre')
+            ordre = min([i for i in range(1,9) if not i in ordre])
+            validated_data['ordre'] = ordre
+        instance = super().create(validated_data)
+
+        rencontre = instance.equipe.rencontre
+        voies = rencontre.voies
+        blocs = [Performance(voie=v, score=instance) for v in voies.filter(type=TypeVoie.bloc)][:rencontre.nbBloc]
+        diffs = [Performance(score=instance) for i in range(rencontre.nbDiff)]
+        vitesse = [Performance(voie=v, score=instance) for v in voies.filter(type=TypeVoie.vitesse)][:rencontre.nbVitesse]
+        perfs = [p.save() for p in blocs + diffs + vitesse]
+
+        return instance
 
 
 from datetime import timedelta

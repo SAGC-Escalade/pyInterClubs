@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.core.exceptions import ValidationError
 import sqlite3
 from datetime import timedelta, date
 
@@ -67,12 +68,14 @@ def equipeTranslation(row):
     return [(id, fields)]
 def scoreTranslation(row):
     id, idequipe, idgrimpeur, idclubpreteur, points, ordre = row
+    equipe = Equipe.objects.get(pk=relations[Equipe][idequipe])
+    offset = 1 if equipe.rencontre.date.year >= 2020 else 0
     fields = {
-        'equipe': Equipe.objects.get(pk=relations[Equipe][idequipe]),
+        'equipe': equipe,
         'grimpeur': Grimpeur.objects.get(pk=relations[Grimpeur][idgrimpeur]),
         'clubPreteur': Club.objects.get(pk=relations[Club][idclubpreteur]) if idclubpreteur != None else None,
         'points': points,
-        'ordre': ordre,
+        'ordre': ordre + offset,
     }
     return [(id, fields)]
 def performanceTranslation(row):
@@ -168,7 +171,10 @@ class Command(BaseCommand):
                         k += 1
                         continue
                     o = kls(**fields)
-                    o.save()
+                    try: o.save()
+                    except ValidationError:
+                        print(kls, fields)
+                        raise
                     if id in relations[kls]:
                         if type(relations[kls][id]) == list:
                             relations[kls][id].append(o.id)

@@ -23,7 +23,7 @@
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-equipe')).render(
             <QueryClientProvider client={queryClient}>
-                <Equipe source="equipes/{{ object.id }}" />
+                <Equipe id="{{ object.id }}" />
             </QueryClientProvider>
         )
         {% endtranspiling %}

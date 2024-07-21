@@ -9,12 +9,12 @@ import PerfInput from "./perf-input.jsx";
 import VoieInput from "./voie-input.jsx";
 
 
-export default function Score({ eventKey, source }) {
+export default function Score({ id }) {
     const [showParameters, setShowParameters] = useState(false);
 
     return (
-        <Observer endpoint={source} csrf={csrf}>
-            {({ data: score, errors, status, partial_update: patch, destroy, action }) => {
+        <Observer endpoint='scores' id={id} csrf={csrf}>
+            {({ data: score, errors, status, action }) => {
                 if (score === null) return;
 
                 let icon;
@@ -23,7 +23,7 @@ export default function Score({ eventKey, source }) {
                 if (score?.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; }
 
                 return (
-                    <AccordionItem className={status.isDeleting ? "deleting" : ""} eventKey={eventKey}>
+                    <AccordionItem className={status.isDeleting ? "deleting" : ""} eventKey={id}>
                         <AccordionHeader>
                             <span className="w-100 d-flex">
                                 {score === undefined ? (
@@ -40,7 +40,7 @@ export default function Score({ eventKey, source }) {
                                 )}
                             </span>
                         </AccordionHeader>
-                        <AccordionCollapse eventKey={eventKey}>
+                        <AccordionCollapse eventKey={id}>
                             <ListGroup variant="flush">
                                 {score === undefined ? (
                                     <>
@@ -57,7 +57,7 @@ export default function Score({ eventKey, source }) {
                                         </ListGroupItem>
                                         <Collapse in={showParameters}>
                                             <ListGroupItem className="border-bottom">
-                                                {rencontre.voiesGroupees && <FormInput label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies} /></FormInput>}
+                                                {rencontre.voiesGroupees && <HorizontalFormGroup label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies} /></HorizontalFormGroup>}
                                                 <HorizontalFormGroup label="Club prêteur">
                                                     <Autocomplete endpoint="clubs" defaultValue={score.clubPreteur} label="nom" />
                                                 </HorizontalFormGroup>
@@ -68,7 +68,9 @@ export default function Score({ eventKey, source }) {
                                                             <Button onClick={() => action("ordre/down")}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
                                                         </ButtonGroup>
                                                         <ButtonGroup>
-                                                            <Button variant="danger" onClick={() => destroy(score.id)}><i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer</Button>
+                                                            <Button variant="danger" onClick={() => action('delete')}>
+                                                                <i className="fa-solid fa-trash fa-fw me-2"></i>Supprimer
+                                                            </Button>
                                                         </ButtonGroup>
                                                         {errors?.ordre && <div className="invalid-feedback">{errors.ordre}</div>}
                                                     </ButtonToolbar>

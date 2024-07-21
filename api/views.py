@@ -11,7 +11,11 @@ from django.db.models import Q
 from core.models import *
 from .serializers import *
 
-__all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet', 'PerformanceViewSet')
+__all__ = (
+    'VoieViewSet', 'ClubViewSet', 'GrimpeurViewSet',
+    'RencontreViewSet', 'EquipeViewSet',
+    'ScoreViewSet', 'PerformanceViewSet'
+)
 
 
 def Response400(data):
@@ -24,23 +28,23 @@ def django2drfValidation(exc):
     return {k if k != DJANGO_NON_FIELD_ERRORS else api_settings.NON_FIELD_ERRORS_KEY:v for k,v in detail.items()}
 
 class DjangoModelViewSet(viewsets.ModelViewSet):
-    def perform_create(self, validated_data):
+    def perform_create(self, serializer):
         try:
-            return super().perform_create(validated_data)
+            return serializer.save()
         except DjangoValidationError as exc:
             raise ValidationError(detail=django2drfValidation(exc))
         except: raise
 
-    def perform_update(self, instance, validated_data):
+    def perform_update(self, serializer):
         try:
-            return super().perform_update(instance, validated_data)
+            return serializer.save()
         except DjangoValidationError as exc:
             raise ValidationError(detail=django2drfValidation(exc))
         except: raise
 
     def perform_destroy(self, instance):
         try:
-            return super().perform_destroy(instance)
+            return instance.delete()
         except DjangoValidationError as exc:
             raise ValidationError(detail=django2drfValidation(exc))
         except: raise
@@ -60,14 +64,17 @@ class VoieViewSet(DjangoModelViewSet):
     queryset = Voie.objects.all()
 
 class GrimpeurViewSet(DjangoModelViewSet):
-    serializer_class = GrimpeurSerializer
+    serializer_class = GrimpeurSerializerIdentity
 
     def get_queryset(self):
-        if hasattr(self.request, 'interclub'):
-            queryset = self.request.interclub.grimpeurs
-        else:
-            queryset = Grimpeur.objects.all()
+        interclub = getattr(self.request, 'interclub', None)
+        if interclub is None: return Grimpeur.objects.none()
 
+        queryset = self.request.interclub.grimpeurs
+        # On ne garde que les grimpeurs qui ne sont pas inscrits
+        alreadyRegistered = interclub.rencontre.scores.values('grimpeur_id')
+        queryset = queryset.exclude(id__in=alreadyRegistered)
+        # On ne garde que ceux qui correspondent au filtre de l'utilisateur
         filter = self.request.query_params.get('q')
         if filter:
             queryset = queryset.filter(
@@ -127,19 +134,20 @@ class ScoreViewSet(DjangoModelViewSet):
         return Response204()
 
     def perform_create(self, serializer):
-        response = super().perform_create(serializer)
-        EquipeSerializer(instance.equipe).notify(all=True)
-        return response
+        instance = super().perform_create(serializer)
+        EquipeSerializer(instance.equipe).notify()
+        EquipeSerializer(instance.equipe).notify(True)
     def perform_update(self, serializer):
-        response = super().perform_create(serializer)
+        instance = super().perform_update(serializer)
         if any(f in serializer.initial_data for f in ('points', )):
-            EquipeSerializer(instance.equipe).notify(all=True)
+            EquipeSerializer(instance.equipe).notify(True)
         if any(f in serializer.initial_data for f in ('ordre', 'grimpeur', 'clubPreteur', 'points')):
             EquipeSerializer(instance.equipe).notify()
-        return response
     def perform_destroy(self, instance):
+        equipe = instance.equipe
         super().perform_destroy(instance)
-        EquipeSerializer(instance.equipe).notify()
+        EquipeSerializer(equipe).notify()
+        EquipeSerializer(equipe).notify(True)
 
 
 class PerformanceViewSet(DjangoModelViewSet):

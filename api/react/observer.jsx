@@ -1,48 +1,48 @@
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useCallback } = React;
 const { useQuery, useMutation, useQueryClient, QueryClient } = window.ReactQuery;
 
 const eventSource = new EventSource('/events/', { withCredentials: true });
 eventSource.onerror = () => { console.log("Erreur de connexion avec le canal temps réel..."); };
 eventSource.onmessage = (event) => { console.log("message non traité :", event); };
 
-export default function Observer({ endpoint, children, csrf=undefined }) {
+export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined }) {
     const queryClient = useQueryClient();
-    const isSingleInstance = endpoint.includes('/');
-    const apiEndpoint = `/api/${endpoint}/`;
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
+    const isSingle = !!id;
+    endpoint = endpoint + (isSingle && id ? `/${id}` : '');
+    const apiEndpoint = `/api/${endpoint}/`;
 
-    async function send(config) {
-        const url = config.url + ((!isSingleInstance && config.id) ? `${config.id}/` : '') + (config.action ? `${config.action}/` : '');
-        const options = {
-            method: config.method,
+    // Gestion des requêtes
+    async function send({ method, url, data = null }) {
+        const response = await fetch(url, {
+            method,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrf,
             },
-            body: JSON.stringify(config.item),
-        };
-        if (config.method === 'GET') {
-            delete options.body;
-        }
-        const response = await fetch(url, options);
+            body: data ? JSON.stringify(data) : null,
+        });
         if (!response.ok) {
-            if (response.status == 400) {
-                throw new Error(await response.text());
-            } else {
-                throw new Error(JSON.stringify({
+            let error = await response.text();
+            try {
+                error = JSON.parse(error);
+            } catch {
+                error = {
                     non_field_errors: "Une erreur est survenue, réessayez ou contactez un administrateur.",
                     message: "Erreur " + response.status + ": " + response.statusText,
-                    debug: await response.text(),
-                }));
+                    debug: error,
+                };
             }
+            throw new Error(JSON.stringify(error));
         }
-        let responseData = config.method === 'DELETE' ? null : undefined;
+        let responseData = method === 'DELETE' ? null : undefined;
         if (response.status !== 204) responseData = await response.json();
         return responseData;
     }
 
+    // Gestion des erreurs
     function handleErrors(error) {
         try {
             error = JSON.parse(error.message);
@@ -61,21 +61,29 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     // Initialisation
     const { data, error: queryError, status, isFetching } = useQuery(
         endpoint,
-        () => send({ method: 'GET', url: apiEndpoint }),
-        {
-            onError: (error) => { handleErrors(error) },
-            refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
-        });
-
-    // Gestion des mise à jour (utilisateur => modèle)
-    const mutateData = useMutation(
-        async ({ method, item, id, action }) => {
-            setErrors(undefined);
-            isDeleting.current = (method === 'DELETE');
-            return send({ method, id, action, item, url: apiEndpoint });
+        () => {
+            if (id === undefined) return Promise.resolve(initialData);
+            return send({ method: 'GET', url: apiEndpoint })
         },
         {
-            onMutate: async ({ method, item, id }) => {
+            initialData,
+            enabled: id !== undefined,
+            onError: (error) => handleErrors(error),
+            refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
+        }
+    );
+
+    // Gestion des mises à jour (utilisateur => modèle)
+    const mutation = useMutation(
+        async ({ method, data, action }) => {
+            setErrors(undefined);
+            isDeleting.current = (method === 'DELETE');
+
+            const url = apiEndpoint + (action ?? '');
+            return send({ method, url, data });
+        },
+        {
+            onMutate: async ({ method, data }) => {
                 await queryClient.cancelQueries(endpoint);
                 const previousData = queryClient.getQueryData(endpoint);
 
@@ -84,17 +92,17 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                     queryClient.setQueryData(endpoint, (oldData) => {
                         if (Array.isArray(oldData)) {
                             if (method === 'POST') {
-                                return [...oldData, { ...item, id: 0 }];
+                                return [...oldData, { ...data, id: 0 }];
                             } else if (method === 'PUT' || method === 'PATCH') {
-                                return oldData.map((oldItem) => (oldItem.id === id ? { ...oldItem, ...item } : oldItem));
-                            //} else if (method === 'DELETE') {
-                            //    return oldData.filter((oldItem) => oldItem.id !== id);
+                                return oldData.map((oldItem) => (oldItem.id === data.id ? { ...oldItem, ...data } : oldItem));
+                                //} else if (method === 'DELETE') {
+                                //    return oldData.filter((oldItem) => oldItem.id !== id);
                             }
                         } else {
                             if (method === 'PUT' || method === 'PATCH') {
-                                return { ...oldData, ...item };
-                            //} else if (method === 'DELETE') {
-                            //    return null;
+                                return { ...oldData, ...data };
+                                //} else if (method === 'DELETE') {
+                                //    return null;
                             }
                         }
                         return oldData;
@@ -108,7 +116,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 // Rollback
                 queryClient.setQueryData(endpoint, context.previousData);
             },
-            onSuccess: (responseData, { method, item, id }, context) => {
+            onSuccess: (responseData, { method, data }, context) => {
                 // Real update
                 queryClient.setQueryData(endpoint, (oldData) => {
                     if (Array.isArray(oldData)) {
@@ -117,7 +125,7 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                         } else if (method === 'PUT' || method === 'PATCH') {
                             return oldData.map((oldItem) => (oldItem.id === responseData.id ? responseData : oldItem));
                         } else if (method === 'DELETE') {
-                            return oldData.filter((oldItem) => oldItem.id !== id);
+                            return oldData.filter((oldItem) => oldItem.id !== data.id);
                         }
                     } else {
                         if (method === 'PUT' || method === 'PATCH') {
@@ -132,12 +140,21 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
             onSettled: () => {
-                isDeleting.current = false
+                isDeleting.current = false;
             },
         }
     );
 
-    // Gestion des mise à jour (modèle => utilisateur)
+    const mutateAsync = useCallback((action = 'read', data = null) => {
+        const methods = { create: "POST", read: "GET", update: "PUT", delete: "DELETE", patch: "PATCH" };
+        return mutation.mutateAsync({
+            method: methods[action] ?? (data ? "POST" : "GET"),
+            data,
+            action: methods[action] === undefined ? action : undefined,
+        });
+    }, [mutation]);
+
+    // Gestion des mises à jour (modèle => utilisateur)
     useEffect(() => {
         const handleSSEMessage = (event) => {
             if (event.type === endpoint) {
@@ -145,14 +162,11 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
                 if (newData) {
                     queryClient.setQueryData(endpoint, (oldData) => {
                         if (Array.isArray(oldData)) {
-                            const newItems = [...oldData];
-                            const index = newItems.findIndex((item) => item.id === newData.id);
-                            if (index !== -1) {
-                                newItems[index] = newData;
+                            if (oldData.findIndex((item) => item.id === newData.id) !== -1) {
+                                return oldData.map((item) => (item.id === newData.id ? newData : item));
                             } else {
-                                newItems.push(newData);
+                                return [...oldData, newData];
                             }
-                            return newItems;
                         } else if (oldData && oldData.id === newData.id) {
                             return { ...oldData, ...newData };
                         }
@@ -174,23 +188,18 @@ export default function Observer({ endpoint, children, csrf=undefined }) {
     // Gestion du rendu
     if (queryError) return <div>Error: {queryError.message}</div>;
 
-    //if (isLoading) return children({ data: undefined, errors: undefined });
     const statuses = {
-        isLoading: status === 'loading' || mutateData.isLoading || isFetching,
-        isError: status === 'error' || mutateData.isError,
-        isSuccess: status === 'success' || mutateData.isSuccess,
+        isLoading: status === 'loading' || mutation.isLoading || isFetching,
+        isError:   status === 'error' || mutation.isError,
+        isSuccess: status === 'success' || mutation.isSuccess,
         isDeleting: isDeleting.current,
-    }
+    };
 
     return children({
         data,
         errors,
         status: statuses,
-        action: (action, item) => mutateData.mutateAsync({ method: item?'POST':'GET', action, item }),
-        create: (item) => mutateData.mutateAsync({ method: 'POST', item }),
-        partial_update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PATCH', id, item: updatedItem }),
-        update: (id, updatedItem) => mutateData.mutateAsync({ method: 'PUT', id, item: updatedItem }),
-        destroy: (id) => mutateData.mutateAsync({ method: 'DELETE', id }),
+        action: mutateAsync,
         resetErrors: () => setErrors(undefined),
     });
 }

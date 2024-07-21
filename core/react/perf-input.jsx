@@ -64,7 +64,7 @@ function Vitesse({ name, value }) {
 
 export default function PerfInput({ id, index }) {
     return (
-        <Observer endpoint={"perfs/" + id} csrf={csrf}>
+        <Observer endpoint="perfs" id={id} csrf={csrf}>
             {({ data: perf }) => {
                 var valide = false;
                 if (perf === undefined) {
