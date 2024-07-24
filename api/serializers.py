@@ -223,7 +223,7 @@ class ScoreSerializer(SSESerializer):
     def create(self, validated_data):
         if not 'ordre' in validated_data:
             # On cherche le premier ordre libre
-            ordre = validated_data['equipe'].membres.all().values('ordre')
+            ordre = validated_data['equipe'].membres.values_list('ordre', flat=True)
             ordre = min([i for i in range(1,9) if not i in ordre])
             validated_data['ordre'] = ordre
         instance = super().create(validated_data)

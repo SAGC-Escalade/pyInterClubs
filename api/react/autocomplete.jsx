@@ -1,95 +1,115 @@
-const { useState, useEffect, useRef } = React;
-const { InputGroup } = ReactBootstrap;
+const { useState, useEffect, useRef, useCallback } = React;
+const { InputGroup, DropdownMenu, DropdownItem, Button } = ReactBootstrap;
 import Observer from './observer.jsx';
 
-export default function Autocomplete({
-    endpoint,
-    name,
-    value,
-    key = "id",
-    label = "label",
-    minLength = 3,
-    nullable = true,
-    id,
-    isInvalid = false,
-    isValid = false,
-    onChange,
-    placeholder = "Rechercher...",
-    className = "",
-    helptext,
-    children,
-    size = null,
-}) {
-    const inputRef = useRef(null);
-    const [query, setQuery] = useState("");
-    const [isFocused, setIsFocused] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(value ?? null);
+const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+};
 
-    const handleSelect = (item, input = "") => {
-        setSelectedItem(item);
-        setQuery(item ? item[label] : input);
-        if (onChange) { onChange(item ? item[key] : null); }
+export default function Autocomplete({
+    endpoint, children, value, onChange, key = 'id',
+    nullable = true, minLength = 3, csrf,
+    className, isValid, isInvalid, placeholder = "Rechercher...", size
+}) {
+    const [searchTerm, setSearchTerm] = useState('');       // Ce qui est affiché dans le input
+    const [searchQuery, setSearchQuery] = useState('');     // Ce qui est recherché
+    const [selectedItem, setSelectedItem] = useState(null); // L'élement sélectionné
+    const [hasFocus, setHasFocus] = useState(false);
+    const inputRef = useRef(null);
+    const timeout = useRef(null);
+
+    const handleInputChange = (event) => {
+        handleSelectItem(null, event.target.value);
+        updateSearchQuery(event.target.value, searchQuery);
+    };
+
+    // TODO : Gérer le debounce en interne de cette fonction de manière à le zapper quand le searchTerm n'est pas valide
+    // (et supprimer direct le searchQuery de manière à ne pas afficher la liste durant 300ms)
+    const updateSearchQuery = useCallback(
+        (query, current) => {
+            clearTimeout(timeout.current);
+            if (query.length >= minLength) {
+                timeout.current = setTimeout(() => setSearchQuery(query), 300);
+            } else if (current != "") {
+                setSearchQuery("");
+            }
+        },
+        []
+    );
+
+    const handleSelectItem = (item, txt = '') => {
+        setSearchTerm(item ? children(item) : txt);
+        if (!item || !selectedItem || item[key] != selectedItem[key]) {
+            setSelectedItem(item);
+            if (onChange)
+                onChange(item);
+        }
     };
 
     return (
-        <Observer endpoint={endpoint}>
+        <Observer endpoint={endpoint} csrf={csrf}>
             {({ data, errors, status, action }) => {
                 useEffect(() => {
-                    if (value && data) {
-                        const selected = data.find(item => item[key] === value);
-                        if (selected) {
-                            handleSelect(selected);
-                        }
-                    } else if (!value) {
-                        handleSelect(null, query);
+                    if (value && selectedItem && selectedItem[key] !== value[key]) {
+                        action(typeof value === 'string' ? `?q=${value}` : `${value[key]}/`);
+                    } else if (!value && !searchTerm) {
+                        handleSelectItem(null);
                     }
-                }, [value, data]);
+                }, [value]);
 
-                const show = isFocused && (query?.length >= minLength) && (data || status.isError || status.isLoading) && !selectedItem;
+                useEffect(() => {
+                    if (searchQuery)
+                        action(typeof searchQuery === 'string' ? `?q=${searchQuery}` : `${searchQuery}/`);
+                    else
+                        data = [];
+                }, [searchQuery]);
+
+                useEffect(() => {
+                    if (data && !Array.isArray(data))
+                        handleSelectItem(data);
+                }, [data]);
+
+                const searchResults = status.isSuccess && !selectedItem ? data : [];
+                const showDropdown = hasFocus && (data || status.isError || status.isLoading) && searchQuery && !selectedItem;
 
                 return (
-                    <div className={`position-relative ${className}` + (isValid ? " is-valid" : "") + (isInvalid ? " is-invalid" : "")}>
-                        <InputGroup hasValidation={isValid || isInvalid} size={size}>
+                    <div className={className + (isValid ? " is-valid" : "") + (isInvalid ? " is-invalid" : "")}>
+                        <InputGroup size={size}>
                             <input
                                 ref={inputRef}
-                                id={id ?? `id_${name}`}
                                 type="text"
-                                name={name}
-                                value={selectedItem ? (!!children ? children(selectedItem) : selectedItem[label]) : (query ?? "")}
+                                value={searchTerm}
                                 placeholder={placeholder}
+                                onChange={handleInputChange}
+                                onFocus={() => setHasFocus(true)}
+                                onBlur={() => setHasFocus(false)}
                                 className={"form-control" + (size ? ` form-control-${size}` : "") + (isValid ? " is-valid" : "") + (isInvalid ? " is-invalid" : "")}
-                                onChange={(e) => {
-                                    const q = e.target.value;
-                                    if (!!q && (q.length >= minLength))
-                                        action(typeof q === 'string' ? `?q=${q}` : `${q}/`);
-                                    handleSelect(null, q);
-                                }}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setTimeout(() => setIsFocused(false), 500)}
                             />
                             {nullable && (
-                                <button className={"btn btn-outline-secondary" + (size ? ` btn-${size}` : "")} type="button" onClick={() => handleSelect(null)}>
+                                <Button variant="outline-secondary" onClick={() => handleSelectItem(null)}>
                                     <i className="fa-solid fa-eraser"></i>
-                                </button>
+                                    <span className="visually-hidden">Effacer</span>
+                                </Button>
                             )}
                         </InputGroup>
-                        {helptext && <div className="form-text">{helptext}</div>}
-                        {show && (
-                            <ul className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
-                                {status.isLoading && (
-                                    <div className="list-group-item">
-                                        <div className="spinner-border text-primary spinner-border-sm" role="status"></div>
-                                        <span role="status"> Chargement...</span>
-                                    </div>
+                        {showDropdown && (
+                            <DropdownMenu show>
+                                {status.isLoading && <DropdownItem>Chargement...</DropdownItem>}
+                                {status.isError && <DropdownItem>Erreur: {errors.message}</DropdownItem>}
+                                {searchResults && searchResults.length > 0 ? (
+                                    searchResults.map((item) => (
+                                        <DropdownItem key={item.id} onMouseDown={() => handleSelectItem(item)}>
+                                            {children(item)}
+                                        </DropdownItem>
+                                    ))
+                                ) : (
+                                    <DropdownItem>Aucun résultat</DropdownItem>
                                 )}
-                                {status.isError && <div className="list-group-item text-danger">Erreur de chargement</div>}
-                                {data && data.length === 0 && <li className="list-group-item">Aucun résultat trouvé</li>}
-                                {data && Array.isArray(data) && data.map((item) => (
-                                    <li key={item[key]} className="list-group-item list-group-item-action" onClick={() => handleSelect(item)}>
-                                        {!!children ? children(item) : item[label]}
-                                    </li>
-                                ))}
-                            </ul>
+                            </DropdownMenu>
                         )}
                     </div>
                 );

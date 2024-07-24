@@ -6,7 +6,7 @@ eventSource.onerror = () => { console.log("Erreur de connexion avec le canal tem
 eventSource.onmessage = (event) => { console.log("message non traité :", event); };
 
 export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined }) {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient();       // Le gestionnaire de requêtes
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
     const isSingle = !!id;

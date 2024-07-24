@@ -23,7 +23,7 @@ export function AddScore({ equipe }) {
                                 }}
                             </Autocomplete>
                             <Button className="text-nowrap ms-3" disabled={!grimpeur}
-                                onClick={() => action('create', { equipe: equipe.id, grimpeur: grimpeur }).then(setGrimpeur(null))}
+                                onClick={() => action('create', { equipe: equipe.id, grimpeur: grimpeur.id }).then(setGrimpeur(null))}
                             >
                                 <i className="fa-solid fa-plus fa-fw me-2"></i>Ajouter le grimpeur
                             </Button>
@@ -62,7 +62,7 @@ export default function Equipe({ id }) {
                         <div className={"card" + (status.isDeleting ? " opacity-50" : "")}>
                             <div className="card-header">
                                 <div className="row">
-                                    {!equipe ? (
+                                    {equipe === undefined ? (
                                         <>
                                             <span className="placeholder col-4" />
                                             <span className="col-5 col-sm-3" />
