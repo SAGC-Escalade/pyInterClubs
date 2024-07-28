@@ -5,8 +5,7 @@ const { AccordionItem, AccordionHeader, AccordionCollapse, Collapse } = ReactBoo
 import Observer from "./observer.jsx";
 import Autocomplete from "./autocomplete.jsx";
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
-import PerfInput from "./perf-input.jsx";
-import VoieInput from "./voie-input.jsx";
+import PerfInput, { VoieInput } from "./perf-input.jsx";
 
 
 export default function Score({ id }) {
@@ -64,8 +63,8 @@ export default function Score({ id }) {
                                                 <HorizontalFormGroup label="Actions">
                                                     <ButtonToolbar>
                                                         <ButtonGroup className={"me-3" + (errors?.ordre ? " is-invalid" : "")}>
-                                                            <Button onClick={() => action("ordre/up")}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
-                                                            <Button onClick={() => action("ordre/down")}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
+                                                            <Button onClick={() => action("ordre/up/")}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
+                                                            <Button onClick={() => action("ordre/down/")}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
                                                         </ButtonGroup>
                                                         <ButtonGroup>
                                                             <Button variant="danger" onClick={() => action('delete')}>

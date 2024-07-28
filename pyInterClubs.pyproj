@@ -122,7 +122,6 @@
     </Content>
     <Content Include="core\react\horizontal-form-group.jsx" />
     <Content Include="core\react\perf-input.jsx" />
-    <Content Include="core\react\voie-input.jsx" />
     <Content Include="leader\react\equipe.jsx" />
     <Content Include="leader\templates\leader\create.html" />
     <Content Include="leader\templates\leader\equipe.html" />

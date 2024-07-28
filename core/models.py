@@ -5,8 +5,11 @@ from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from django.db.models import Q
 from django.urls import reverse
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 from datetime import timedelta
+from itertools import groupby
 
 from admin.models import Juge
 from api.models import CleanModel
@@ -62,10 +65,11 @@ class Voie(CleanModel):
         return list(self.zones.values())[index]
 
 class Club(CleanModel):
+    class Meta:
+        ordering = ['nom']
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     ville = models.CharField(max_length=50)
-
     def __str__(self):
         return self.nom
 
@@ -91,6 +95,7 @@ class Grimpeur(CleanModel):
             models.Index(fields=['anneeNaissance',]),
             models.Index(fields=['sexe',]),
         ]
+        ordering = ['nom', 'prenom']
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
@@ -131,6 +136,39 @@ class Rencontre(CleanModel):
     @property
     def scores(self):
         return Score.objects.filter(equipe__rencontre__pk=self.pk)
+
+    def proceed_speed_points(self, perf=None):
+        sexe = (Genre.homme, Genre.femme)
+        if perf:
+            if perf.score_id is None or perf.score.grimpeur_id is None: return
+            sexe = (perf.score.grimpeur.sexe,)
+        perfs = []
+        for s in sexe:
+            classement = Performance.objects.filter(
+                Q(voie__type=TypeVoie.vitesse)
+                & Q(score__grimpeur__sexe=s)
+                & Q(score__equipe__rencontre=self)
+                & Q(temps__isnull=False)
+            ).order_by('temps')
+            rank = 0
+            for _, group in groupby(classement, key=lambda p: p.temps):
+                group = list(group)
+                for perf in group:
+                    # Evaluation des conditions de la voie
+                    for k,p in perf.voie.zones.items():
+                        if rank == k or ('rank' in k and eval(k.replace('{rank}', str(rank)), {'__builtins__': None})):
+                            points = p
+                            break
+                    else:
+                        raise RuntimeError("Aucune condition trouvée pour la performance")
+                    # Evaluation des points correspondants
+                    if type(points) == str and 'rank' in points:
+                        perf.points = eval(points.replace('{rank}', str(rank)), {'__builtins__': None})
+                    else:
+                        perf.points = points
+                    perfs.append(perf)
+                rank += len(group)
+        Performance.objects.bulk_update(perfs, ['points'])
 
 
 class Equipe(CleanModel):
@@ -204,12 +242,14 @@ class Score(CleanModel):
 
     def ordre_up(self):
         prev = self.equipe.membres.filter(ordre__lt=self.ordre).order_by('ordre').last()
+        if prev is None: return
         prev.ordre += 1
         self.ordre -= 1
         prev.save()
         self.save()
     def ordre_down(self):
         next = self.equipe.membres.filter(ordre__gt=self.ordre).order_by('ordre').first()
+        if next is None: return
         next.ordre -= 1
         self.ordre += 1
         next.save()
@@ -218,7 +258,7 @@ class Score(CleanModel):
     def save(self, *args, **kwargs):
         creating = self._state.adding
         if creating:
-            if self.grimpeur.club_id != self.equipe_id:
+            if self.grimpeur.club_id != self.equipe.club_id:
                 self.clubPreteur = self.grimpeur.club
         else:
             self.points = sum(self.performances.values_list('points', flat=True))
@@ -234,18 +274,35 @@ class Performance(CleanModel):
     voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True, blank=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
     temps = models.DurationField(null=True, blank=True)
-    points = models.IntegerField(default=0, null=True, blank=True)
+    points = models.IntegerField(null=True, blank=True)
     etat = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.voie_id != None:
-            zone = None
-            if self.etat is not None and self.etat in range(len(self.voie.zones)):
+            if self.etat is None:
+                self.points = None
+            elif self.etat is not None and self.etat in range(len(self.voie.zones)):
                 points = self.voie.points(self.etat)
-                if type(points) == int: self.points = self.voie.points(self.etat)
+                if type(points) == str: pass
+                else:                   self.points = points
                 # TODO: Si les points sont une str, il faut les calculer...
         #send_event('events', reverse("perf-detail", args=[self.id]), "updated")
         return super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+
+@receiver(post_save, sender=Performance, dispatch_uid='proceed_speed_points')
+@receiver(post_delete, sender=Performance, dispatch_uid='proceed_speed_points')
+def proceed_speed_points(sender, instance, **kwargs):
+    if instance.voie_id and instance.voie.type == TypeVoie.vitesse:
+        if instance.score_id and instance.score.equipe_id and instance.score.equipe.rencontre_id:
+            instance.score.equipe.rencontre.proceed_speed_points(instance)
+    else:
+        if instance.score_id and instance.score.equipe_id:
+            instance.score.save()
+
+
 
 class RencontreVoie(CleanModel):
     class Meta:

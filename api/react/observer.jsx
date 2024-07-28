@@ -87,8 +87,8 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                 await queryClient.cancelQueries(endpoint);
                 const previousData = queryClient.getQueryData(endpoint);
 
-                // Optimistic update
-                if (method !== 'DELETE') {
+                // Optimistic update (Les modifications sont déjà appliquées par le composant enfant ou le formulaire HTML)
+                /*if (method !== 'DELETE') {
                     queryClient.setQueryData(endpoint, (oldData) => {
                         if (Array.isArray(oldData)) {
                             if (method === 'POST') {
@@ -107,7 +107,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                         }
                         return oldData;
                     });
-                }
+                }*/
 
                 return { previousData };
             },
@@ -136,7 +136,6 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                     }
                     return responseData !== undefined ? responseData : oldData;
                 });
-
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
             onSettled: () => {
@@ -158,6 +157,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     useEffect(() => {
         const handleSSEMessage = (event) => {
             if (event.type === endpoint) {
+                console.log(event);
                 const newData = event.data ? JSON.parse(event.data) : null;
                 if (newData) {
                     queryClient.setQueryData(endpoint, (oldData) => {

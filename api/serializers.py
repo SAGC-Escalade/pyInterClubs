@@ -78,11 +78,10 @@ class SSESerializer(serializers.ModelSerializer):
     def url_list(self):
         return f"{self.context['view'].basename}s"
 
-    def notify(self, all_objects=False):
-        if all_objects:
+    def notify_list(self, list=False):
+        if list:
             send_event('events', self.url_list, None)
-        else:
-            send_event('events', self.url_detail, self.data)
+        send_event('events', self.url_detail, self.data)
 
 
 class ForeignKeyField(serializers.Field):
@@ -241,10 +240,22 @@ class ScoreSerializer(SSESerializer):
 from datetime import timedelta
 class PerformanceSerializer(SSESerializer):
     class DurationField(serializers.DurationField):
-        def to_representation(self, value):
-            if value == timedelta(microseconds=-1): return 'Chute'
-            if value == timedelta(microseconds=-2): return 'Abandon'
-            return super().to_representation(value)
+        def to_representation(self, duration):
+            if duration == timedelta(microseconds=-1): return 'Chute'
+            if duration == timedelta(microseconds=-2): return 'Abandon'
+
+            days = duration.days
+            seconds = duration.seconds
+            hundredths = duration.microseconds//10000
+            minutes = seconds // 60
+            seconds %= 60
+            hours = minutes // 60
+            minutes %= 60
+
+            string = "{:02d}:{:02d}:{:02d}.{:02d}".format(hours, minutes, seconds, hundredths)
+            if days:
+                string = "{} ".format(days) + string
+            return string
 
         def to_internal_value(self, value):
             if value == 'Chute': return timedelta(microseconds=-1)

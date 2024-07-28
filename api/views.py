@@ -95,29 +95,6 @@ class EquipeViewSet(DjangoModelViewSet):
         return self.request.interclub.equipes
 
 
-    @action(detail=True, methods=['post'], permission_classes=[])
-    def add(self, request, pk=None):
-        equipe = self.get_object()
-        data = dict(**request.data, equipe=equipe.id)
-
-        score = ScoreSerializer(data=data, context={'request':request})
-        if not score.is_valid():
-            return Response400(score.errors)
-        if score.validated_data['grimpeur'].club_id != equipe.id:
-            score.validated_data['clubPreteur'] = score.validated_data['grimpeur'].club
-        score = score.save()
-
-        rencontre = equipe.rencontre
-        voies = rencontre.voies
-        blocs = [Performance(voie=v, score=score) for v in voies.filter(type=TypeVoie.bloc)][:rencontre.nbBloc]
-        diffs = [Performance(score=score) for i in range(rencontre.nbDiff)]
-        vitesse = [Performance(voie=v, score=score) for v in voies.filter(type=TypeVoie.vitesse)][:rencontre.nbVitesse]
-        perfs = [p.save() for p in blocs + diffs + vitesse]
-
-        EquipeSerializer(equipe).notify()
-        return Response204()
-
-
 class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
@@ -130,7 +107,7 @@ class ScoreViewSet(DjangoModelViewSet):
         score = self.get_object()
         if cmd == 'up': score.ordre_up()
         else:           score.ordre_down()
-        EquipeSerializer(score.equipe).notify()
+        # EquipeSerializer(score.equipe).notify()
         return Response204()
 
     def perform_create(self, serializer):
@@ -141,15 +118,23 @@ class ScoreViewSet(DjangoModelViewSet):
         instance = super().perform_update(serializer)
         if any(f in serializer.initial_data for f in ('points', )):
             EquipeSerializer(instance.equipe).notify(True)
-        if any(f in serializer.initial_data for f in ('ordre', 'grimpeur', 'clubPreteur', 'points')):
+        if any(f in serializer.initial_data for f in ('ordre', 'grimpeur', 'clubPreteur')):
             EquipeSerializer(instance.equipe).notify()
     def perform_destroy(self, instance):
         equipe = instance.equipe
         super().perform_destroy(instance)
-        EquipeSerializer(equipe).notify()
         EquipeSerializer(equipe).notify(True)
 
 
 class PerformanceViewSet(DjangoModelViewSet):
     serializer_class = PerformanceSerializer
     queryset = Performance.objects.all()
+
+    def perform_update(self, serializer):
+        instance = super().perform_update(serializer)
+        if any(f in serializer.initial_data for f in ('points', )):
+            ScoreSerializer(instance.score).notify()
+            EquipeSerializer(instance.score.equipe).notify(True)
+        if any(f in serializer.initial_data for f in ('temps', )):
+            ScoreSerializer(instance.score).notify()
+            EquipeSerializer(instance.score.equipe).notify(True)
