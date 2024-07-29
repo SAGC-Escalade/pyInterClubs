@@ -8,6 +8,7 @@ django-js-reverse         ~= 0.10.2
 djangorestframework       ~= 3.14
 django-babel-transpiling  ~= 0.3	# django-jsx sera peut-être plus adapté (il intègre une commande de compilation pour les fichiers statiques)
 django-eventstream        ~= 4.5
+django-model-utils        ~= 4.5
 
 django-bootstrap5         ~= 22.2
 fontawesomefree           ~= 6.1

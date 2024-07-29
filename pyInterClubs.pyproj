@@ -75,6 +75,9 @@
     <Compile Include="core\apps.py" />
     <Compile Include="core\migrations\__init__.py" />
     <Compile Include="core\models.py" />
+    <Compile Include="core\signals.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="core\tests.py" />
     <Compile Include="core\__init__.py" />
     <Compile Include="leader\apps.py" />

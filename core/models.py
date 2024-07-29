@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from model_utils import FieldTracker
 
 from datetime import timedelta
 from itertools import groupby
@@ -149,20 +150,20 @@ class Rencontre(CleanModel):
                 & Q(score__grimpeur__sexe=s)
                 & Q(score__equipe__rencontre=self)
                 & Q(temps__isnull=False)
-            ).order_by('temps')
+            ).select_related('voie').order_by('temps')
             rank = 0
-            for _, group in groupby(classement, key=lambda p: p.temps):
+            for temps, group in groupby(classement, key=lambda p: p.temps):
                 group = list(group)
                 for perf in group:
                     # Evaluation des conditions de la voie
                     for k,p in perf.voie.zones.items():
-                        if rank == k or ('rank' in k and eval(k.replace('{rank}', str(rank)), {'__builtins__': None})):
+                        if temps == k or ('rank' in k and eval(k.replace('{rank}', str(rank)), {'__builtins__': None})):
                             points = p
                             break
                     else:
                         raise RuntimeError("Aucune condition trouvée pour la performance")
                     # Evaluation des points correspondants
-                    if type(points) == str and 'rank' in points:
+                    if isinstance(points, str) and 'rank' in points:
                         perf.points = eval(points.replace('{rank}', str(rank)), {'__builtins__': None})
                     else:
                         perf.points = points
@@ -220,6 +221,8 @@ class Score(CleanModel):
     ordre = models.IntegerField(default=1, validators=[MaxValueValidator(8), MinValueValidator(1)])
     clubPreteur = models.ForeignKey(Club, on_delete=models.PROTECT, blank=True, null=True)
 
+    tracker = FieldTracker(fields=['points'])
+
     @property
     def valide(self):
         if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
@@ -260,10 +263,14 @@ class Score(CleanModel):
         if creating:
             if self.grimpeur.club_id != self.equipe.club_id:
                 self.clubPreteur = self.grimpeur.club
-        else:
-            self.points = sum(self.performances.values_list('points', flat=True))
+        # else:
+        #     self.points = sum(self.performances.values_list('points', flat=True))
         return super().save(*args, **kwargs)
 
+    def refresh(self, field):
+        if field == 'points':
+            self.points = sum(p for p in self.performances.values_list('points', flat=True) if p)
+        if self.tracker.has_changed: self.save
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
@@ -276,6 +283,9 @@ class Performance(CleanModel):
     temps = models.DurationField(null=True, blank=True)
     points = models.IntegerField(null=True, blank=True)
     etat = models.IntegerField(null=True, blank=True)
+
+    tracker = FieldTracker(fields=['temps', 'points', 'etat', 'voie_id'])
+
 
     def save(self, *args, **kwargs):
         if self.voie_id != None:
@@ -291,17 +301,6 @@ class Performance(CleanModel):
 
     def clean(self):
         super().clean()
-
-@receiver(post_save, sender=Performance, dispatch_uid='proceed_speed_points')
-@receiver(post_delete, sender=Performance, dispatch_uid='proceed_speed_points')
-def proceed_speed_points(sender, instance, **kwargs):
-    if instance.voie_id and instance.voie.type == TypeVoie.vitesse:
-        if instance.score_id and instance.score.equipe_id and instance.score.equipe.rencontre_id:
-            instance.score.equipe.rencontre.proceed_speed_points(instance)
-    else:
-        if instance.score_id and instance.score.equipe_id:
-            instance.score.save()
-
 
 
 class RencontreVoie(CleanModel):

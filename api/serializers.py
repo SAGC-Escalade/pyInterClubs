@@ -78,7 +78,7 @@ class SSESerializer(serializers.ModelSerializer):
     def url_list(self):
         return f"{self.context['view'].basename}s"
 
-    def notify_list(self, list=False):
+    def notify(self, list=False):
         if list:
             send_event('events', self.url_list, None)
         send_event('events', self.url_detail, self.data)
