@@ -157,7 +157,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     useEffect(() => {
         const handleSSEMessage = (event) => {
             if (event.type === endpoint) {
-                console.log(event);
+                //console.log(event);
                 const newData = event.data ? JSON.parse(event.data) : null;
                 if (newData) {
                     queryClient.setQueryData(endpoint, (oldData) => {

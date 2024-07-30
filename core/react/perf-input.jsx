@@ -39,7 +39,9 @@ export function Points({ value }) {
 export function Vitesse({ value, onChange:setTime }) {
     const defaultTime = "00:00:00.00";
     function format(time) {
-        if (time === null) return defaultTime;
+        console.log(time);
+        if (time === null) return 'A réaliser';
+        if (time === 'Chute' || time === 'Abandon') return time;
         time = time.replace(/\D/g, '');
         time = time.match(/(?:(?:([0-2]?\d)??([0-5]?\d))??([0-5]?\d))??(\d\d?)$/);
         if (time === null) return defaultTime;
@@ -63,10 +65,17 @@ export function Vitesse({ value, onChange:setTime }) {
                 <DropdownMenu align="end">
                     <DropdownItem onClick={() => setTime(defaultTime)}>
                         <i className="fa-regular fa-clock fa-fw me-2"></i>
-                        hh:mm:ss.ffffff
+                        hh:mm:ss.ff
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownHeader>Cas particuliers</DropdownHeader>
+                    <DropdownItem onClick={() => setTime("A réaliser")}>
+                        <span className="fa-layers fa-fw me-2">
+                            <i className="fa-solid fa-slash" data-fa-mask="fa-regular fa-clock" data-fa-transform="flip-h down-1 right-1"></i>
+                            <i className="fa-solid fa-slash" data-fa-transform="flip-h" ></i>
+                        </span>
+                        A réaliser
+                    </DropdownItem>
                     <DropdownItem onClick={() => setTime("Chute")}>
                         <span className="fa-layers fa-fw me-2">
                             <i className="fa-solid fa-person-falling" data-fa-transform="shrink-2 down-2 left-2"></i>

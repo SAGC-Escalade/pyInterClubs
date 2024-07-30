@@ -240,9 +240,14 @@ class ScoreSerializer(SSESerializer):
 from datetime import timedelta
 class PerformanceSerializer(SSESerializer):
     class DurationField(serializers.DurationField):
+        values = {
+            'A réaliser': None,
+            'Chute': timedelta(microseconds=-1),
+            'Abandon': timedelta(microseconds=-2),
+        }
+        rvalues = {v:k for k,v in values.items()}
         def to_representation(self, duration):
-            if duration == timedelta(microseconds=-1): return 'Chute'
-            if duration == timedelta(microseconds=-2): return 'Abandon'
+            if duration in self.rvalues: return self.rvalues[duration]
 
             days = duration.days
             seconds = duration.seconds
@@ -258,8 +263,7 @@ class PerformanceSerializer(SSESerializer):
             return string
 
         def to_internal_value(self, value):
-            if value == 'Chute': return timedelta(microseconds=-1)
-            if value == 'Abandon': return timedelta(microsecons=-2)
+            if value in self.values: return self.values[value]
             return super().to_internal_value(value)
 
     temps = DurationField(required=False)

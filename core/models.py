@@ -153,6 +153,8 @@ class Rencontre(CleanModel):
             ).select_related('voie').order_by('temps')
             rank = 0
             for temps, group in groupby(classement, key=lambda p: p.temps):
+                if temps == timedelta(microseconds=-2): temps = 'Abandon'
+                if temps == timedelta(microseconds=-1): temps = 'Chute'
                 group = list(group)
                 for perf in group:
                     # Evaluation des conditions de la voie
