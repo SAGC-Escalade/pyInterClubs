@@ -7,7 +7,16 @@
             Connectez-vous en tant que club afin de créer vos équipes et entrer les résultats des grimpeurs.
             Connectez-vous en tant que jury afin d'entrer les résultats des grimpeurs sur une voie en particulier.
         </p>
-        <a role="button" class="btn btn-primary btn-lg" href="{% url 'login' %}" title="S'authentifier">S'authentifier <i class="fa-solid fa-right-to-bracket ms-1"></i></a>
+        <a role="button" class="btn btn-primary btn-lg" href="{% url 'login' %}" title="S'authentifier"><i class="fa-solid fa-right-to-bracket me-1"></i> S'authentifier</a>
+    </div>
+{% elif not user.profil.rencontre and user.is_superuser %}
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">pyInterClubs</h1>
+        <p class="col-md-8 fs-4">
+            Bienvenue dans le logiciel de gestion des rencontres des clubs d'escalade de la Gironde.
+            Sélectionnez une rencontre pour connecter les juges et les coachs.
+        </p>
+        <a role="button" class="btn btn-primary btn-lg" href="{% url 'rencontres' %}" title="Sélectionner une rencontre"><i class="fa-solid fa-map-location fa-fw me-2"></i> Sélectionner une rencontre</a>
     </div>
 {% else %}
     <div class="container">
