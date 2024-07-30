@@ -56,7 +56,7 @@ export default function Score({ id }) {
                                         </ListGroupItem>
                                         <Collapse in={showParameters}>
                                             <ListGroupItem className="border-bottom">
-                                                {rencontre.voiesGroupees && <HorizontalFormGroup label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies} /></HorizontalFormGroup>}
+                                                {rencontre.voiesGroupees && <HorizontalFormGroup label="Groupe"><VoieInput name="groupe" value={score.groupe} choices={rencontre.voies.filter((v) => v.type == 2)} /></HorizontalFormGroup>}
                                                 <HorizontalFormGroup label="Club prêteur">
                                                     <Autocomplete endpoint="clubs" defaultValue={score.clubPreteur} label="nom" />
                                                 </HorizontalFormGroup>

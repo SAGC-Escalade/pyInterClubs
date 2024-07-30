@@ -7,8 +7,11 @@ import HorizontalFormGroup from "./horizontal-form-group.jsx";
 
 
 export function VoieInput({ value, choices = niveaux, onChange, size, isValid, isInvalid }) {
+    const selected = !!value ? (choices.some(voie => voie.id === value) ? value : -1) : 0;
     return (
-        <FormSelect defaultValue={value} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid}>
+        <FormSelect value={selected} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid}>
+            {selected == -1 && <option value={-1} disabled>La voie sélectionnée n'est pas autorisée</option>}
+            <option value={0} disabled>Sélectionnez une voie</option>
             {choices.map(function (voie) {
                 return (<option key={voie.id} value={voie.id}>{voie.nom}/{voie.niveau}</option>);
             })}
@@ -109,11 +112,14 @@ export default function PerfInput({ id, index }) {
                 } else if (perf.voie === null || perf.voie.type == 2) { // Diff
                     return (
                         <HorizontalFormGroup label={"Voie " + index}>
-                            <InputGroup>
-                                {!rencontre.voiesGroupees && <VoieInput value={perf.voie?.id} choices={rencontre.voies} onChange={(ev) => action('patch', { "voie": ev.target.value })} />}
+                            <InputGroup className={errors ? "is-invalid" : ""}>
+                                {!rencontre.voiesGroupees && <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />}
                                 <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
                                 <Points value={perf.points} />
                             </InputGroup>
+                            {errors && Object.keys(errors).map((key) => (
+                                errors[key].map((msg, i) => (<span key={`${key}-${i}`} className="invalid-feedback">{msg}</span>))
+                            ))}
                         </HorizontalFormGroup>
                     );
                 } else if (perf.voie.type == 1) { // Bloc
@@ -125,7 +131,7 @@ export default function PerfInput({ id, index }) {
                             </InputGroup>
                         </HorizontalFormGroup>
                     );
-                } else if (perf.voie.type == 3) {// Vitesse
+                } else if (perf.voie.type == 3) { // Vitesse
                     return (
                         <HorizontalFormGroup label={"Temps " + index}>
                             <InputGroup>

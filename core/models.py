@@ -303,6 +303,12 @@ class Performance(CleanModel):
 
     def clean(self):
         super().clean()
+        if self.score_id and self.voie_id and self.tracker.has_changed('voie_id'):
+            # La voie n'est autorisée QUE si elle n'est pas déjà utilisée dans la même rencontre
+            if self.score.equipe_id and self.score.equipe.rencontre_id and not self.score.equipe.rencontre.voiesReutilisables:
+                if self.score.performances.filter(~Q(id=self.id) & Q(voie=self.voie)).count():
+                    raise ValidationError({'voie': ["Les voies ne sont faisables qu'une seule fois"]})
+
 
 
 class RencontreVoie(CleanModel):

@@ -96,7 +96,7 @@ class ForeignKeyField(serializers.Field):
         try:
             return self.model_class.objects.get(pk=data)
         except self.model_class.DoesNotExist:
-            pass
+            return None
 
 
 ################################################################################
