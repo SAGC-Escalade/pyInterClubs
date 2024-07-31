@@ -3,6 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 __all__ = ('ClubViewSet', 'RencontreViewSet', 'VoieViewSet', 'GrimpeurViewSet', 'EquipeViewSet', 'ScoreViewSet')
 
+app_name = 'api'
+
 router = DefaultRouter()
 router.register('clubs', ClubViewSet, 'club')
 router.register('voies', VoieViewSet, 'voie')

@@ -9,11 +9,11 @@
     <div class="col-2">
         <button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button>
         {% if r.profil_set.count %}
-        <a href="{% url 'qrcode-clubs' %}" class="btn btn-link btn-sm py-0">
+        <a href="{% url 'rencontre:qrcode-clubs' %}" class="btn btn-link btn-sm py-0">
             <i class="fa-solid fa-stop"></i>
         </a>
         {% endif %}
-        <a href="{% url 'qrcode-clubs' %}?rencontre={{ r.id }}" class="btn btn-link btn-sm py-0">
+        <a href="{% url 'rencontre:qrcode-clubs' %}?rencontre={{ r.id }}" class="btn btn-link btn-sm py-0">
             <i class="fa-solid {% if r.profil_set.count %}fa-qrcode{% else %}fa-play{% endif %}"></i>
         </a>
     </div>

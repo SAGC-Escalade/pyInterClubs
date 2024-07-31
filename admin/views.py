@@ -37,7 +37,7 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
 
 
 class RencontreSelectionView(SuperUserRequiredMixin, FormView):
-    success_url = reverse_lazy('qrcode-clubs')
+    success_url = reverse_lazy('rencontre:qrcode-clubs')
     form_class = RencontreSelectionForm
     template_name = 'admin/rencontres-list.html'
 

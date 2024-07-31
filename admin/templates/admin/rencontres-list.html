@@ -14,7 +14,7 @@
 
 {% block body %}
 <div class="container">
-    <form action="{% url 'rencontres' %}" method="post">
+    <form action="{% url 'rencontre:select' %}" method="post">
         {% csrf_token %}
         <button class="btn btn-lg btn-primary shadow rounded-circle position-fixed end-0 me-5"><i class="fa-solid fa-plus" data-fa-transform="up-1" title="Ajouter une rencontre"></i></button>
 

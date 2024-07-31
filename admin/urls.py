@@ -3,7 +3,10 @@ from django.views.generic import TemplateView
 
 from .views import *
 
+app_name = 'rencontre'
+
 urlpatterns = [
     path('clubs', ClubQRCodesView.as_view(), name='qrcode-clubs'),
-    path('', RencontreSelectionView.as_view(), name='rencontres'),
+    path('', RencontreSelectionView.as_view(), name='select'),
+    # path('create', RencontreCreateView.as_view(), name='create'),
 ]
