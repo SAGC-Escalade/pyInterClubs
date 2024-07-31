@@ -22,10 +22,6 @@ class EquipeUpdateView(LoginRequiredMixin, WithRencontreMixin, DetailView):
     model = Equipe
     template_name = 'leader/equipe.html'
 
-    def _get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.setdefault('rencontre', RencontreSerializer(self.object.rencontre).data)
-        return context
 
 class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
     success_url = 'leader:edit'

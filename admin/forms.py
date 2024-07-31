@@ -37,12 +37,3 @@ class RencontreSelectionForm(forms.Form):
         to_field_name='id',
         widget=RencontreWidget
     )
-
-    def save(self):
-        if not hasattr(self.request.user, 'profil'):
-            Profil(user=self.request.user, rencontre=self.instance).save()
-        else:
-            self.request.user.profil.rencontre = self.instance
-            self.request.user.profil.save()
-        #Config.set('CURRENT_RENCONTRE', self.cleaned_data['rencontre'].ID)
-        #Config.set('CURRENT_CATEGORIE', int(self.cleaned_data['categorie']))
