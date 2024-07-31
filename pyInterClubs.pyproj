@@ -84,9 +84,6 @@
     <Compile Include="leader\forms.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="leader\templatetags\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="leader\tests.py" />
     <Compile Include="leader\urls.py">
       <SubType>Code</SubType>
@@ -98,9 +95,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pyInterClubs\forms.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="leader\templatetags\widget_tweak.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pyInterClubs\asgi.py">
@@ -236,7 +230,6 @@
     <Folder Include="leader\templates\leader\" />
     <Folder Include="leader\templates\widgets\" />
     <Folder Include="pyInterClubs\" />
-    <Folder Include="leader\templatetags\" />
     <Folder Include="pyInterClubs\static\" />
     <Folder Include="pyInterClubs\static\3rd\" />
     <Folder Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\" />

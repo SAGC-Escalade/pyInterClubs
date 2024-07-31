@@ -5,8 +5,6 @@ from .views import *
 from core.models import Score
 
 urlpatterns = [
-    path('list', TemplateView.as_view(template_name="leader/list_equipes.html"), name='list-equipes'),
-
     path('create', EquipeCreateView.as_view(), name='create'),
     path('<int:pk>', EquipeUpdateView.as_view(), name='edit'),
 ]

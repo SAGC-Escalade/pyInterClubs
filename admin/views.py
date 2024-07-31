@@ -53,7 +53,3 @@ class RencontreSelectionView(SuperUserRequiredMixin, FormView):
             self.request.user.profil.rencontre = form.cleaned_data['rencontre']
             self.request.user.profil.save()
         return HttpResponseRedirect(self.get_success_url() + f"?rencontre={form.cleaned_data['rencontre'].id}")
-
-    #def get_success_url(self):
-    #    print(dir(self))
-    #    return self.success_url + f"?rencontre="

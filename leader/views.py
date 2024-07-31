@@ -34,11 +34,9 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        # initial.setdefault('rencontre', self.request.interclub.rencontre)
         user = self.request.user
         if user.profil and hasattr(user.profil, 'club'):
             initial.setdefault('club', user.profil.club)
-            # initial.setdefault('numero', self.request.interclub.equipes.count() + 1)
         return initial
 
     def get_success_url(self):
@@ -47,7 +45,8 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.rencontre = self.request.interclub.rencontre
-        self.object.numero = self.request.interclub.equipes.filter(club=self.object.club).count() + 1
+        numeros = self.request.interclub.equipes.filter(club=self.object.club).values_list('numero', flat=True)
+        self.object.numero = min([i for i in range(1,max(numeros)+1) if not i in numeros])
         self.object.save()
         return super().form_valid(form)
 
