@@ -55,6 +55,7 @@ class Voie(CleanModel):
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=15)
     niveau = models.CharField(max_length=5)
+    categorie = models.IntegerField(choices=Categorie.choices)
     type = models.IntegerField(choices=TypeVoie.choices)
     zones = models.JSONField()
     actif = models.BooleanField(default=False)
@@ -139,6 +140,7 @@ class Rencontre(CleanModel):
         return Score.objects.filter(equipe__rencontre__pk=self.pk)
 
     def proceed_speed_points(self, perf=None):
+        # TODO: Trouver comment ne ps appeller ce calcul à chaque ajout d'une performance lors de l'import de l'ancienne base.
         sexe = (Genre.homme, Genre.femme)
         if perf:
             if perf.score_id is None or perf.score.grimpeur_id is None: return
@@ -153,25 +155,29 @@ class Rencontre(CleanModel):
             ).select_related('voie').order_by('temps')
             rank = 0
             for temps, group in groupby(classement, key=lambda p: p.temps):
-                if temps == timedelta(microseconds=-2): temps = 'Abandon'
-                if temps == timedelta(microseconds=-1): temps = 'Chute'
+                # TODO: Les temps C# négatifs de l'abandon et de la chute ne correspondent pas aux temps Python
+                # Il faut corriger cela... (peut-être lors de l'import)
+                if temps == timedelta(minutes=-2): temps = 'Abandon'
+                if temps == timedelta(minutes=-1): temps = 'Chute'
                 group = list(group)
                 for perf in group:
                     # Evaluation des conditions de la voie
-                    for k,p in perf.voie.zones.items():
+                    for i, (k,p) in enumerate(perf.voie.zones.items()):
                         if temps == k or ('rank' in k and eval(k.replace('{rank}', str(rank)), {'__builtins__': None})):
                             points = p
                             break
                     else:
                         raise RuntimeError("Aucune condition trouvée pour la performance")
                     # Evaluation des points correspondants
+                    perf.etat = i
                     if isinstance(points, str) and 'rank' in points:
                         perf.points = eval(points.replace('{rank}', str(rank)), {'__builtins__': None})
                     else:
                         perf.points = points
                     perfs.append(perf)
                 rank += len(group)
-        Performance.objects.bulk_update(perfs, ['points'])
+        #[print(p.temps, p.points) for p in perfs]
+        Performance.objects.bulk_update(perfs, ['points', 'etat'])
 
 
 class Equipe(CleanModel):
@@ -321,6 +327,10 @@ class RencontreVoie(CleanModel):
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
+    # NOTE: Il ne faut pas cascader la suppression d'un juge !
+    # Les juges et les coach vont être supprimé à la fin de chaque rencontre,
+    # Si on cascade, on va supprimer les voies d'une rencontre ?
+    # Au mieux on met NULL (SET_NULL ?)
     juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True, blank=True)#, related_name="voies")
 
     def __str__(self):

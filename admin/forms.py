@@ -11,6 +11,10 @@ from .models import *
 class RencontreWidget(forms.RadioSelect):
     option_template_name = "widgets/rencontre-option.html"
     template_name = "widgets/rencontre.html"
+    class Media:
+        css = {
+            'all': ['css/collapsible.css'],
+        }
 
 class RencontreChoiceIterator(ModelChoiceIterator):
     def __iter__(self):
@@ -36,4 +40,33 @@ class RencontreSelectionForm(forms.Form):
         empty_label=None,
         to_field_name='id',
         widget=RencontreWidget
+    )
+
+
+class RencontreCreateForm(forms.ModelForm):
+    class Meta:
+        model = Rencontre
+        fields = ('saison', 'date', 'club', 'categorie', 'nbBloc', 'nbDiff', 'nbVitesse', 'voiesReutilisables', 'voiesGroupees', 'voies')
+        labels = {
+            'club': "Club d'accueil",
+            'categorie': 'Catégorie',
+            'nbBloc': 'Nombre de blocs',
+            'nbDiff': 'Nombre de voies en diff',
+            'nbVitesse': 'Nombre de voie de vitesse',
+            'voiesReutilisables': 'Voies réutilisables',
+            'voiesGroupees': 'Voies groupées',
+        }
+        help_texts = {
+            #'nbBloc': 'Indiquez le nombre de voies de bloc à réaliser.',
+            #'nbDiff': 'Indiquez le nombre de voies de difficulté à réaliser.',
+            'nbVitesse': 'Indiquez le nombre de voies à réaliser.',
+            'voiesReutilisables': 'Indiquez si les voies de difficulté sont réalisables plusieurs fois.',
+            'voiesGroupees': 'Indiquez si le compétiteur sélectionne un groupe globale ou ses voies de difficulté individuellement.',
+            'voies': 'Sélectionnez les voies réalisables pour la rencontre',
+        }
+
+    voies = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=Voie.objects.filter(actif=True).order_by("type", "nom"),
+        to_field_name='id'
     )

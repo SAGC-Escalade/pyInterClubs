@@ -6,7 +6,7 @@
     <div class="col-2">{{ r.club.ville }}</div>
     <div class="col">{{ r.equipes.count }}</div>
     <div class="col">{{ r.scores.count }}</div>
-    <div class="col-2">
+    <div class="col-2 d-flex">
         <button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button>
         {% if r.profil_set.count %}
         <a href="{% url 'rencontre:qrcode-clubs' %}" class="btn btn-link btn-sm py-0">
@@ -15,6 +15,9 @@
         {% endif %}
         <a href="{% url 'rencontre:qrcode-clubs' %}?rencontre={{ r.id }}" class="btn btn-link btn-sm py-0">
             <i class="fa-solid {% if r.profil_set.count %}fa-qrcode{% else %}fa-play{% endif %}"></i>
+        </a>
+        <a href="{% url 'rencontre:delete' r.id %}" class="btn btn-link text-danger btn-sm py-0 ms-auto">
+            <i class="fa-solid fa-trash"></i>
         </a>
     </div>
 </div>

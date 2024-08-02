@@ -14,9 +14,9 @@
     </div>
     {% for group, options, index in widget.optgroups %}
     {% if group %}
-    <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
+    <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover collapsible-button{% if index != 0 %} collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
         <div class="col">{{ group }}</div>
-        <div class="col-2">
+        <div class="col-2 d-flex">
             <button class="btn btn-link btn-sm py-0"><i class="fa-solid fa-eye"></i></button>
         </div>
     </div>

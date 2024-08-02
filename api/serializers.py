@@ -242,8 +242,8 @@ class PerformanceSerializer(SSESerializer):
     class DurationField(serializers.DurationField):
         values = {
             'A réaliser': None,
-            'Chute': timedelta(microseconds=-1),
-            'Abandon': timedelta(microseconds=-2),
+            'Chute': timedelta(minutes=-1),
+            'Abandon': timedelta(minutes=-2),
         }
         rvalues = {v:k for k,v in values.items()}
         def to_representation(self, duration):

@@ -42,7 +42,7 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
         self.object = form.save(commit=False)
         self.object.rencontre = self.request.interclub.rencontre
         numeros = self.request.interclub.equipes.filter(club=self.object.club).values_list('numero', flat=True)
-        self.object.numero = min([i for i in range(1,max(numeros)+1) if not i in numeros])
+        self.object.numero = min([i for i in range(1,max(numeros)+2) if not i in numeros]) if len(numeros) else 1
         self.object.save()
         return super().form_valid(form)
 

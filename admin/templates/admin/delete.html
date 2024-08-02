@@ -1,0 +1,37 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Supprimer la rencontre{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="card-header">
+                    <span class="{% if form.non_field_errors or form.club.errors %}is-invalid{% endif %}">Supprimer la rencontre ?</span>
+                    {% if form.non_field_errors %}
+                        <span class="invalid-feedback">{{ form.non_field_errors }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <p>Voulez-vous vraiment supprimer la rencontre du {{ object.date }} à {{ object.club.ville }} ?</p>
+                    <p>Cette action est définitive.</p>
+                    {{ form }}
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Supprimer la rencontre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

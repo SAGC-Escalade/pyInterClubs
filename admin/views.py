@@ -1,14 +1,13 @@
-from django.views import View
-from django.views.generic.edit import FormView
-from django.views.generic.list import ListView
+from django.views.generic import FormView, CreateView, DeleteView, ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models.functions import MD5, Concat
 from django.db.models import Value as V
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 
+from datetime import datetime
 
-from core.models import Club, Rencontre
+from core.models import Club, Rencontre, Categorie, Voie
 from .forms import *
 from .models import *
 
@@ -39,7 +38,7 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
 class RencontreSelectionView(SuperUserRequiredMixin, FormView):
     success_url = reverse_lazy('rencontre:qrcode-clubs')
     form_class = RencontreSelectionForm
-    template_name = 'admin/rencontres-list.html'
+    template_name = 'admin/select.html'
 
     def get_initial(self):
         initial = super().get_initial()
@@ -53,3 +52,29 @@ class RencontreSelectionView(SuperUserRequiredMixin, FormView):
             self.request.user.profil.rencontre = form.cleaned_data['rencontre']
             self.request.user.profil.save()
         return HttpResponseRedirect(self.get_success_url() + f"?rencontre={form.cleaned_data['rencontre'].id}")
+
+class RencontreCreateView(SuperUserRequiredMixin, CreateView):
+    success_url = reverse_lazy('rencontre:select')
+    form_class = RencontreCreateForm
+    template_name = 'admin/create.html'
+
+    def get_initial(self):
+        now = datetime.now()
+        categorie = self.request.POST.get('categorie')
+
+        initial = super().get_initial()
+        initial.update({
+            'saison': now.year,
+            'date': now.date(),
+        })
+        if categorie == Categorie.enfants:
+            initial['voiesGroupees'] = True
+        if not categorie is None:
+            initial['voies'] = Voie.objects.filter(actif=True, categorie=categorie)
+        return initial
+
+class RencontreDeleteView(SuperUserRequiredMixin, DeleteView):
+    success_url = reverse_lazy('rencontre:select')
+    model = Rencontre
+    template_name = 'admin/delete.html'
+    context_object_name = 'object'

@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Créer une rencontre{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="card-header">
+                    <span class="{% if form.non_field_errors or form.club.errors %}is-invalid{% endif %}">Créer une rencontre</span>
+                    {% if form.non_field_errors %}
+                        <span class="invalid-feedback">{{ form.non_field_errors }}</span>
+                    {% endif %}
+                    <ul class="mt-3 nav nav-tabs card-header-tabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="parameters-tab" data-bs-toggle="tab" data-bs-target="#parameters-pane" type="button" role="tab">Paramètres</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link" id="lines-tab" data-bs-toggle="tab" data-bs-target="#lines-pane" type="button" role="tab">Voies</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced-pane" type="button" role="tab">Avancés</button>
+                      </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content">
+                    <div class="card-body tab-pane fade show active" id="parameters-pane" role="tabpanel">
+                        {% bootstrap_field form.saison layout='horizontal' %}
+                        {% bootstrap_field form.date layout='horizontal' %}
+                        {% bootstrap_field form.club layout='horizontal' %}
+                        {% bootstrap_field form.categorie layout='horizontal' %}
+                    </div>
+                    <div class="card-body tab-pane fade" id="lines-pane" role="tabpanel">
+                        {% bootstrap_field form.voies layout='horizontal' field_class='size' %}
+                    </div>
+                    <div class="card-body tab-pane fade" id="advanced-pane" role="tabpanel">
+                        {% bootstrap_field form.nbBloc layout='horizontal' %}
+                        {% bootstrap_field form.nbDiff layout='horizontal' %}
+                        {% bootstrap_field form.nbVitesse layout='horizontal' %}
+                        {% bootstrap_field form.voiesReutilisables layout='horizontal' %}
+                        {% bootstrap_field form.voiesGroupees layout='horizontal' %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i>Créer la rencontre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -109,7 +109,10 @@
     <Compile Include="pyInterClubs\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="admin\templates\admin\rencontres-list.html" />
+    <Content Include="admin\static\css\collapsible.css" />
+    <Content Include="admin\templates\admin\create.html" />
+    <Content Include="admin\templates\admin\delete.html" />
+    <Content Include="admin\templates\admin\select.html" />
     <Content Include="admin\templates\widgets\rencontre-option.html">
       <SubType>Code</SubType>
     </Content>
@@ -216,6 +219,8 @@
     <Folder Include="admin\migrations\" />
     <Folder Include="admin\management\commands\" />
     <Folder Include="admin\management\" />
+    <Folder Include="admin\static\" />
+    <Folder Include="admin\static\css\" />
     <Folder Include="admin\templates\widgets\" />
     <Folder Include="admin\templates\" />
     <Folder Include="admin\templates\admin\" />
