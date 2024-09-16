@@ -42,7 +42,6 @@ export function Points({ value }) {
 export function Vitesse({ value, onChange:setTime }) {
     const defaultTime = "00:00:00.00";
     function format(time) {
-        console.log(time);
         if (time === null) return 'A réaliser';
         if (time === 'Chute' || time === 'Abandon') return time;
         time = time.replace(/\D/g, '');

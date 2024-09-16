@@ -56,7 +56,7 @@ export default function Autocomplete({
                 useEffect(() => {
                     if (value && selectedItem && selectedItem[key] !== value[key]) {
                         action(typeof value === 'string' ? `?q=${value}` : `${value[key]}/`);
-                    } else if (!value && !searchTerm) {
+                    } else if (!value) {
                         handleSelectItem(null);
                     }
                 }, [value]);

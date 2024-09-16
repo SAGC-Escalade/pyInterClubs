@@ -57,6 +57,9 @@ export default function Equipe({ id }) {
                     </div>
                 );
 
+                const disabledAddButton = !(equipe?.membres.length < 8);
+                const showAddCollapsible = (showAdd || (equipe?.membres.length == 0)) && !disabledAddButton;
+
                 return (
                     <>
                         <div className={"card" + (status.isDeleting ? " opacity-50" : "")}>
@@ -162,7 +165,7 @@ export default function Equipe({ id }) {
                             </Accordion>
 
                             {equipe?.membres.length < 8 && (
-                                <Collapse in={showAdd || (equipe?.membres.length == 0)}>
+                                <Collapse in={showAddCollapsible}>
                                     <ul className="list-group list-group-flush">
                                         <li className="list-group-item">
                                             <AddScore equipe={equipe} />
@@ -172,8 +175,13 @@ export default function Equipe({ id }) {
                             )}
 
                             <div className="card-footer hstack gap-3">
-                                <Button variant="none" disabled={!(equipe?.membres.length < 8)} onClick={() => setShowAdd(!showAdd)}>
-                                    <i className="fa-solid fa-plus fa-fw"></i><span className="d-none d-md-inline ms-2">Ajouter un grimpeur</span>
+                                <Button variant="none" disabled={disabledAddButton} onClick={() => setShowAdd(!showAdd)}>
+                                    {showAddCollapsible ? (
+                                        <svg class="svg-inline--fa fa-fw" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z" /></svg>
+                                    ) : (
+                                        <svg class="svg-inline--fa fa-fw" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" /></svg>
+                                    )}
+                                    <span className="d-none d-md-inline ms-2">Ajouter un grimpeur</span>
                                 </Button>
                                 <Button className="ms-auto" variant="danger" disabled={!equipe} onClick={() => setShowDelete(true)}>
                                     <i className="fa-solid fa-trash fa-fw"></i><span className="d-none d-md-inline ms-2">Supprimer l'équipe</span>
