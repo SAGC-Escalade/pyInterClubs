@@ -64,7 +64,7 @@ class RencontreCreateView(SuperUserRequiredMixin, CreateView):
 
         initial = super().get_initial()
         initial.update({
-            'saison': now.year,
+            'saison': now.year - (now.month < 8),
             'date': now.date(),
         })
         if categorie == Categorie.enfants:

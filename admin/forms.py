@@ -43,6 +43,9 @@ class RencontreSelectionForm(forms.Form):
     )
 
 
+class VoiesSelectWidget(forms.SelectMultiple):
+    option_template_name = "widgets/voies-option.html"
+
 class RencontreCreateForm(forms.ModelForm):
     class Meta:
         model = Rencontre
@@ -67,6 +70,19 @@ class RencontreCreateForm(forms.ModelForm):
 
     voies = forms.ModelMultipleChoiceField(
         required=False,
-        queryset=Voie.objects.filter(actif=True).order_by("type", "nom"),
-        to_field_name='id'
+        queryset=Voie.objects.filter(actif=True).order_by("categorie", "type"),
+        to_field_name='id',
+        widget=VoiesSelectWidget(attrs={'size':'15'}),
     )
+
+    def clean_voies(self):
+        data = self.cleaned_data["voies"]
+        if len(data) == 0: raise ValidationError('Sélectionnez les voies de la rencontre.')
+        return data
+
+    def clean(self):
+        cleaned_data = super().clean()
+        categorie = cleaned_data.get('categorie')
+        voies = cleaned_data.get('voies')
+        if voies and any(v.categorie != categorie for v in voies):
+            raise ValidationError({'voies': 'Sélectionnez uniquement les voies de la catégorie concernée.'})

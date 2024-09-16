@@ -117,6 +117,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="admin\templates\widgets\rencontre.html" />
+    <Content Include="admin\templates\widgets\voies-option.html" />
     <Content Include="api\react\autocomplete.jsx">
       <SubType>Code</SubType>
     </Content>
