@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.db import models
+from django.db.models import Case, When
+from django.db.models.functions import Cast, Substr
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
@@ -27,6 +29,8 @@ __all__ = [
     "RencontreVoie",
 ]
 
+########################################################
+# Définition des Enum
 
 class Categorie(models.IntegerChoices):
     __empty__   = 'Sélectionnez la catégorie'
@@ -46,6 +50,81 @@ class TypeVoie(models.IntegerChoices):
     vitesse   = 3, 'Vitesse'
 
 
+########################################################
+# Définition des Manager et des QuerySet
+
+class VoieQuerySet(models.QuerySet):
+    def order_by__nom(self):
+        is_tete = Case(
+            When(nom__startswith='M', then=False),
+            When(nom__startswith='T', then=True),
+            output_field=models.BooleanField()
+        )
+        numero_voie = Cast(Substr('nom', 2), models.IntegerField())
+        return self.annotate(tete=is_tete, numero=numero_voie).order_by('tete', 'numero')
+
+    def actifs(self):
+        return self.filter(actif=True)
+    def blocs(self):
+        return self.filter(type=TypeVoie.bloc)
+    def diffs(self):
+        return self.filter(type=TypeVoie.diff)
+    def vitesses(self):
+        return self.filter(type=TypeVoie.vitesse)
+class VoieManager(models.Manager):
+    def get_queryset(self):
+        return VoieQuerySet(self.model, using=self.db)
+
+    def order_by__nom(self):
+        return self.get_queryset().order_by__nom()
+
+    def actifs(self):
+        return self.get_queryset().actifs()
+    def blocs(self):
+        return self.get_queryset().blocs()
+    def diffs(self):
+        return self.get_queryset().diffs()
+    def vitesses(self):
+        return self.get_queryset().vitesses()
+
+class GrimpeurQuerySet(models.QuerySet):
+    def hommes(self):
+        return self.filter(sexe=Genre.homme)
+    def femmes(self):
+        return self.filter(sexe=Genre.femme)
+class GrimpeurManager(models.Manager):
+    def get_queryset(self):
+        return GrimpeurQuerySet(self.model, using=self.db)
+
+    def hommes(self):
+        return self.get_queryset().hommes()
+    def femmes(self):
+        return self.get_queryset().femmes()
+
+class ScoreQuerySet(models.QuerySet):
+    def hommes(self):
+        return self.filter(Grimpeur__Sexe=Genre.Homme)
+    def femmes(self):
+        return self.filter(Grimpeur__Sexe=Genre.Femme)
+
+    def in_order(self):
+        return self.order_by('ordre')
+class ScoreManager(models.Manager):
+    def get_queryset(self):
+        return ScoreQuerySet(self.model, using=self.db)
+
+    def hommes(self):
+        return self.get_queryset().hommes()
+    def femmes(self):
+        return self.get_queryset().femmes()
+
+    def in_order(self):
+        return self.get_queryset().in_order()
+
+
+########################################################
+# Définition des Models
+
 class Voie(CleanModel):
     class Meta:
         indexes = [
@@ -60,11 +139,14 @@ class Voie(CleanModel):
     zones = models.JSONField()
     actif = models.BooleanField(default=False)
 
+    objects = VoieManager()
+
     def __str__(self):
         return f'{self.nom}/{self.niveau}'
 
     def points(self, index):
         return list(self.zones.values())[index]
+
 
 class Club(CleanModel):
     class Meta:
@@ -75,21 +157,6 @@ class Club(CleanModel):
     def __str__(self):
         return self.nom
 
-
-class GrimpeurQuerySet(models.QuerySet):
-    def hommes(self):
-        return self.filter(sexe=Genre.homme)
-    def femmes(self):
-        return self.filter(sexe=Genre.femme)
-
-class GrimpeurManager(models.Manager):
-    def get_queryset(self):
-        return GrimpeurQuerySet(self.model, using=self.db)
-
-    def hommes(self):
-        return self.get_queryset().hommes()
-    def femmes(self):
-        return self.get_queryset().femmes()
 
 class Grimpeur(CleanModel):
     class Meta:
@@ -200,27 +267,6 @@ class Equipe(CleanModel):
         return sum([m.points for m in self.membres.all()])
 
 
-class ScoreQuerySet(models.QuerySet):
-    def hommes(self):
-        return self.filter(Grimpeur__Sexe=Genre.Homme)
-    def femmes(self):
-        return self.filter(Grimpeur__Sexe=Genre.Femme)
-
-    def in_order(self):
-        return self.order_by('ordre')
-
-class ScoreManager(models.Manager):
-    def get_queryset(self):
-        return ScoreQuerySet(self.model, using=self.db)
-
-    def hommes(self):
-        return self.get_queryset().hommes()
-    def femmes(self):
-        return self.get_queryset().femmes()
-
-    def in_order(self):
-        return self.get_queryset().in_order()
-
 class Score(CleanModel):
     id = models.BigAutoField(primary_key=True)
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='membres')
@@ -247,24 +293,43 @@ class Score(CleanModel):
 
     def clean(self):
         super().clean()
-        if self.equipe_id is not None and self.equipe.membres.count() >= 8:
+        if self.equipe_id is not None and self.equipe.membres.count() >= 8 and (self.pk is None or not self.equipe.membres.filter(pk=self.pk).exists()):
             raise ValidationError("Une équipe ne peut pas avoir plus de 8 membres.")
 
 
     def ordre_up(self):
-        prev = self.equipe.membres.filter(ordre__lt=self.ordre).order_by('ordre').last()
+        prev = self.equipe.membres.filter(ordre__lt=self.ordre).in_order().last()
         if prev is None: return
         prev.ordre += 1
         self.ordre -= 1
         prev.save()
         self.save()
     def ordre_down(self):
-        next = self.equipe.membres.filter(ordre__gt=self.ordre).order_by('ordre').first()
+        next = self.equipe.membres.filter(ordre__gt=self.ordre).in_order().first()
         if next is None: return
         next.ordre -= 1
         self.ordre += 1
         next.save()
         self.save()
+    def groupe(self, groupe):
+        if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return
+        # Set des paramètres de la rencontre
+        nbDiff = self.equipe.rencontre.nbDiff
+        # Get des voies de la rencontre
+        voies = self.equipe.rencontre.voies.diffs().order_by__nom()
+        # Get des paramètres du groupe sélectionné
+        groupe = voies.get(pk=groupe)
+        # Get des 3 voies du groupe
+        voies = list(voies)
+        i = voies.index(groupe)
+        voies = voies[i:i+nbDiff]
+        # On enregistre la sélection dans les perfs du grimpeur
+        perfs = list(self.performances.filter(Q(voie__type=TypeVoie.diff)|Q(voie=None)))
+        for p,v in zip(perfs, voies):
+            p.voie = v
+            p.save()
+        self.refresh('points')
+
 
     def save(self, *args, **kwargs):
         creating = self._state.adding
@@ -278,7 +343,7 @@ class Score(CleanModel):
     def refresh(self, field):
         if field == 'points':
             self.points = sum(p for p in self.performances.values_list('points', flat=True) if p)
-        if self.tracker.has_changed: self.save
+        if self.tracker.has_changed: self.save()
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
@@ -311,7 +376,7 @@ class Performance(CleanModel):
         super().clean()
         if self.score_id and self.voie_id and self.tracker.has_changed('voie_id'):
             # La voie n'est autorisée QUE si elle n'est pas déjà utilisée dans la même rencontre
-            if self.score.equipe_id and self.score.equipe.rencontre_id and not self.score.equipe.rencontre.voiesReutilisables:
+            if self.score.equipe_id and self.score.equipe.rencontre_id and not (self.score.equipe.rencontre.voiesReutilisables or self.score.equipe.rencontre.voiesGroupees):
                 if self.score.performances.filter(~Q(id=self.id) & Q(voie=self.voie)).count():
                     raise ValidationError({'voie': ["Les voies ne sont faisables qu'une seule fois"]})
 

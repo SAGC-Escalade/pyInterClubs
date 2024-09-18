@@ -229,9 +229,9 @@ class ScoreSerializer(SSESerializer):
 
         rencontre = instance.equipe.rencontre
         voies = rencontre.voies
-        blocs = [Performance(voie=v, score=instance) for v in voies.filter(type=TypeVoie.bloc)][:rencontre.nbBloc]
+        blocs = [Performance(voie=v, score=instance) for v in voies.blocs()][:rencontre.nbBloc]
         diffs = [Performance(score=instance) for i in range(rencontre.nbDiff)]
-        vitesse = [Performance(voie=v, score=instance) for v in voies.filter(type=TypeVoie.vitesse)][:rencontre.nbVitesse]
+        vitesse = [Performance(voie=v, score=instance) for v in voies.vitesses()][:rencontre.nbVitesse]
         perfs = [p.save() for p in blocs + diffs + vitesse]
 
         return instance
@@ -268,6 +268,8 @@ class PerformanceSerializer(SSESerializer):
 
     temps = DurationField(required=False)
     voie = ForeignKeyField(model_class=Voie, serializer=VoieSerializer)
+
+    url_list = 'perfs'
     class Meta:
         model = Performance
         fields = [

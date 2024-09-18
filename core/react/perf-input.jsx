@@ -13,18 +13,22 @@ export function VoieInput({ value, choices = niveaux, onChange, size, isValid, i
             {selected == -1 && <option value={-1} disabled>La voie sélectionnée n'est pas autorisée</option>}
             <option value={0} disabled>Sélectionnez une voie</option>
             {choices.map(function (voie) {
-                return (<option key={voie.id} value={voie.id}>{voie.nom}/{voie.niveau}</option>);
+                return (<option key={voie.id} value={voie.id}>{voie.nom} ({voie.niveau})</option>);
             })}
         </FormSelect>
     );
 }
 export function EtatInput({ value, choices = undefined, onChange, size, isValid, isInvalid }) {
     if (choices === undefined)
-        choices = { "A réaliser": null, "Réussie": 1, "Valorisée": 2, "Echouée": 3 }
-    choices = Object.keys(choices);
+        choices = { "A réaliser": null, "Chute": 0, "Valorisée": 0, "Réussie": 0 }
+    choices = Object.entries(choices);
+    // On désactive le select si la valeur sélectionnée rapporte 0 points (sauf si c'est la chute)
+    const disabled = (choices[value] || [])[0] != "Chute" && (choices[value] || [])[1] === 0;
     return (
-        <FormSelect defaultValue={value | ""} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid}>
-            {choices.map((label, index) => {
+        <FormSelect value={value | ""} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
+            {choices.map(([label, points], index) => {
+                // Si l'option ne rapporte pas de points, on ne l'affiche pas (sauf si c'est celle qui est sélectionnée)
+                if (points === 0 && label != "Chute" && value != index) return;
                 return (<option value={index} key={index}>{label}</option>);
             })}
         </FormSelect>
@@ -112,7 +116,11 @@ export default function PerfInput({ id, index }) {
                     return (
                         <HorizontalFormGroup label={"Voie " + index}>
                             <InputGroup className={errors ? "is-invalid" : ""}>
-                                {!rencontre.voiesGroupees && <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />}
+                                {rencontre.voiesGroupees ? (
+                                    <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
+                                ) : (
+                                    <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />
+                                )}
                                 <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
                                 <Points value={perf.points} />
                             </InputGroup>

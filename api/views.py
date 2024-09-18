@@ -99,7 +99,7 @@ class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
         return self.request.interclub.scores
-    
+
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
     def set_ordre(self, request, pk=None, cmd=None):
         if not cmd in ('up', 'down'): return Response({'no_field_errors': ["command not found"]}, status=status.HTTP_400_BAD_REQUEST)
@@ -107,7 +107,18 @@ class ScoreViewSet(DjangoModelViewSet):
         score = self.get_object()
         if cmd == 'up': score.ordre_up()
         else:           score.ordre_down()
-        # EquipeSerializer(score.equipe).notify()
+        # EquipeSerializer(score.equipe).notify() # Pas besoin de notifier celà pour le moment
+        return Response204()
+
+    @action(detail=True, url_path=r'groupe', methods=['POST']) #, permission_classes=[])
+    def set_groupe(self, request, pk=None):
+        if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
+        score = self.get_object()
+        score.groupe(self.request.data.get('id'))
+        # for perf in score.performances.filter(voie__type=TypeVoie.diff):
+        #     PerformanceSerializer(perf).notify()
+        EquipeSerializer(score.equipe).notify(True)
+        ScoreSerializer(score).notify() # Peut être qu'il serai préférable de renvoyer le score en réponse plutôt que par notification
         return Response204()
 
     def perform_create(self, serializer):

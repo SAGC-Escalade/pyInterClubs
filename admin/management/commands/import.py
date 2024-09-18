@@ -11,9 +11,7 @@ def clubTranslation(row):
 def niveauTranslation(row):
     id, ptsValorise, ptsComplete, nom, niveau, categorie, actif = row
     if id == 44: return [(None, False)] # On ne crée pas le gardien, il devient inutile dans cette version
-    zones = {'A réaliser': None, 'Chute': 0}
-    if ptsValorise: zones['Valorisée'] = ptsValorise
-    zones['Réussie'] = ptsComplete
+    zones = {'A réaliser': None, 'Chute': 0, 'Valorisée': ptsValorise, 'Réussie': ptsComplete}
     fields = {
         'zones': zones,
         'type': TypeVoie.bloc if nom == 'Bloc' else TypeVoie.diff,

@@ -70,7 +70,7 @@ class RencontreCreateForm(forms.ModelForm):
 
     voies = forms.ModelMultipleChoiceField(
         required=False,
-        queryset=Voie.objects.filter(actif=True).order_by("categorie", "type"),
+        queryset=Voie.objects.actifs().order_by("categorie", "type"),
         to_field_name='id',
         widget=VoiesSelectWidget(attrs={'size':'15'}),
     )
