@@ -56,7 +56,7 @@ class ClubViewSet(DjangoModelViewSet):
     def get_queryset(self):
         queryset = Club.objects.all()
         filter = self.request.query_params.get('q')
-        if filter: queryset = queryset.filter(nom__icontains=filter)
+        if filter: queryset = queryset.filter(Q(nom__icontains=filter) | Q(ville__icontains=filter))
         return queryset
 
 class VoieViewSet(DjangoModelViewSet):
@@ -70,7 +70,7 @@ class GrimpeurViewSet(DjangoModelViewSet):
         interclub = getattr(self.request, 'interclub', None)
         if interclub is None: return Grimpeur.objects.none()
 
-        queryset = self.request.interclub.grimpeurs
+        queryset = interclub.grimpeurs
         # On ne garde que les grimpeurs qui ne sont pas inscrits
         alreadyRegistered = interclub.rencontre.scores.values('grimpeur_id')
         queryset = queryset.exclude(id__in=alreadyRegistered)

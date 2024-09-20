@@ -23,7 +23,7 @@ export default function Autocomplete({
     const timeout = useRef(null);
 
     const handleInputChange = (event) => {
-        handleSelectItem(null, event.target.value);
+        handleSelectItem(null, event.target.value, false);
         updateSearchQuery(event.target.value, searchQuery);
     };
 
@@ -41,11 +41,11 @@ export default function Autocomplete({
         []
     );
 
-    const handleSelectItem = (item, txt = '') => {
+    const handleSelectItem = (item, txt = '', propagate = true) => {
         setSearchTerm(item ? children(item) : txt);
         if (!item || !selectedItem || item[key] != selectedItem[key]) {
             setSelectedItem(item);
-            if (onChange)
+            if (onChange && propagate)
                 onChange(item);
         }
     };
@@ -56,6 +56,9 @@ export default function Autocomplete({
                 useEffect(() => {
                     if (value && selectedItem && selectedItem[key] !== value[key]) {
                         action(typeof value === 'string' ? `?q=${value}` : `${value[key]}/`);
+                    } else if (value && !selectedItem) {
+                        setSearchTerm(children(value));
+                        setSelectedItem(value);
                     } else if (!value) {
                         handleSelectItem(null);
                     }

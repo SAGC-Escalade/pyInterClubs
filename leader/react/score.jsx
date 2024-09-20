@@ -56,16 +56,20 @@ export default function Score({ id }) {
                                         </ListGroupItem>
                                         <Collapse in={showParameters}>
                                             <ListGroupItem className="border-bottom">
-                                                    {rencontre.voiesGroupees && (
-                                                        <HorizontalFormGroup label="Groupe">
-                                                            <VoieInput name="groupe" value={score.groupe}
-                                                                choices={rencontre.voies.filter((v) => v.type == 2)}
-                                                                onChange={(ev) => action('groupe/', { 'id': parseInt(ev.target.value) })}
-                                                            />
-                                                        </HorizontalFormGroup>
-                                                    )}
+                                                {rencontre.voiesGroupees && (
+                                                    <HorizontalFormGroup label="Groupe">
+                                                        <VoieInput name="groupe" value={score.groupe}
+                                                            choices={rencontre.voies.filter((v) => v.type == 2)}
+                                                            onChange={(ev) => action('groupe/', { 'id': parseInt(ev.target.value) })}
+                                                        />
+                                                    </HorizontalFormGroup>
+                                                )}
                                                 <HorizontalFormGroup label="Club prêteur">
-                                                    <Autocomplete endpoint="clubs" defaultValue={score.clubPreteur} label="nom" />
+                                                    <Autocomplete endpoint="clubs" value={score.clubPreteur} onChange={(c) => action('patch', { "clubPreteur": c?.id ?? null })}>
+                                                        {({ nom, ville }) => {
+                                                            return `${nom} (${ville})`;
+                                                        }}
+                                                    </Autocomplete>
                                                 </HorizontalFormGroup>
                                                 <HorizontalFormGroup label="Actions">
                                                     <ButtonToolbar>
