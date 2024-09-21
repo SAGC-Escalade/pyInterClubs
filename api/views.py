@@ -115,11 +115,10 @@ class ScoreViewSet(DjangoModelViewSet):
         if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
         score = self.get_object()
         score.groupe(self.request.data.get('id'))
-        # for perf in score.performances.filter(voie__type=TypeVoie.diff):
-        #     PerformanceSerializer(perf).notify()
+        for perf in score.performances.filter(voie__type=TypeVoie.diff):
+            PerformanceSerializer(perf).notify()
         EquipeSerializer(score.equipe).notify(True)
-        ScoreSerializer(score).notify() # Peut être qu'il serai préférable de renvoyer le score en réponse plutôt que par notification
-        return Response204()
+        return Response(ScoreSerializer(score).data)
 
     def perform_create(self, serializer):
         instance = super().perform_create(serializer)
@@ -143,9 +142,7 @@ class PerformanceViewSet(DjangoModelViewSet):
 
     def perform_update(self, serializer):
         instance = super().perform_update(serializer)
-        if any(f in serializer.initial_data for f in ('points', )):
-            ScoreSerializer(instance.score).notify()
-            EquipeSerializer(instance.score.equipe).notify(True)
-        if any(f in serializer.initial_data for f in ('temps', )):
+        print(serializer.initial_data)
+        if any(f in serializer.initial_data for f in ('points', 'temps', 'voie', 'etat')):
             ScoreSerializer(instance.score).notify()
             EquipeSerializer(instance.score.equipe).notify(True)
