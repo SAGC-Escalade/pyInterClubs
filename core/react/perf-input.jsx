@@ -43,11 +43,11 @@ export function Points({ value }) {
     );
 }
 
-export function Vitesse({ value, onChange:setTime }) {
+export function Vitesse({ value, onChange }) {
     const defaultTime = "00:00:00.00";
     function format(time) {
         if (time === null) return 'A réaliser';
-        if (time === 'Chute' || time === 'Abandon') return time;
+        if (time === 'Chute' || time === 'Abandon' || time === 'A réaliser') return time;
         time = time.replace(/\D/g, '');
         time = time.match(/(?:(?:([0-2]?\d)??([0-5]?\d))??([0-5]?\d))??(\d\d?)$/);
         if (time === null) return defaultTime;
@@ -55,41 +55,50 @@ export function Vitesse({ value, onChange:setTime }) {
         return `${hr}:${min}:${sec}.${cent}`;
     }
 
-    //const [time, setTime] = useState("");
+    const [time, setTime] = useState(format(value));
     const inputRef = useRef(null);
+    const timer = useRef(null);
 
-    const handleChange = (ev) => setTime(format(ev.target.value));
-    //const handleValueChange = useEffect(() => { console.log("change value", value); setTime(format(value)); }, [value]);
+    useRef(() => {
+        setTime(format(value));
+    }, [value]);
+
+    const handleChange = (t) => {
+        t = format(t);
+        setTime(t);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => onChange(format(t)), 500);
+    }
 
     return (
         <>
-            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={format(value)} onChange={handleChange} />
+            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={time} onChange={(ev) => handleChange(ev.target.value)} />
             <Dropdown as={ButtonGroup}>
                 <DropdownToggle split variant="outline-secondary" align="end">
                     <span className="visually-hidden">Cas particuliers</span>
                 </DropdownToggle>
                 <DropdownMenu align="end">
-                    <DropdownItem onClick={() => setTime(defaultTime)}>
+                    <DropdownItem onClick={() => handleChange(defaultTime)}>
                         <i className="fa-regular fa-clock fa-fw me-2"></i>
                         hh:mm:ss.ff
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownHeader>Cas particuliers</DropdownHeader>
-                    <DropdownItem onClick={() => setTime("A réaliser")}>
+                    <DropdownItem onClick={() => handleChange("A réaliser")}>
                         <span className="fa-layers fa-fw me-2">
                             <i className="fa-solid fa-slash" data-fa-mask="fa-regular fa-clock" data-fa-transform="flip-h down-1 right-1"></i>
                             <i className="fa-solid fa-slash" data-fa-transform="flip-h" ></i>
                         </span>
                         A réaliser
                     </DropdownItem>
-                    <DropdownItem onClick={() => setTime("Chute")}>
+                    <DropdownItem onClick={() => handleChange("Chute")}>
                         <span className="fa-layers fa-fw me-2">
                             <i className="fa-solid fa-person-falling" data-fa-transform="shrink-2 down-2 left-2"></i>
                             <i className="fa-solid fa-slash" data-fa-transform="rotate-52 right-5"></i>
                         </span>
                         Chute
                     </DropdownItem>
-                    <DropdownItem onClick={() => setTime("Abandon")}>
+                    <DropdownItem onClick={() => handleChange("Abandon")}>
                         <span className="fa-layers fa-fw me-2">
                             <i className="fa-solid fa-person-walking" data-fa-transform="flip-h shrink-2 left-2"></i>
                             <i className="fa-solid fa-slash" data-fa-transform="rotate-52 shrink-2 right-5 up-4"></i>

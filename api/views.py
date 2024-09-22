@@ -142,7 +142,6 @@ class PerformanceViewSet(DjangoModelViewSet):
 
     def perform_update(self, serializer):
         instance = super().perform_update(serializer)
-        print(serializer.initial_data)
         if any(f in serializer.initial_data for f in ('points', 'temps', 'voie', 'etat')):
             ScoreSerializer(instance.score).notify()
             EquipeSerializer(instance.score.equipe).notify(True)
