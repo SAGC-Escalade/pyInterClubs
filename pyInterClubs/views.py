@@ -28,6 +28,8 @@ class ClubAuthenticationView(LoginView):
         return self.post(*args, **kwargs)
 
 
+# Workaround permettant de servir du JSX sans précompilation
+# L'état de l'art voudrait que le JSX soit précompilé et disponible dans les fichiers statiques du projet
 options = get_options()
 transpiler = get_transpiler(options)
 

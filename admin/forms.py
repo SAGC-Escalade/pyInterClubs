@@ -36,7 +36,7 @@ class RencontreChoiceField(forms.ModelChoiceField):
 class RencontreSelectionForm(forms.Form):
     rencontre = RencontreChoiceField(
         required=True,
-        queryset=Rencontre.objects.all().order_by("-saison", "date"),
+        queryset=Rencontre.objects.select_related('club').prefetch_related('equipes__membres', 'profil_set').order_by("-saison", "date"),
         empty_label=None,
         to_field_name='id',
         widget=RencontreWidget

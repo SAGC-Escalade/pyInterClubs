@@ -53,15 +53,11 @@ class ScoreInline(admin.TabularInline):
     model = Score
     fk_name = 'equipe'
     show_change_link = True
-    fields = ('grimpeur', 'points', 'valide', 'clubPreteur')
+    fields = ('grimpeur', 'clubPreteur')
     ordering = ('ordre',)
-    readonly_fields = ('grimpeur', 'valide', 'clubPreteur')
+    readonly_fields = ('grimpeur', 'clubPreteur')
     max_num = 8
     verbose_name = 'Participant'
-
-    @admin.display(boolean=True)
-    def valide(self, obj):
-        return obj.valide
 
 
 # ModelAdmin
@@ -138,7 +134,7 @@ class EquipeAdmin(admin.ModelAdmin):
 
 @admin.register(Score)
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = ('grimpeur', 'get_rencontre', 'get_equipe', 'points')
+    list_display = ('grimpeur', 'get_rencontre', 'get_equipe')
     list_filter = (
         GrimpeurFirstLetterFilter,
         byField(Rencontre, '__str__', 'equipe__rencontre', 'rencontre'),
@@ -149,7 +145,7 @@ class ScoreAdmin(admin.ModelAdmin):
     search_help_text = "Recherchez par le nom, le prénom ou le club d'un grimpeur"
     fieldsets = (
         ('Grimpeur', {
-            'fields': ('equipe', 'grimpeur', 'points'),
+            'fields': ('equipe', 'grimpeur'),
         }),
         ('Options avancées', {
             'classes': ('collapse',),

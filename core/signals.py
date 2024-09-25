@@ -18,22 +18,11 @@ def proceed_speed_points(sender, instance, created=False, **kwargs):
             perf.refresh_from_db()
     elif perf.tracker.has_changed('points') and perf.score_id:
         perf.score.refresh('points')
+        perf.score.save()
 
-
-
-@receiver(pre_save, sender=Performance)
-def detect_changes_pre_save(sender, instance, **kwargs):
-    if instance.pk:  # Si l'instance existe déjà
-        old_instance = sender.objects.get(pk=instance.pk)
-        if instance.tracker.has_changed('temps') or instance.tracker.has_changed('points'):
-            update_score_points(instance)
 
 @receiver(post_delete, sender=Performance)
 def update_score_on_performance_delete(sender, instance, **kwargs):
-    update_score_points(instance)
-
-def update_score_points(instance):
-    score = instance.score
-    total_points = sum(perf.points for perf in score.performances.all() if perf.points is not None)
-    score.points = total_points
-    score.save()
+    perf = instance
+    perf.score.refresh('points')
+    perf.score.save()

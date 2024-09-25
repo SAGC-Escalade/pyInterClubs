@@ -6,6 +6,7 @@ from rest_framework import serializers
 from django_eventstream import send_event
 from itertools import groupby
 from operator import itemgetter
+import re
 
 from core.models import *
 
@@ -133,15 +134,13 @@ class RencontreSerializer(SSESerializer):
 
 class EquipeSerializer(SSESerializer):
     url_list = 'equipes'
-    membres = serializers.SerializerMethodField()
+    points = serializers.IntegerField(read_only=True)
+    valide = serializers.BooleanField(read_only=True)
+    membres = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     club = ClubSerializer(read_only=True)
     class Meta:
         model = Equipe
         fields = ['id', 'membres', 'club', 'numero', 'valide', 'points']
-
-    def get_membres(self, obj):
-        membres = obj.membres.all().order_by('ordre')
-        return list(m.id for m in membres)
 
     def save(self, **kwargs):
         ret = super().save(**kwargs)
@@ -160,24 +159,38 @@ class EquipeSerializer(SSESerializer):
 
 
 class ScoreSerializer(SSESerializer):
+    re_nom = re.compile(r'([TM])(\d+)', re.IGNORECASE)
+    @staticmethod
+    def _cut_nom(voie):
+        m = ScoreSerializer.re_nom.search(voie.nom)
+        if m is None: return None
+        l,n = m.groups()
+        return l,int(n)
+
     class EquipeField(serializers.PrimaryKeyRelatedField):
         def get_queryset(self):
             interclub = getattr(self.context.get('request', {}), 'interclub', None)
-            if interclub is None:
-                return Equipe.objects.none()
-            return interclub.equipes
+            if interclub is None or interclub.rencontre is None: return Equipe.objects.none()
+            return Equipe.objects \
+                .global_filter(rencontre=interclub.rencontre, club=interclub.club)
 
     class GrimpeurField(serializers.PrimaryKeyRelatedField):
         def get_queryset(self):
-            interclub = getattr(self.context.get('request', {}), 'interclub', None)
-            if interclub is None:
-                return Grimpeur.objects.none()
-            queryset = interclub.grimpeurs
-            # On filtre sur les enfants qui ne sont pas encore inscrits uniquement
-            alreadyRegistered = interclub.rencontre.scores.values('grimpeur_id')
-            queryset = queryset.exclude(id__in=alreadyRegistered)
+            request = self.context.get('request', {})
+            interclub = getattr(request, 'interclub', None)
+            if interclub is None or interclub.rencontre is None: return Grimpeur.objects.none()
 
-            return queryset
+            queryset = Grimpeur.objects.global_filter(club=interclub.club)
+            if request and request.user and request.user.is_superuser:
+                rencontre = Rencontre.objects.get(pk=interclub.rencontre)
+                # On filtre les grimpeurs par rapport à leur âge
+                if rencontre.categorie == Categorie.enfants:
+                    queryset = queryset.enfants(rencontre.saison)
+                else:
+                    queryset = queryset.adolescents(rencontre.saison)
+
+            # On ne garde que les grimpeurs qui ne sont pas inscrits
+            return queryset.exclude_inscrits(rencontre=interclub.rencontre)
 
     class Meta:
         model = Score
@@ -192,6 +205,8 @@ class ScoreSerializer(SSESerializer):
 
     url_list = 'scores'
     __perfs = None
+    points = serializers.IntegerField(read_only=True)
+    valide = serializers.BooleanField(read_only=True)
     equipe = EquipeField()
     grimpeur = GrimpeurField()
     clubPreteur = serializers.PrimaryKeyRelatedField(queryset=Club.objects.all(), required=False, allow_null=True)
@@ -199,16 +214,18 @@ class ScoreSerializer(SSESerializer):
     groupe = serializers.SerializerMethodField()
 
     def get_performances(self, instance):
-        perfs = instance.performances.values('id', 'voie__type')
-        return {k: [v['id'] for v in perfs if TypeVoie(v['voie__type'] or TypeVoie.diff).label == k] for k in ('Bloc', 'Difficulté', 'Vitesse')}
+        perfs = instance.performances.all() #.values('id', 'voie__type') Inutile, tout est déjà chargé
+        return {k: [v.id for v in perfs if TypeVoie(v.voie.type or TypeVoie.diff).label == k] for k in ('Bloc', 'Difficulté', 'Vitesse')}
 
     def get_groupe(self, instance):
+        class Empty:
+            id = None
+
         if not instance.equipe.rencontre.voiesGroupees:
             return None
-        diffs = self.get_performances(instance).get(TypeVoie.diff.label, [None])
-        if not diffs or diffs[0] is None:
-            return None
-        return instance.performances.get(pk=diffs[0]).voie_id
+        diffs = instance.performances.all()
+        diffs = [p.voie for p in diffs if (p.voie.type or TypeVoie.diff) == TypeVoie.diff]
+        return min(diffs, key=self._cut_nom, default=Empty).id
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)

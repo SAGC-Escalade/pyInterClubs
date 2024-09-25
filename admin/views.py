@@ -22,7 +22,8 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
     template_name = 'admin/qrcode_club.html'
 
     def get_queryset(self):
-        return super().get_queryset().annotate(md5=MD5(Concat('nom', V(f"-{self.request.interclub.rencontre}")))).order_by('nom')
+        # TODO: Simplifier la requête en comptant directement le nombre de grimpeurs plutôt que de les récupérer
+        return super().get_queryset().prefetch_related('grimpeurs').annotate(md5=MD5(Concat('nom', V(f"-{self.request.interclub.rencontre}"))))
 
     def get_context_data(self, **kwargs):
         import socket

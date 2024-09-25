@@ -1,29 +1,18 @@
 from django.views.generic import DetailView, CreateView #, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.core.exceptions import BadRequest, ValidationError, ImproperlyConfigured
 
 from core.models import *
+from admin.middleware import WithRencontreRequiredMixin
 from .forms import *
 
-class WithRencontreMixin:
-    # Classe permettant de s'assurer que la rencontre est sélectionnée au niveau du middleware
-    # Si ce n'est pas le cas, une exception ValidationError sera levée.
-    def dispatch(self, request, *args, **kwargs):
-        if not hasattr(request, 'interclub'):
-            raise ImproperlyConfigured("Le middleware 'interclub' n'est pas trouvé, peut-être n'a-t-il pas été configuré correctement.")
-        if not request.interclub or not request.interclub.rencontre:
-            raise ValidationError("L'administrateur n'a pas démarré de rencontre.")
-        return super().dispatch(request, *args, **kwargs)
 
-
-
-class EquipeUpdateView(LoginRequiredMixin, WithRencontreMixin, DetailView):
+class EquipeUpdateView(LoginRequiredMixin, WithRencontreRequiredMixin, DetailView):
     model = Equipe
     template_name = 'leader/equipe.html'
 
 
-class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
+class EquipeCreateView(LoginRequiredMixin, WithRencontreRequiredMixin, CreateView):
     success_url = 'leader:edit'
     form_class = EquipeCreateForm
     template_name = 'leader/create.html'
@@ -40,8 +29,9 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.rencontre = self.request.interclub.rencontre
-        numeros = self.request.interclub.equipes.filter(club=self.object.club).values_list('numero', flat=True)
+        rencontre = Rencontre.objects.prefetch_related('equipes').get(pk=self.request.interclub.rencontre)
+        self.object.rencontre = rencontre
+        numeros = [e.numero for e in rencontre.equipes.all() if e.club_id == self.object.club_id]
         self.object.numero = min([i for i in range(1,max(numeros)+2) if not i in numeros]) if len(numeros) else 1
         self.object.save()
         return super().form_valid(form)

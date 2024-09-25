@@ -6,9 +6,10 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, F, Count, Case, When, Sum, Prefetch, BooleanField
 
 from core.models import *
+from admin.middleware import WithRencontreRequiredMixin
 from .serializers import *
 
 __all__ = (
@@ -27,7 +28,7 @@ def django2drfValidation(exc):
     detail = as_serializer_error(exc)
     return {k if k != DJANGO_NON_FIELD_ERRORS else api_settings.NON_FIELD_ERRORS_KEY:v for k,v in detail.items()}
 
-class DjangoModelViewSet(viewsets.ModelViewSet):
+class DjangoModelViewSet(WithRencontreRequiredMixin, viewsets.ModelViewSet):
     def perform_create(self, serializer):
         try:
             return serializer.save()
@@ -67,13 +68,18 @@ class GrimpeurViewSet(DjangoModelViewSet):
     serializer_class = GrimpeurSerializerIdentity
 
     def get_queryset(self):
-        interclub = getattr(self.request, 'interclub', None)
-        if interclub is None: return Grimpeur.objects.none()
+        interclub = self.request.interclub
+        queryset = Grimpeur.objects.global_filter(club=interclub.club)
+        if not self.request.user.is_superuser:
+            rencontre = Rencontre.objects.get(pk=interclub.rencontre)
+            # On filtre les grimpeurs par rapport à leur âge
+            if rencontre.categorie == Categorie.enfants:
+                queryset = queryset.enfants(rencontre.saison)
+            else:
+                queryset = queryset.adolescents(rencontre.saison)
 
-        queryset = interclub.grimpeurs
         # On ne garde que les grimpeurs qui ne sont pas inscrits
-        alreadyRegistered = interclub.rencontre.scores.values('grimpeur_id')
-        queryset = queryset.exclude(id__in=alreadyRegistered)
+        queryset = queryset.exclude_inscrits(rencontre=interclub.rencontre)
         # On ne garde que ceux qui correspondent au filtre de l'utilisateur
         filter = self.request.query_params.get('q')
         if filter:
@@ -81,7 +87,7 @@ class GrimpeurViewSet(DjangoModelViewSet):
                 Q(nom__icontains=filter) |
                 Q(prenom__icontains=filter)
             )
-        return queryset.order_by('nom', 'prenom')
+        return queryset #.order_by('nom', 'prenom') Normalement déjà ordonné par nom/prénom
 
 
 class RencontreViewSet(DjangoModelViewSet):
@@ -92,13 +98,22 @@ class EquipeViewSet(DjangoModelViewSet):
     serializer_class = EquipeSerializer
 
     def get_queryset(self):
-        return self.request.interclub.equipes
+        interclub = self.request.interclub
+        queryset = Equipe.objects.with_related() \
+            .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
+            .with_valide_and_points()
+        if self.request.user.is_superuser:
+            queryset = queryset.order_by('-points')
+        return queryset
 
 
 class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
-        return self.request.interclub.scores
+        interclub = self.request.interclub
+        return Score.objects.with_related() \
+            .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
+            .with_valide_and_points()
 
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
     def set_ordre(self, request, pk=None, cmd=None):
@@ -138,7 +153,7 @@ class ScoreViewSet(DjangoModelViewSet):
 
 class PerformanceViewSet(DjangoModelViewSet):
     serializer_class = PerformanceSerializer
-    queryset = Performance.objects.all()
+    queryset = Performance.objects.select_related('voie').all()
 
     def perform_update(self, serializer):
         instance = super().perform_update(serializer)

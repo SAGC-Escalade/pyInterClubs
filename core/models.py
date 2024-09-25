@@ -1,11 +1,10 @@
 from django.contrib import admin
-from django.db import models
-from django.db.models import Case, When
+from django.db import models, transaction
+from django.db.models import Q, F, Count, Case, When, Sum, Prefetch, BooleanField, QuerySet
 from django.db.models.functions import Cast, Substr
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
-from django.db.models import Q
 from django.urls import reverse
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -21,10 +20,10 @@ __all__ = [
     "Categorie", "Genre", "TypeVoie",
     "Voie",
     "Club",
-    "GrimpeurQuerySet", "GrimpeurManager", "Grimpeur",
+    "Grimpeur",
     "Rencontre",
     "Equipe",
-    "ScoreQuerySet", "ScoreManager", "Score",
+    "Score",
     "Performance",
     "RencontreVoie",
 ]
@@ -71,35 +70,81 @@ class VoieQuerySet(models.QuerySet):
         return self.filter(type=TypeVoie.diff)
     def vitesses(self):
         return self.filter(type=TypeVoie.vitesse)
-class VoieManager(models.Manager):
-    def get_queryset(self):
-        return VoieQuerySet(self.model, using=self.db)
-
-    def order_by__nom(self):
-        return self.get_queryset().order_by__nom()
-
-    def actifs(self):
-        return self.get_queryset().actifs()
-    def blocs(self):
-        return self.get_queryset().blocs()
-    def diffs(self):
-        return self.get_queryset().diffs()
-    def vitesses(self):
-        return self.get_queryset().vitesses()
 
 class GrimpeurQuerySet(models.QuerySet):
     def hommes(self):
         return self.filter(sexe=Genre.homme)
     def femmes(self):
         return self.filter(sexe=Genre.femme)
-class GrimpeurManager(models.Manager):
-    def get_queryset(self):
-        return GrimpeurQuerySet(self.model, using=self.db)
 
-    def hommes(self):
-        return self.get_queryset().hommes()
-    def femmes(self):
-        return self.get_queryset().femmes()
+    def enfants(self, saison):
+        amin, amax = 8, 13  # Ages correspondants à la catégorie 'Enfant'
+        amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
+        return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
+    def adolescents(self, annee):
+        amin, amax = 13, 19  # Ages correspondants à la catégorie 'Adolescent'
+        amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
+        return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
+
+    def global_filter(self, *, club=None):
+        qs = self
+        if club: qs = qs.filter(club_id=club)
+        return qs
+
+    def exclude_inscrits(self, rencontre):
+        alreadyRegistered = Score.objects.global_filter(rencontre=rencontre).values('grimpeur_id')
+        return self.exclude(id__in=alreadyRegistered)
+
+class RencontreQuerySet(models.QuerySet):
+    def global_filter(self, *, rencontre=None, club=None):
+        qs = self
+        if club:      qs = qs.filter(club_id=club)
+        if rencontre: qs = qs.get(pk=rencontre)
+        return qs
+    def with_related(self, with_valide_and_points=False):
+        e_qs = Equipe.objects.with_related(with_valide_and_points)
+        if with_valide_and_points: e_qs = e_qs.with_valide_and_points()
+        return self.prefetch_related(
+                Prefetch('equipes', queryset=e_qs),
+                'voies'
+            ).select_related(
+                'club'
+            )
+
+class EquipeQuerySet(models.QuerySet):
+    def global_filter(self, *, rencontre=None, club=None):
+        qs = self
+        if rencontre: qs = qs.filter(rencontre_id=rencontre)
+        if club:      qs = qs.filter(club_id=club)
+        return qs
+    def with_related(self, with_valide_and_points=False):
+        s_qs = Score.objects.with_related()
+        if with_valide_and_points: s_qs = s_qs.with_valide_and_points()
+        s_qs = s_qs.in_order()
+        return self.prefetch_related(
+                Prefetch('membres', queryset=s_qs)
+            ).select_related('club', 'rencontre')
+    def with_valide_and_points(self):
+        return self.annotate(
+                points=Sum('membres__performances__points'),
+                # Calcul du nombre de performances non-nulles pour chaque type de voie
+                nb_blocs_valide=Count('membres__performances', filter=Q(membres__performances__voie__type=TypeVoie.bloc) & Q(membres__performances__points__isnull=False)),
+                nb_diffs_valide=Count('membres__performances', filter=Q(membres__performances__voie__type=TypeVoie.diff) & Q(membres__performances__points__isnull=False)),
+                nb_vitesses_valide=Count('membres__performances', filter=Q(membres__performances__voie__type=TypeVoie.vitesse) & Q(membres__performances__points__isnull=False)),
+                nb_membres=Count('membres', distinct=True),  # Nombre de membres de l'équipe
+            ).annotate(
+                # Vérification de la validité en comparant les performances réelles avec les attentes
+                valide=Case(
+                    When((
+                        Q(nb_blocs_valide=F('nb_membres') * F('rencontre__nbBloc')) &
+                        Q(nb_diffs_valide=F('nb_membres') * F('rencontre__nbDiff')) &
+                        Q(nb_vitesses_valide=F('nb_membres') * F('rencontre__nbVitesse'))
+                        ), then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                )
+            )
 
 class ScoreQuerySet(models.QuerySet):
     def hommes(self):
@@ -109,17 +154,58 @@ class ScoreQuerySet(models.QuerySet):
 
     def in_order(self):
         return self.order_by('ordre')
-class ScoreManager(models.Manager):
-    def get_queryset(self):
-        return ScoreQuerySet(self.model, using=self.db)
 
-    def hommes(self):
-        return self.get_queryset().hommes()
-    def femmes(self):
-        return self.get_queryset().femmes()
+    def global_filter(self, *, rencontre=None, equipe=None, club=None):
+        qs = self
+        if equipe:    qs = qs.filter(equipe_id=equipe)
+        if rencontre: qs = qs.filter(equipe__rencontre_id=rencontre)
+        if club:      qs = qs.filter(grimpeur__club_id=club)
+        return qs
+    def with_related(self):
+        return self.prefetch_related(
+                Prefetch('performances', queryset=Performance.objects.with_related())
+            ).select_related('equipe__rencontre__club', 'equipe__club', 'clubPreteur', 'grimpeur__club')
+    def with_valide_and_points(self):
+        return self.annotate(
+                points=Sum('performances__points'),
+                # Calcul du nombre de performances non-nulles pour chaque type de voie
+                nb_blocs_valide=Count('performances', filter=Q(performances__voie__type=TypeVoie.bloc) & Q(performances__points__isnull=False)),
+                nb_diffs_valide=Count('performances', filter=Q(performances__voie__type=TypeVoie.diff) & Q(performances__points__isnull=False)),
+                nb_vitesses_valide=Count('performances', filter=Q(performances__voie__type=TypeVoie.vitesse) & Q(performances__points__isnull=False)),
+            ).annotate(
+                # Vérification de la validité en comparant les performances réelles avec les attentes
+                valide=Case(
+                    When((
+                        Q(nb_blocs_valide=F('equipe__rencontre__nbBloc')) &
+                        Q(nb_diffs_valide=F('equipe__rencontre__nbDiff')) &
+                        Q(nb_vitesses_valide=F('equipe__rencontre__nbVitesse'))
+                        ), then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                )
+            )
 
-    def in_order(self):
-        return self.get_queryset().in_order()
+class PerformanceQuerySet(models.QuerySet):
+    def global_filter(self, *, score=None, equipe=None, rencontre=None, club=None, sexe=None):
+        qs = self
+        if score:     qs = qs.filter(score_id=score)
+        if equipe:    qs = qs.filter(score__equipe_id=equipe)
+        if rencontre: qs = qs.filter(score__equipe__rencontre_id=rencontre)
+        if club:      qs = qs.filter(score__grimpeur__club_id=club)
+        if sexe:      qs = qs.filter(score__grimpeur__sexe=sexe)
+        return qs
+    def with_related(self):
+        return self.select_related('voie', 'score__equipe__rencontre__club', 'score__equipe__club', 'score__clubPreteur', 'score__grimpeur__club')
+
+    def blocs(self):
+        return self.filter(voie__type=TypeVoie.bloc)
+    def diffs(self):
+        return self.filter(voie__type=TypeVoie.diff)
+    def vitesses(self):
+        return self.filter(voie__type=TypeVoie.vitesse)
+    def with_temps(self):
+        return self.filter(temps__isnull=False)
 
 
 ########################################################
@@ -131,6 +217,8 @@ class Voie(CleanModel):
             models.Index(fields=['type',]),
             models.Index(fields=['actif',]),
         ]
+    objects = VoieQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=15)
     niveau = models.CharField(max_length=5)
@@ -138,8 +226,6 @@ class Voie(CleanModel):
     type = models.IntegerField(choices=TypeVoie.choices)
     zones = models.JSONField()
     actif = models.BooleanField(default=False)
-
-    objects = VoieManager()
 
     def __str__(self):
         return f'{self.nom}/{self.niveau}'
@@ -151,9 +237,11 @@ class Voie(CleanModel):
 class Club(CleanModel):
     class Meta:
         ordering = ['nom']
+
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     ville = models.CharField(max_length=50)
+
     def __str__(self):
         return self.nom
 
@@ -165,6 +253,8 @@ class Grimpeur(CleanModel):
             models.Index(fields=['sexe',]),
         ]
         ordering = ['nom', 'prenom']
+    objects = GrimpeurQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
@@ -176,8 +266,6 @@ class Grimpeur(CleanModel):
     def __str__(self):
         return f'{self.nom} {self.prenom}'
 
-    objects = GrimpeurManager()
-
 
 class Rencontre(CleanModel):
     class Meta:
@@ -185,6 +273,8 @@ class Rencontre(CleanModel):
             models.Index(fields=['categorie',]),
             models.Index(fields=['date',]),
         ]
+    objects = RencontreQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     saison = models.IntegerField()
     club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='rencontres')
@@ -203,23 +293,26 @@ class Rencontre(CleanModel):
     str = __str__
 
     @property
-    def scores(self):
-        return Score.objects.filter(equipe__rencontre__pk=self.pk)
+    def scores_count(self):
+        return sum(e.membres.count() for e in self.equipes.all())
 
+
+    @transaction.atomic
     def proceed_speed_points(self, perf=None):
-        # TODO: Trouver comment ne ps appeller ce calcul à chaque ajout d'une performance lors de l'import de l'ancienne base.
+        # TODO: Trouver comment ne pas appeller ce calcul à chaque ajout d'une performance lors de l'import de l'ancienne base.
         sexe = (Genre.homme, Genre.femme)
         if perf:
             if perf.score_id is None or perf.score.grimpeur_id is None: return
             sexe = (perf.score.grimpeur.sexe,)
         perfs = []
+        scores = []
         for s in sexe:
             classement = Performance.objects.filter(
                 Q(voie__type=TypeVoie.vitesse)
                 & Q(score__grimpeur__sexe=s)
                 & Q(score__equipe__rencontre=self)
                 & Q(temps__isnull=False)
-            ).select_related('voie').order_by('temps')
+            ).prefetch_related('voie').prefetch_related('score').order_by('temps')
             rank = 0
             for temps, group in groupby(classement, key=lambda p: p.temps):
                 # TODO: Les temps C# négatifs de l'abandon et de la chute ne correspondent pas aux temps Python
@@ -235,19 +328,26 @@ class Rencontre(CleanModel):
                             break
                     else:
                         raise RuntimeError("Aucune condition trouvée pour la performance")
-                    # Evaluation des points correspondants
                     perf.etat = i
+                    # Evaluation des points correspondants
                     if isinstance(points, str) and 'rank' in points:
                         perf.points = eval(points.replace('{rank}', str(rank)), {'__builtins__': None})
                     else:
                         perf.points = points
                     perfs.append(perf)
                 rank += len(group)
-        #[print(p.temps, p.points) for p in perfs]
         Performance.objects.bulk_update(perfs, ['points', 'etat'])
 
 
 class Equipe(CleanModel):
+    class Meta:
+        indexes = [
+            models.Index(fields=['club',]),
+            models.Index(fields=['rencontre',]),
+        ]
+        ordering = ['club_id', 'numero']
+    objects = EquipeQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.PROTECT, related_name='equipes')
     club = models.ForeignKey(Club, on_delete=models.PROTECT, related_name='equipes')
@@ -256,40 +356,26 @@ class Equipe(CleanModel):
     def __str__(self):
         return f'{self.club.nom} {self.numero}'
 
-    @property
-    def valide(self):
-        if self.pk is None or self.rencontre_id is None: return None
-        if self.membres.count() == 0: return False
-        return all([m.valide for m in self.membres.all()])
-
-    @property
-    def points(self):
-        return sum([m.points for m in self.membres.all()])
-
 
 class Score(CleanModel):
+    class Meta:
+        indexes = [
+            models.Index(fields=['equipe',]),
+            models.Index(fields=['grimpeur',]),
+        ]
+        ordering = ['equipe_id', 'ordre']
+    objects = ScoreQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     equipe = models.ForeignKey(Equipe, on_delete=models.PROTECT, related_name='membres')
     grimpeur = models.ForeignKey(Grimpeur, on_delete=models.PROTECT, related_name='participations')
-    points = models.IntegerField(default=0)
     ordre = models.IntegerField(default=1, validators=[MaxValueValidator(8), MinValueValidator(1)])
     clubPreteur = models.ForeignKey(Club, on_delete=models.PROTECT, blank=True, null=True)
 
-    tracker = FieldTracker(fields=['points'])
-
-    @property
-    def valide(self):
-        if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return None
-        if self.performances.filter(voie__type=TypeVoie.bloc).count() != self.equipe.rencontre.nbBloc: return False
-        if self.performances.filter(voie__type=TypeVoie.diff).count() != self.equipe.rencontre.nbDiff: return False
-        if self.performances.filter(voie__type=TypeVoie.vitesse).count() != self.equipe.rencontre.nbVitesse: return False
-        if self.performances.filter(points=None).count(): return False
-        return True
+    tracker = FieldTracker(fields=['ordre'])
 
     def __str__(self):
         return f'{self.equipe.rencontre} - {self.grimpeur}'
-
-    objects = ScoreManager()
 
     def clean(self):
         super().clean()
@@ -336,20 +422,25 @@ class Score(CleanModel):
         if creating:
             if self.grimpeur.club_id != self.equipe.club_id:
                 self.clubPreteur = self.grimpeur.club
-        # else:
-        #     self.points = sum(self.performances.values_list('points', flat=True))
         return super().save(*args, **kwargs)
 
     def refresh(self, field):
         if field == 'points':
             self.points = sum(p for p in self.performances.values_list('points', flat=True) if p)
-        if self.tracker.has_changed: self.save()
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
 # - La diff n'a pas besoin du temps (quoique)
 # - La vitesse n'a pas besoin de l'état (quoique: chute, abandon)
 class Performance(CleanModel):
+    class Meta:
+        indexes = [
+            models.Index(fields=['voie_id',]),
+            models.Index(fields=['score_id',]),
+            models.Index(fields=['temps',]),
+        ]
+    objects = PerformanceQuerySet().as_manager()
+
     id = models.BigAutoField(primary_key=True)
     voie = models.ForeignKey(Voie, on_delete=models.PROTECT, null=True, blank=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="performances")
@@ -369,7 +460,6 @@ class Performance(CleanModel):
                 if type(points) == str: pass
                 else:                   self.points = points
                 # TODO: Si les points sont une str, il faut les calculer...
-        #send_event('events', reverse("perf-detail", args=[self.id]), "updated")
         return super().save(*args, **kwargs)
 
     def clean(self):
@@ -389,6 +479,7 @@ class RencontreVoie(CleanModel):
         constraints = [
             models.UniqueConstraint(fields=['rencontre', 'voie'], name='unique_rencontre_voie')
         ]
+
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
