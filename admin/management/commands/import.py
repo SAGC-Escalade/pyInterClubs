@@ -66,14 +66,13 @@ def equipeTranslation(row):
     }
     return [(id, fields)]
 def scoreTranslation(row):
-    id, idequipe, idgrimpeur, idclubpreteur, points, ordre = row
+    id, idequipe, idgrimpeur, idclubpreteur, ordre = row
     equipe = Equipe.objects.get(pk=relations[Equipe][idequipe])
     offset = 1 if equipe.rencontre.date.year >= 2020 else 0
     fields = {
         'equipe': equipe,
         'grimpeur': Grimpeur.objects.get(pk=relations[Grimpeur][idgrimpeur]),
         'clubPreteur': Club.objects.get(pk=relations[Club][idclubpreteur]) if idclubpreteur != None else None,
-        'points': points,
         'ordre': ordre + offset,
     }
     return [(id, fields)]
@@ -145,7 +144,7 @@ TRANSLATIONS = [
     (Grimpeur, 'SELECT ID, IDClub, Nom, Prenom, AnneeNaissance, Licence, Sexe FROM Grimpeurs', grimpeurTranslation),
     (Rencontre, 'SELECT Rencontres.ID, IDClub, Date, Annee FROM Rencontres LEFT JOIN Saisons ON Rencontres.IDSaison = Saisons.ID', rencontreTranslation),
     (Equipe, 'SELECT ID, IDRencontre, IDClub, Numero, Categorie FROM Equipes', equipeTranslation),
-    (Score, 'SELECT ID, IDEquipe, IDGrimpeur, IDClubPreteur, Points, Ordre FROM Scores', scoreTranslation),
+    (Score, 'SELECT ID, IDEquipe, IDGrimpeur, IDClubPreteur, Ordre FROM Scores', scoreTranslation),
     (RencontreVoie, 'SELECT ID FROM Rencontres', rencontreVoieVitesseTranslation),
     (Performance, 'SELECT ID, IDBloc1, Bloc1, IDBloc2, Bloc2, IDVoie1, Voie1, IDVoie2, Voie2, IDVoie3, Voie3, IDVoie4, Voie4, Vitesse, PtsVitesse FROM Scores', performanceTranslation),
 ]

@@ -272,6 +272,7 @@ class Rencontre(CleanModel):
         indexes = [
             models.Index(fields=['categorie',]),
             models.Index(fields=['date',]),
+            models.Index(fields=['saison',]),
         ]
     objects = RencontreQuerySet().as_manager()
 
