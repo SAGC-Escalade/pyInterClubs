@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.datastructures import MultiValueDict
+from django.core.exceptions import ValidationError
 from django_bootstrap5.widgets import RadioSelectButtonGroup
 
 from core.models import *
@@ -19,7 +20,12 @@ class EquipeCreateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.rencontre = kwargs.pop('rencontre', None)
         initial = kwargs.get('initial', {})
         data = kwargs.pop('data', None) or (args.pop(0) if args else {})
         data = MultiValueDict({**{k:[v] for k,v in initial.items()}, **data})
         super().__init__(data, *args, **kwargs)
+
+    def clean(self):
+        if not self.rencontre:
+            raise ValidationError("Attendez que l'administrateur démarre une rencontre.")

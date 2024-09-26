@@ -162,6 +162,7 @@ class ScoreSerializer(SSESerializer):
     re_nom = re.compile(r'([TM])(\d+)', re.IGNORECASE)
     @staticmethod
     def _cut_nom(voie):
+        if voie is None: return 0
         m = ScoreSerializer.re_nom.search(voie.nom)
         if m is None: return None
         l,n = m.groups()
@@ -178,10 +179,11 @@ class ScoreSerializer(SSESerializer):
         def get_queryset(self):
             request = self.context.get('request', {})
             interclub = getattr(request, 'interclub', None)
-            if interclub is None or interclub.rencontre is None: return Grimpeur.objects.none()
+            if interclub is None or interclub.rencontre is None:
+                return Grimpeur.objects.none()
 
             queryset = Grimpeur.objects.global_filter(club=interclub.club)
-            if request and request.user and request.user.is_superuser:
+            if request and request.user and not request.user.is_superuser:
                 rencontre = Rencontre.objects.get(pk=interclub.rencontre)
                 # On filtre les grimpeurs par rapport à leur âge
                 if rencontre.categorie == Categorie.enfants:
@@ -215,7 +217,7 @@ class ScoreSerializer(SSESerializer):
 
     def get_performances(self, instance):
         perfs = instance.performances.all() #.values('id', 'voie__type') Inutile, tout est déjà chargé
-        return {k: [v.id for v in perfs if TypeVoie(v.voie.type or TypeVoie.diff).label == k] for k in ('Bloc', 'Difficulté', 'Vitesse')}
+        return {k: [v.id for v in perfs if TypeVoie(getattr(v.voie, 'type', None) or TypeVoie.diff).label == k] for k in ('Bloc', 'Difficulté', 'Vitesse')}
 
     def get_groupe(self, instance):
         class Empty:
@@ -224,8 +226,10 @@ class ScoreSerializer(SSESerializer):
         if not instance.equipe.rencontre.voiesGroupees:
             return None
         diffs = instance.performances.all()
-        diffs = [p.voie for p in diffs if (p.voie.type or TypeVoie.diff) == TypeVoie.diff]
-        return min(diffs, key=self._cut_nom, default=Empty).id
+        diffs = [p.voie for p in diffs if p.voie is None or p.voie.type == TypeVoie.diff]
+        diffs = min(diffs, key=self._cut_nom, default=Empty)
+        if diffs: return diffs.id
+        return None
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)

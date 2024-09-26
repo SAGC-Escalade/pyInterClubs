@@ -17,10 +17,17 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreRequiredMixin, CreateVie
     form_class = EquipeCreateForm
     template_name = 'leader/create.html'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        user = self.request.user
+        if hasattr(user, 'profil') and hasattr(user.profil, 'rencontre'):
+            kwargs['rencontre'] = user.profil.rencontre
+        return kwargs
+
     def get_initial(self):
         initial = super().get_initial()
         user = self.request.user
-        if user.profil and hasattr(user.profil, 'club'):
+        if hasattr(user, 'profil') and hasattr(user.profil, 'club'):
             initial.setdefault('club', user.profil.club)
         return initial
 

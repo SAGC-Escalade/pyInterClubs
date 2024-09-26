@@ -99,6 +99,7 @@ class EquipeViewSet(DjangoModelViewSet):
 
     def get_queryset(self):
         interclub = self.request.interclub
+        if not interclub.rencontre: return Equipe.objects.none()
         queryset = Equipe.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
             .with_valide_and_points()
@@ -111,6 +112,7 @@ class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
         interclub = self.request.interclub
+        if not interclub.rencontre: return Score.objects.none()
         return Score.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
             .with_valide_and_points()

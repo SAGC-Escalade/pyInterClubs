@@ -53,20 +53,19 @@
                         </a>
                     </div>
                 </div>
+                <script type="module">
+                    import { ListEquipe } from "/react/equipe.jsx";
+                    const { QueryClient, QueryClientProvider } = window.ReactQuery;
+                    const queryClient = new QueryClient();
+                    {% transpiling %}
+                    ReactDOM.createRoot(document.querySelector('#react-list-equipe')).render(
+                        <QueryClientProvider client={queryClient}>
+                            <ListEquipe />
+                        </QueryClientProvider>
+                    )
+                    {% endtranspiling %}
+                </script>
             {% endif %}
         </ul>
     </div>
 </div>
-
-<script type="module">
-    import { ListEquipe } from "/react/equipe.jsx";
-    const { QueryClient, QueryClientProvider } = window.ReactQuery;
-    const queryClient = new QueryClient();
-    {% transpiling %}
-    ReactDOM.createRoot(document.querySelector('#react-list-equipe')).render(
-        <QueryClientProvider client={queryClient}>
-            <ListEquipe />
-        </QueryClientProvider>
-    )
-    {% endtranspiling %}
-</script>

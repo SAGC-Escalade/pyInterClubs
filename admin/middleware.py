@@ -47,6 +47,6 @@ class WithRencontreRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
         if not hasattr(request, 'interclub') or not request.interclub:
             raise ImproperlyConfigured("Le middleware 'interclub' n'est pas trouvé, peut-être n'a-t-il pas été configuré correctement.")
-        if not request.interclub.rencontre:
-            raise ValidationError("L'administrateur n'a pas démarré de rencontre.")
+        #if not request.interclub.rencontre:
+        #    raise ValidationError("L'administrateur n'a pas démarré de rencontre.")
         return super().dispatch(request, *args, **kwargs)
