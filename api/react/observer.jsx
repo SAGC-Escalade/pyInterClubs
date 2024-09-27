@@ -5,7 +5,7 @@ const eventSource = new EventSource('/events/', { withCredentials: true });
 eventSource.onerror = () => { console.log("Erreur de connexion avec le canal temps réel..."); };
 eventSource.onmessage = (event) => { console.log("message non traité :", event); };
 
-export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined }) {
+export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined, queryString = undefined }) {
     const queryClient = useQueryClient();       // Le gestionnaire de requêtes
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
@@ -63,7 +63,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         endpoint,
         () => {
             if (id === undefined) return Promise.resolve(initialData);
-            return send({ method: 'GET', url: apiEndpoint })
+            return send({ method: 'GET', url: apiEndpoint + (queryString ?? '') })
         },
         {
             initialData,
@@ -79,7 +79,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
             setErrors(undefined);
             isDeleting.current = (method === 'DELETE');
 
-            const url = apiEndpoint + (action ?? '');
+            const url = apiEndpoint + (action ?? '') + (queryString ?? '');
             return send({ method, url, data });
         },
         {

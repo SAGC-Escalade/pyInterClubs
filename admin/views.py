@@ -1,4 +1,4 @@
-from django.views.generic import FormView, CreateView, DeleteView, ListView
+from django.views.generic import FormView, CreateView, DeleteView, ListView, TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models.functions import MD5, Concat
 from django.db.models import Value as V
@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from datetime import datetime
 
 from core.models import Club, Rencontre, Categorie, Voie
+from admin.middleware import WithRencontreRequiredMixin
 from .forms import *
 from .models import *
 
@@ -15,9 +16,12 @@ from .models import *
 class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
 
 
-class ClubQRCodesView(SuperUserRequiredMixin, ListView):
+class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
     model = Club
     template_name = 'admin/qrcode_club.html'
 
@@ -34,6 +38,20 @@ class ClubQRCodesView(SuperUserRequiredMixin, ListView):
         kwargs['config'] = Config
         kwargs['environ'] = self.request.environ if hasattr(self.request, 'environ') else self.request.META
         return super().get_context_data(**kwargs)
+
+
+#class ResultsView(StaffRequiredMixin, WithRencontreRequiredMixin, TemplateView):
+#    model = Score
+#    template_name = 'admin/resultats.html'
+#
+#    def get_queryset(self):
+#        rencontre = self.request.interclub.rencontre
+#        return super().get_queryset() \
+#            .select_related('grimpeur__club') \
+#            .prefetch_related('performances') \
+#            .globale_filter(rencontre=rencontre) \
+#            .with_valide_and_points() \
+#            .in_order()
 
 
 class RencontreSelectionView(SuperUserRequiredMixin, FormView):

@@ -113,9 +113,14 @@ class ScoreViewSet(DjangoModelViewSet):
     def get_queryset(self):
         interclub = self.request.interclub
         if not interclub.rencontre: return Score.objects.none()
-        return Score.objects.with_related() \
+        queryset = Score.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
             .with_valide_and_points()
+
+        order = self.request.query_params.get('order_by')
+        if order: queryset = queryset.order_by(order)
+
+        return queryset
 
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
     def set_ordre(self, request, pk=None, cmd=None):

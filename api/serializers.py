@@ -116,9 +116,10 @@ class ClubSerializer(serializers.ModelSerializer):
 
 
 class GrimpeurSerializer(serializers.ModelSerializer):
+    club_nom = serializers.SlugRelatedField(source='club', slug_field='nom', read_only=True)
     class Meta:
         model = Grimpeur
-        fields = '__all__'
+        fields = ['id', 'nom', 'prenom', 'sexe', 'club_nom']
 class GrimpeurSerializerIdentity(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
@@ -235,7 +236,10 @@ class ScoreSerializer(SSESerializer):
         ret = super().to_representation(instance)
         # Overwrite the grimpeur field with the nested serializer data
         if instance.grimpeur:
-            ret['grimpeur'] = GrimpeurSerializerIdentity(instance.grimpeur, context=self.context).data
+            if self.context.get('request').query_params.get('withClub'):
+                ret['grimpeur'] = GrimpeurSerializer(instance.grimpeur, context=self.context).data
+            else:
+                ret['grimpeur'] = GrimpeurSerializerIdentity(instance.grimpeur, context=self.context).data
         if instance.clubPreteur:
             ret['clubPreteur'] = ClubSerializer(instance.clubPreteur, context=self.context).data
         return ret
