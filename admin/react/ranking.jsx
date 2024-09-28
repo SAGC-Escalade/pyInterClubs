@@ -22,11 +22,22 @@ export default function Ranking({ categorie }) {
                 var ranks = {};
                 return (
                     <ul className="list-group">
+                        <li className="list-group-item d-flex fw-bold" key={0} style={{ borderBottom: "2px solid black" }}>
+                            <div className="me-2" style={{ width: "3ch" }}>#</div>
+                            <div className="me-2">
+                                <i className="fa-solid fa-person-half-dress fa-fw fa-lg lh-1"></i>
+                            </div>
+                            <div className="col-8 col-md-9 row">
+                                <div className="col-12 col-sm-8 text-truncate">Nom</div>
+                                <div className="d-none d-sm-block col-sm-4  text-truncate">Club</div>
+                            </div>
+                            <div className="text-end text-nowrap ms-auto">Score</div>
+                        </li>
                         {scores.map(function (score, index) {
                             let icon;
                             icon = "d-none";
-                            if (score?.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; }
-                            if (score?.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; }
+                            if (score?.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw fa-lg lh-1"; }
+                            if (score?.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw fa-lg lh-1"; }
 
                             let medal = "";
                             let background = "";
@@ -36,7 +47,7 @@ export default function Ranking({ categorie }) {
                             if (rank <= 3) {
                                 background = [0, "gold", "silver", "bronze"][rank];
                                 medal = (
-                                    <i className="fa-layers fa-fw fa-lg">
+                                    <i className="fa-layers fa-fw fa-lg me-3">
                                         <i className={`fa-solid fa-medal sexe ${sexe == 1 ? 'femme' : 'homme'}`} data-fa-transform="grow-4 down-1"></i>
                                         <i className={`fa-solid fa-circle ${background}`} data-fa-transform="shrink-2 down-4"></i>
                                         <i className={`fa-solid fa-${rank} text-white`} data-fa-transform="shrink-5 down-4"></i>
@@ -46,17 +57,21 @@ export default function Ranking({ categorie }) {
 
                             return (
                                 <li className={`list-group-item d-flex ${background}`} key={score.id}>
-                                    <div className="col-8 col-sm-6 col-md-5 text-truncate">
-                                        {rank}.
-                                        <i className={icon} style={{ lineHeight: 1 }}></i>
-                                        {score.grimpeur?.nom} {score.grimpeur?.prenom}
+                                    <div className="me-2" style={{ width: "3ch" }}>{rank}.</div>
+                                    <div className="me-2">
+                                        <i className={icon}></i>
                                     </div>
-                                    <div className="d-none d-sm-block col-sm-3 col-md-4 text-truncate">
-                                        {score?.grimpeur?.club_nom && <small className="text-muted">{score?.grimpeur?.club_nom}</small>}
+                                    <div className="col-8 col-md-9 row">
+                                        <div className="col-12 col-sm-8 text-truncate">
+                                            {score.grimpeur?.nom} {score.grimpeur?.prenom}
+                                        </div>
+                                        <div className="col-12 col-sm-4 text-truncate">
+                                            {score?.grimpeur?.club_nom && <small className="text-muted">{score?.grimpeur?.club_nom}</small>}
+                                        </div>
                                     </div>
-                                    <div className="ms-auto">
+                                    <div className="text-end text-nowrap ms-auto">
                                         {medal}
-                                        <Badge bg={score.valide ? "success" : "primary"} className="mx-3">
+                                        <Badge bg={score.valide ? "success" : "primary"}>
                                             {score.points}<span className="d-none d-sm-inline ms-1">pts</span>
                                         </Badge>
                                     </div>
