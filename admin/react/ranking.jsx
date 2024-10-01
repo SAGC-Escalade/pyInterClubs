@@ -7,6 +7,10 @@ export default function Ranking({ categorie }) {
     return (
         <Observer endpoint='scores' id={null} csrf={csrf} queryString="?order_by=-points&withClub=1">
             {({ data: scores = [], status }) => {
+                /***************************************************************/
+                /* TODO: Gérer le tri des résultats ici (et pas côté serveur)  */
+                /* Afin que lors d'une MAJ, le tri soit refait automatiquement */
+                /***************************************************************/
                 if (status.isLoading) return (
                     <ul className="list-group">
                         <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i><span className="placeholder w-75"></span></li>

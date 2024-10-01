@@ -40,7 +40,6 @@ class EquipeCreateView(LoginRequiredMixin, WithRencontreRequiredMixin, CreateVie
         self.object.rencontre = rencontre
         numeros = [e.numero for e in rencontre.equipes.all() if e.club_id == self.object.club_id]
         self.object.numero = min([i for i in range(1,max(numeros)+2) if not i in numeros]) if len(numeros) else 1
-        self.object.save()
         return super().form_valid(form)
 
     def get(self, *args, **kwargs):

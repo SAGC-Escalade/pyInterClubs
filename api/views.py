@@ -129,7 +129,6 @@ class ScoreViewSet(DjangoModelViewSet):
         score = self.get_object()
         if cmd == 'up': score.ordre_up()
         else:           score.ordre_down()
-        # EquipeSerializer(score.equipe).notify() # Pas besoin de notifier celà pour le moment
         return Response204()
 
     @action(detail=True, url_path=r'groupe', methods=['POST']) #, permission_classes=[])
@@ -137,33 +136,9 @@ class ScoreViewSet(DjangoModelViewSet):
         if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
         score = self.get_object()
         score.groupe(self.request.data.get('id'))
-        for perf in score.performances.filter(voie__type=TypeVoie.diff):
-            PerformanceSerializer(perf).notify()
-        EquipeSerializer(score.equipe).notify(True)
-        return Response(ScoreSerializer(score).data)
-
-    def perform_create(self, serializer):
-        instance = super().perform_create(serializer)
-        EquipeSerializer(instance.equipe).notify()
-        EquipeSerializer(instance.equipe).notify(True)
-    def perform_update(self, serializer):
-        instance = super().perform_update(serializer)
-        if any(f in serializer.initial_data for f in ('points', )):
-            EquipeSerializer(instance.equipe).notify(True)
-        if any(f in serializer.initial_data for f in ('ordre', 'grimpeur', 'clubPreteur')):
-            EquipeSerializer(instance.equipe).notify()
-    def perform_destroy(self, instance):
-        equipe = instance.equipe
-        super().perform_destroy(instance)
-        EquipeSerializer(equipe).notify(True)
+        return Response(ScoreSerializer(score, read_only=True).data)
 
 
 class PerformanceViewSet(DjangoModelViewSet):
     serializer_class = PerformanceSerializer
-    queryset = Performance.objects.select_related('voie').all()
-
-    def perform_update(self, serializer):
-        instance = super().perform_update(serializer)
-        if any(f in serializer.initial_data for f in ('points', 'temps', 'voie', 'etat')):
-            ScoreSerializer(instance.score).notify()
-            EquipeSerializer(instance.score.equipe).notify(True)
+    queryset = Performance.objects.select_related('voie', 'score__equipe')

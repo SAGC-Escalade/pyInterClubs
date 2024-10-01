@@ -11,7 +11,6 @@ import re
 from core.models import *
 
 __all__ = (
-    #"SSESerializer", "ForeignKeyField",
     "VoieSerializer", "ClubSerializer",
     "GrimpeurSerializer", "GrimpeurSerializerIdentity",
     "RencontreSerializer", "EquipeSerializer",
@@ -67,22 +66,12 @@ class SSESerializer(serializers.ModelSerializer):
 
         return instance
 
-    def save(self, **kwargs):
-        ret = super().save(**kwargs)
-        self.notify()
-        return ret
-
     @property
     def url_detail(self):
         return f"{self.url_list}/{self.instance.pk}"
     @property
     def url_list(self):
         return f"{self.context['view'].basename}s"
-
-    def notify(self, list=False):
-        if list:
-            send_event('events', self.url_list, None)
-        send_event('events', self.url_detail, self.data)
 
 
 class ForeignKeyField(serializers.Field):
@@ -142,12 +131,6 @@ class EquipeSerializer(SSESerializer):
     class Meta:
         model = Equipe
         fields = ['id', 'membres', 'club', 'numero', 'valide', 'points']
-
-    def save(self, **kwargs):
-        ret = super().save(**kwargs)
-        if any(e in ('numero', 'club') for e in self.validated_data.keys()):
-            send_event('events', self.url_list, None)
-        return ret
 
     def create(self, validated_data):
         context = {}
@@ -236,12 +219,15 @@ class ScoreSerializer(SSESerializer):
         ret = super().to_representation(instance)
         # Overwrite the grimpeur field with the nested serializer data
         if instance.grimpeur:
-            if self.context.get('request').query_params.get('withClub'):
+            if self.context.get('request', None) and self.context.get('request').query_params.get('withClub'):
                 ret['grimpeur'] = GrimpeurSerializer(instance.grimpeur, context=self.context).data
             else:
                 ret['grimpeur'] = GrimpeurSerializerIdentity(instance.grimpeur, context=self.context).data
         if instance.clubPreteur:
             ret['clubPreteur'] = ClubSerializer(instance.clubPreteur, context=self.context).data
+        if not 'points' in ret:
+            print(list(p.points for p in instance.performances.all()))
+            ret['points'] = sum(p.points for p in instance.performances.all() if p.points)
         return ret
 
     def create(self, validated_data):

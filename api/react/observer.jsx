@@ -6,6 +6,37 @@ eventSource.onerror = () => { console.log("Erreur de connexion avec le canal tem
 eventSource.onmessage = (event) => { console.log("message non traité :", event); };
 
 export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined, queryString = undefined }) {
+    /* Fonctions et valeurs possibles des paramètres :
+     * 
+     * endpoint (string): C'est la seconde partie du chemin de l'API, c'est aussi la première partie de l'id des events SSE
+     *   exemple: rencontres, scores, equipes, performances
+     * id (int, null, undefined): Défini l'id de l'objet à surveiller ou le comportement (trap d'événements SSE ou polling).
+     *   int: L'id de l'objet à surveiller. La structure JSX enfant sera mise à jour en cas de modification des champs de cette instance du modèle
+     *   null: Surveille la liste complète des instances du modèle. La structure JSX est MAJ en cas d'ajout/suppression ou certaines modifications des instances du modèle
+     *   undefined: Désactive la surveillance. La structure JSX est MAJ par polling
+     * initialData (object): Initialise les données à passer à la structure JSX enfant avant même le premier GET du modèle
+     * csrf (string): Définie la chaîne CSRF utilisé lors de cette session HTML
+     * querystring (string): Définie une chaîne de requête supplémentaire à ajouter à l'URI de l'API juste avant d'envoyer la requête.
+     *   Permet de configurer du filtrage ou des paramètres supplémentaires attendus côté serveur.
+     * children (object): Défini la structure JSX à mettre à jour
+     * 
+     * Dans la structure JSX enfant, il est possible d'utiliser les paramètres suivants pour la personnaliser :
+     * 
+     * data (object, array, null, undefined): Ce sont les données récupérées par l'API.
+     *   object: Les données d'une instance d'un modèle
+     *   array: Les données de plusieurs instances d'un même modèle
+     *   null: Aucune donnée n'a été récupérée ou elles ont été supprimées
+     *   undefined: Les données sont en cours de récupération
+     * errors (object): Défini la totalité des erreurs rencontrées durant les opérations CRUDS sur le modèle
+     * status (object):
+     *   isLoading:  Une requête est en cours de chargement,
+     *   isError:    Une requête a terminé en erreur,
+     *   isSuccess:  La requête s'est terminée correctement, se référer à "data" pour utiliser les données récupérées
+     *   isDeleting: Une requête de suppression est en cours d'envoi,
+     * action (function): C'est une fonction utilisable pour agir sur l'API (permet de gérer les opérations CRUDS)
+     * resetErrors (function): Permet de supprimer les erreurs de l'appel précédent
+     */
+
     const queryClient = useQueryClient();       // Le gestionnaire de requêtes
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
@@ -13,7 +44,62 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     endpoint = endpoint + (isSingle && id ? `/${id}` : '');
     const apiEndpoint = `/api/${endpoint}/`;
 
-    // Gestion des requêtes
+    const subscriptions = useRef({});
+
+    /*************************************************************/
+    /* Gestion des événements (MAJ modèle => interface)          */
+
+    // MAJ des datas en fonction des événements
+    const handleSSEMessage = useCallback((event) => {
+        //console.log(event.type, event.data);
+        const newData = event.data ? JSON.parse(event.data) : null;
+        if (newData) {
+            queryClient.setQueryData(endpoint, (oldData) => {
+                if (Array.isArray(oldData)) {
+                    if (newData.deleted) {
+                        unsubscribe(newData.deleted.id);
+                        return oldData.filter((oldItem) => oldItem.id !== newData.deleted.id);
+                    } else if (oldData.findIndex((item) => item.id === newData.id) !== -1) {
+                        return oldData.map((item) => (item.id === newData.id ? newData : item));
+                    } else {
+                        subscribe(newData.id);
+                        return [...oldData, newData];
+                    }
+                } else if (oldData && oldData.id === newData.id) {
+                    return { ...oldData, ...newData };
+                } else if (newData.deleted) {
+                    return null;
+                }
+                return oldData;
+            });
+        } else {
+            queryClient.invalidateQueries(endpoint);
+        }
+    }, [endpoint, queryClient]);
+
+    // Abonnement aux événements d'un objet
+    const subscribe = useCallback((id) => {
+        if (!subscriptions.current[id]) {
+            //console.log(`subscribe ${endpoint}/${id}`);
+            eventSource.addEventListener(`${endpoint}/${id}`, handleSSEMessage);
+            subscriptions.current[id] = handleSSEMessage;
+        }
+    }, [handleSSEMessage]);
+
+    // Désabonnement des événements d'un objet
+    const unsubscribe = useCallback((id) => {
+        const handler = subscriptions.current[id];
+        if (handler) {
+            //console.log(`unsubscribe ${endpoint}/${id}`);
+            eventSource.removeEventListener(`${endpoint}/${id}`, handler);
+            delete subscriptions.current[id];
+        }
+    }, []);
+
+
+    /*************************************************************/
+    /* Gestion des requêtes                                      */
+
     async function send({ method, url, data = null }) {
         const response = await fetch(url, {
             method,
@@ -42,7 +128,10 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         return responseData;
     }
 
-    // Gestion des erreurs
+
+    /*************************************************************/
+    /* Gestion des erreurs                                       */
+
     function handleErrors(error) {
         try {
             error = JSON.parse(error.message);
@@ -58,7 +147,10 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         setErrors(error);
     }
 
-    // Initialisation
+
+    /*************************************************************/
+    /* Initialisation                                            */
+
     const { data, error: queryError, status, isFetching } = useQuery(
         endpoint,
         () => {
@@ -73,7 +165,35 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     );
 
-    // Gestion des mises à jour (utilisateur => modèle)
+    // Abonnement/Désabonnement global
+    useEffect(() => {
+        if (id !== undefined) {
+            //console.log(`subscribe ${endpoint}`);
+            eventSource.addEventListener(endpoint, handleSSEMessage);
+
+            return () => {
+                eventSource.removeEventListener(endpoint, handleSSEMessage);
+                // Nettoyage de tous les abonnements
+                Object.keys(subscriptions.current).forEach(unsubscribe);
+            };
+        }
+    }, [endpoint, handleSSEMessage, unsubscribe]);
+
+    // On s'abonne à chaque sous-objet quand les données récupérées sont une liste d'objets
+    useEffect(() => {
+        if (id !== undefined && Array.isArray(data)) {
+            data.forEach((item) => {
+                if (item && item.id) {
+                    subscribe(item.id);
+                }
+            });
+        }
+    }, [data, subscribe]);
+
+
+    /*************************************************************/
+    /* Gestion des actions utilisateur                           */
+
     const mutation = useMutation(
         async ({ method, data, action }) => {
             setErrors(undefined);
@@ -121,10 +241,12 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                 queryClient.setQueryData(endpoint, (oldData) => {
                     if (Array.isArray(oldData)) {
                         if (method === 'POST') {
+                            subscribe(responseData.id);
                             return oldData.map((oldItem) => (oldItem.id === 0 ? responseData : oldItem));
                         } else if (method === 'PUT' || method === 'PATCH') {
                             return oldData.map((oldItem) => (oldItem.id === responseData.id ? responseData : oldItem));
                         } else if (method === 'DELETE') {
+                            unsubscribe(responseData.id);
                             return oldData.filter((oldItem) => oldItem.id !== data.id);
                         }
                     } else {
@@ -136,6 +258,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                     }
                     return responseData !== undefined ? responseData : oldData;
                 });
+                // On invalide pas la requête, mais cela pourrai être nécessaire en cas de polling (que l'on rajoutera plus tard)
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
             onSettled: () => {
@@ -144,6 +267,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     );
 
+    // Méthode asynchrone de mutation pré-paramétrée pour les sous-composants
     const mutateAsync = useCallback((action = 'read', data = null) => {
         const methods = { create: "POST", read: "GET", update: "PUT", delete: "DELETE", patch: "PATCH" };
         return mutation.mutateAsync({
@@ -153,39 +277,10 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         });
     }, [mutation]);
 
-    // Gestion des mises à jour (modèle => utilisateur)
-    useEffect(() => {
-        const handleSSEMessage = (event) => {
-            if (event.type === endpoint) {
-                //console.log(event);
-                const newData = event.data ? JSON.parse(event.data) : null;
-                if (newData) {
-                    queryClient.setQueryData(endpoint, (oldData) => {
-                        if (Array.isArray(oldData)) {
-                            if (oldData.findIndex((item) => item.id === newData.id) !== -1) {
-                                return oldData.map((item) => (item.id === newData.id ? newData : item));
-                            } else {
-                                return [...oldData, newData];
-                            }
-                        } else if (oldData && oldData.id === newData.id) {
-                            return { ...oldData, ...newData };
-                        }
-                        return oldData;
-                    });
-                } else {
-                    queryClient.invalidateQueries(endpoint);
-                }
-            }
-        };
 
-        eventSource.addEventListener(endpoint, handleSSEMessage);
+    /*************************************************************/
+    /* Gestion du rendu                                          */
 
-        return () => {
-            eventSource.removeEventListener(endpoint, handleSSEMessage);
-        };
-    }, [endpoint, queryClient]);
-
-    // Gestion du rendu
     if (queryError) return <div>Error: {queryError.message}</div>;
 
     const statuses = {

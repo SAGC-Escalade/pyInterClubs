@@ -66,6 +66,9 @@
     <Compile Include="api\serializers.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="api\signals.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="api\urls.py">
       <SubType>Code</SubType>
     </Compile>

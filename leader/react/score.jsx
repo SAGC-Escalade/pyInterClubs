@@ -33,7 +33,7 @@ export default function Score({ id }) {
                                         <span className="text-truncate">{score.grimpeur?.nom} {score.grimpeur?.prenom}</span>
                                         {score.clubPreteur && <sup><Badge pill bg="secondary" className="ms-1">{score.clubPreteur.nom}</Badge></sup>}
                                         <Badge bg={score.valide ? "success" : "primary"} className="me-3 ms-auto">
-                                            {score.points}<span className="d-none d-sm-inline ms-1">pts</span>
+                                            {score.points || 0}<span className="d-none d-sm-inline ms-1">pts</span>
                                         </Badge>
                                     </>
                                 )}
@@ -65,7 +65,8 @@ export default function Score({ id }) {
                                                     </HorizontalFormGroup>
                                                 )}
                                                 <HorizontalFormGroup label="Club prêteur">
-                                                    <Autocomplete endpoint="clubs" value={score.clubPreteur} onChange={(c) => action('patch', { "clubPreteur": c?.id ?? null })}>
+                                                        <Autocomplete endpoint="clubs" value={score.clubPreteur}
+                                                            onChange={(c) => (c != score.clubPreteur) ? action('patch', { "clubPreteur": c?.id ?? null }) : null}>
                                                         {({ nom, ville }) => {
                                                             return `${nom} (${ville})`;
                                                         }}
