@@ -136,8 +136,9 @@ class EquipeQuerySet(models.QuerySet):
                 # Vérification de la validité en comparant les performances réelles avec les attentes
                 valide=Case(
                     When((
-                        Q(nb_blocs_valide=F('nb_membres') * F('rencontre__nbBloc')) &
-                        Q(nb_diffs_valide=F('nb_membres') * F('rencontre__nbDiff')) &
+                        (Q(nb_blocs_valide__gt=0) | Q(nb_diffs_valide__gt=0) | Q(nb_vitesses_valide__gt=0)) &
+                        Q(nb_blocs_valide = F('nb_membres') * F('rencontre__nbBloc')) &
+                        Q(nb_diffs_valide = F('nb_membres') * F('rencontre__nbDiff')) &
                         Q(nb_vitesses_valide=F('nb_membres') * F('rencontre__nbVitesse'))
                         ), then=True
                     ),
@@ -163,7 +164,7 @@ class ScoreQuerySet(models.QuerySet):
         return qs
     def with_related(self):
         return self.prefetch_related(
-                Prefetch('performances', queryset=Performance.objects.with_related())
+                Prefetch('performances', queryset=Performance.objects.with_related()),
             ).select_related('equipe__rencontre__club', 'equipe__club', 'clubPreteur', 'grimpeur__club')
     def with_valide_and_points(self):
         return self.annotate(
@@ -176,6 +177,7 @@ class ScoreQuerySet(models.QuerySet):
                 # Vérification de la validité en comparant les performances réelles avec les attentes
                 valide=Case(
                     When((
+                        (Q(nb_blocs_valide__gt=0) | Q(nb_diffs_valide__gt=0) | Q(nb_vitesses_valide__gt=0)) &
                         Q(nb_blocs_valide=F('equipe__rencontre__nbBloc')) &
                         Q(nb_diffs_valide=F('equipe__rencontre__nbDiff')) &
                         Q(nb_vitesses_valide=F('equipe__rencontre__nbVitesse'))
@@ -196,7 +198,7 @@ class PerformanceQuerySet(models.QuerySet):
         if sexe:      qs = qs.filter(score__grimpeur__sexe=sexe)
         return qs
     def with_related(self):
-        return self.select_related('voie', 'score__equipe__rencontre__club', 'score__equipe__club', 'score__clubPreteur', 'score__grimpeur__club')
+        return self.select_related('voie')
 
     def blocs(self):
         return self.filter(voie__type=TypeVoie.bloc)
@@ -414,8 +416,9 @@ class Score(CleanModel):
         perfs = list(self.performances.filter(Q(voie__type=TypeVoie.diff)|Q(voie=None)))
         for p,v in zip(perfs, voies):
             p.voie = v
+            # TODO: Faire un update_bulk ou save_bulk pour éviter les notifications en cascade
+            # Et appeler les notifications manuellement (3 perfs + 1 score + 1 equipe)
             p.save()
-        self.refresh('points')
 
 
     def save(self, *args, **kwargs):
@@ -425,9 +428,6 @@ class Score(CleanModel):
                 self.clubPreteur = self.grimpeur.club
         return super().save(*args, **kwargs)
 
-    def refresh(self, field):
-        if field == 'points':
-            self.points = sum(p for p in self.performances.values_list('points', flat=True) if p)
 
 # Peut-être qu'il faudrait utiliser le polymorphisme pour la classe Performance
 # Une classe PerformanceDiff (pour bloc et diff), une classe PerformanceVitesse
