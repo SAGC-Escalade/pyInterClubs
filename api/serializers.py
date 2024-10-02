@@ -12,7 +12,7 @@ from core.models import *
 
 __all__ = (
     "VoieSerializer", "ClubSerializer",
-    "GrimpeurSerializer", "GrimpeurSerializerIdentity",
+    "GrimpeurSerializer",
     "RencontreSerializer", "EquipeSerializer",
     "ScoreSerializer", "PerformanceSerializer",
 )
@@ -109,10 +109,6 @@ class GrimpeurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
         fields = ['id', 'nom', 'prenom', 'sexe', 'club_nom']
-class GrimpeurSerializerIdentity(serializers.ModelSerializer):
-    class Meta:
-        model = Grimpeur
-        fields = ['id', 'nom', 'prenom', 'sexe']
 
 
 class RencontreSerializer(SSESerializer):
@@ -219,10 +215,7 @@ class ScoreSerializer(SSESerializer):
         ret = super().to_representation(instance)
         # Overwrite the grimpeur field with the nested serializer data
         if instance.grimpeur:
-            if self.context.get('request', None) and self.context.get('request').query_params.get('withClub'):
-                ret['grimpeur'] = GrimpeurSerializer(instance.grimpeur, context=self.context).data
-            else:
-                ret['grimpeur'] = GrimpeurSerializerIdentity(instance.grimpeur, context=self.context).data
+            ret['grimpeur'] = GrimpeurSerializer(instance.grimpeur, context=self.context).data
         if instance.clubPreteur:
             ret['clubPreteur'] = ClubSerializer(instance.clubPreteur, context=self.context).data
         if not 'points' in ret:

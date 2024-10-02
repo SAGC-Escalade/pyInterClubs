@@ -5,7 +5,7 @@ import Observer from "./observer.jsx";
 
 export default function Ranking({ categorie }) {
     return (
-        <Observer endpoint='scores' id={null} csrf={csrf} queryString="?order_by=-points&withClub=1">
+        <Observer endpoint='scores' id={null} csrf={csrf} queryString="?order_by=-points">
             {({ data: scores = [], status }) => {
                 /***************************************************************/
                 /* TODO: Gérer le tri des résultats ici (et pas côté serveur)  */
@@ -76,7 +76,7 @@ export default function Ranking({ categorie }) {
                                     <div className="text-end text-nowrap ms-auto">
                                         {medal}
                                         <Badge bg={score.valide ? "success" : "primary"}>
-                                            {score.points}<span className="d-none d-sm-inline ms-1">pts</span>
+                                            {score.points | 0}<span className="d-none d-sm-inline ms-1">pts</span>
                                         </Badge>
                                     </div>
                                 </li>

@@ -65,11 +65,11 @@ class VoieViewSet(DjangoModelViewSet):
     queryset = Voie.objects.all()
 
 class GrimpeurViewSet(DjangoModelViewSet):
-    serializer_class = GrimpeurSerializerIdentity
+    serializer_class = GrimpeurSerializer
 
     def get_queryset(self):
         interclub = self.request.interclub
-        queryset = Grimpeur.objects.global_filter(club=interclub.club)
+        queryset = Grimpeur.objects.select_related('club').global_filter(club=interclub.club)
         if not self.request.user.is_superuser:
             rencontre = Rencontre.objects.get(pk=interclub.rencontre)
             # On filtre les grimpeurs par rapport à leur âge
