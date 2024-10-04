@@ -1,7 +1,15 @@
 {% extends "index.html" %}
 {% load babel_transpiling %}
 
-{% block title %}Equipe {{ object }}{% endblock %}
+{% block title %}{{ object }}{% endblock %}
+
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-user-group fa-fw me-2"></i>{{ object }}
+        </a>
+    </li>
+{% endblock %}
 
 {% block head %}
     <style>

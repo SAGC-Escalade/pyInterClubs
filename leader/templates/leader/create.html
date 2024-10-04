@@ -3,6 +3,14 @@
 
 {% block title %}Ajouter une équipe{% endblock %}
 
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-plus fa-fw me-2"></i>Ajouter une équipe
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="card">

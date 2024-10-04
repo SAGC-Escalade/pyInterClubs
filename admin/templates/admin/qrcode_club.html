@@ -3,6 +3,14 @@
 
 {% block title %}QRCode des clubs{% endblock %}
 
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-qrcode fa-fw me-2"></i>QRCodes
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     <div class="accordion" id="qrcodes">

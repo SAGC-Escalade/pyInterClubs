@@ -8,7 +8,8 @@
                 <a role="button" class="btn" href="{% url 'logout' %}" title="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></a>
             </div>
             <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
-            <span class="fw-bold"><span class="text-uppercase">{{ user.first_name }}</span> <span class="text-capitalize">{{ user.last_name }}</span></span>
+            <span class="fw-bold"><span class="text-capitalize">{{ user.first_name|default:"Utilisateur Anonyme" }}</span></span>
+            <span class="text-capitalize">({{ user.last_name }})</span>
         </div>
         {% else %}
         <div class="vstack gap-2 position-relative align-items-center">
@@ -46,7 +47,7 @@
                     <div class="accordion-item">
                         <div id="hdrEquipes" class="accordion-header">
                             <button class="accordion-button d-flex" type="button" data-bs-toggle="collapse" data-bs-target="#bdyEquipes" aria-expanded="true" aria-controls="bdyEquipes" style="--bs-accordion-btn-padding-y:0.5rem; --bs-accordion-btn-padding-x:1rem;">
-                                <i class="fa-solid fa-users me-2"></i>
+                                <i class="fa-solid fa-user-group me-2"></i>
                                 <span class="">Mes équipes</span>
                             </button>
                         </div>

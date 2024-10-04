@@ -3,6 +3,14 @@
 
 {% block title %}Résultats de la rencontre{% endblock %}
 
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-ranking-star fa-fw me-2"></i>Résultats
+        </a>
+    </li>
+{% endblock %}
+
 {% block head %}
     <style>
         .sexe  { color: rgba(0,0,0,.3); }

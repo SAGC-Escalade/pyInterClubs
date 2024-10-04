@@ -214,7 +214,6 @@
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_index.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
-    <Content Include="pyInterClubs\templates\p_navbar.html" />
     <Content Include="admin\templates\admin\qrcode_club.html" />
     <Content Include="pyInterClubs\templates\index.html" />
     <Content Include="pyInterClubs\templates\registration\login.html" />

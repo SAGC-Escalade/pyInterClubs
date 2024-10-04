@@ -3,6 +3,14 @@
 
 {% block title %}Connexion{% endblock %}
 
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-right-to-bracket fa-fw me-2"></i>Connexion
+        </a>
+    </li>
+{% endblock %}
+
 {% block body %}
 {% bootstrap_messages %}
 

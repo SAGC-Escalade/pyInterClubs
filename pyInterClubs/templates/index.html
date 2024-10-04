@@ -22,8 +22,32 @@
     <script src="{% static '3rd/react-query-3.39.3-dist/react-query.production.min.js' %}"></script>
     <script type="module" src="{% static '3rd/react-bootstrap-2.9.1-dist/react-bootstrap.min.js' %}"></script>
 </head>
-<body class="placeholder-glow">
-    {% include 'p_navbar.html' %}
+<body class="placeholder-glow mt-5 pt-2">
+    <nav class="navbar navbar-expand-md bg-light fixed-top">
+        <div class="container-fluid">
+            <a href="#menu" data-bs-toggle="offcanvas" class="nav-link me-3" aria-controls="menu"><i class="fa-solid fa-bars"></i></a>
+            <span class="navbar-brand">
+                <span class="fa-layers fa-fw">
+                    <i class="fa-solid fa-person-falling" data-fa-transform="shrink-2 down-2 left-2"></i>
+                    <i class="fa-solid fa-slash" data-fa-transform="rotate-20 right-2"></i>
+                </span>
+                pyInterClubs
+            </span>
+            <div class="collapse navbar-collapse" id="navbarScroll">
+                <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="d-md-none fa-solid fa-home fa-fw me-2"></i>Accueil
+                        </a>
+                    </li>
+                    {% block nav-items %}{% endblock %}
+                </ul>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-chevron-down fa-fw"></i>
+            </button>
+        </div>
+    </nav>
     {% include 'p_menu.html' %}
 
     <div id="mainFragment" class="my-3">
