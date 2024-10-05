@@ -322,6 +322,8 @@ class Rencontre(CleanModel):
     @transaction.atomic
     def proceed_speed_points(self, perf=None):
         # TODO: Trouver comment ne pas appeller ce calcul à chaque ajout d'une performance lors de l'import de l'ancienne base.
+        # TODO: Simplifier cette méthode pour la rendre plus lisible
+        # (certaines actions peuvent être dispatché dans d'autres modèles comme "Evaluation des conditions et points de la voie" => Perf.get_points())
         sexe = (Genre.homme, Genre.femme)
         if perf:
             if perf.score_id is None or perf.score.grimpeur_id is None: return
@@ -405,6 +407,9 @@ class Score(CleanModel):
             raise ValidationError("Une équipe ne peut pas avoir plus de 8 membres.")
 
 
+    # TODO: Il peut être judicieux de revoir ces méthodes.
+    # Une fonction déclenché par un signal post_save permettant de remettre les indices dans l'ordre (sans trou)
+    # à l'ajout/suppression d'un grimpeur ou à la modification de l'emplacement d'un grimpeur.
     def ordre_up(self):
         prev = self.equipe.membres.filter(ordre__lt=self.ordre).in_order().last()
         if prev is None: return
@@ -472,6 +477,7 @@ class Performance(CleanModel):
 
 
     def save(self, *args, **kwargs):
+        # TODO: Il peut être bénéfique de recalculer les points dans un signal post_save
         if self.voie_id != None:
             if self.etat is None:
                 self.points = None
@@ -504,7 +510,7 @@ class RencontreVoie(CleanModel):
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
-    # NOTE: Il ne faut pas cascader la suppression d'un juge !
+    # TODO: Il ne faut pas cascader la suppression d'un juge !
     # Les juges et les coach vont être supprimé à la fin de chaque rencontre,
     # Si on cascade, on va supprimer les voies d'une rencontre ?
     # Au mieux on met NULL (SET_NULL ?)
