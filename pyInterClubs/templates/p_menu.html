@@ -9,7 +9,7 @@
             </div>
             <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
             <span class="fw-bold"><span class="text-capitalize">{{ user.first_name|default:"Utilisateur Anonyme" }}</span></span>
-            <span class="text-capitalize">({{ user.last_name }})</span>
+            {% if user.last_name %}<span class="text-capitalize">{{ user.last_name }}</span>{% endif %}
         </div>
         {% else %}
         <div class="vstack gap-2 position-relative align-items-center">
@@ -35,6 +35,10 @@
                 <a href="{% url 'rencontre:qrcode-clubs' %}?rencontre={{ user.profil.rencontre.id }}" class="list-group-item list-group-item-action d-flex align-items-center">
                     <i class="fa-solid fa-qrcode fa-fw me-2"></i>
                     QRCodes de connexion
+                </a>
+                <a href="{% url 'juge:create' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fa-solid fa-gavel fa-fw me-2"></i>
+                    Affectation des juges
                 </a>
                 <a href="{% url 'rencontre:resultats' %}" class="list-group-item list-group-item-action d-flex align-items-center">
                     <i class="fa-solid fa-ranking-star fa-fw me-2"></i>

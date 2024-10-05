@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'daphne',
     'channels',
     'leader',
+    'judge',
     'admin',
     'core',
     'api',

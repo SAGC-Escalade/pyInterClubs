@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/', include('api.urls', namespace='api'), name='api'),
     path('admin/', include('admin.urls', namespace='rencontre')),
     path('leader/', include('leader.urls', namespace='equipe')),
+    path('judge/', include('judge.urls', namespace='juge')),
     path('accounts/', include('django.contrib.auth.urls')),
 
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),

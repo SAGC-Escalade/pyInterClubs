@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Liste des juges{% endblock %}
+
+{% block nav-items %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ request.path }}">
+        <i class="d-md-none fa-solid fa-gravel fa-fw me-2"></i>Liste des juges
+    </a>
+</li>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="card">
+        <a href="{% url 'juge:create' %}" class="btn btn-lg btn-primary shadow rounded-circle position-fixed end-0 me-5">
+            <i class="fa-solid fa-plus" data-fa-transform="up-1" title="Ajouter un juge"></i>
+        </a>
+        <div class="list-group">
+            {% for item in object_list %}
+                <a href="{% url 'juge:create' %}" class="list-group-item list-group-item-action {% if item.juge != None %}list-group-item-success{% endif %} d-flex justify-content-between">
+                    <span>{{ item.voie.nom }} / {{ item.voie.niveau }}</span>
+                    <span>{{ item.juge.first_name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

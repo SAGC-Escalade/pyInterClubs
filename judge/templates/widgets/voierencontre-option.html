@@ -1,0 +1,6 @@
+{% with widget.value.instance as v %}
+<option value="{{ widget.value|stringformat:'s' }}" {% if v.juge %}disabled{% endif %} {% include "django/forms/widgets/attrs.html" %}>
+    {{ v.voie }}
+    {% if v.juge %} (déjà affectée){% endif %}
+</option>
+{% endwith %}

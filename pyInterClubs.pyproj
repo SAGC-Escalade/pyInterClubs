@@ -83,6 +83,17 @@
     </Compile>
     <Compile Include="core\tests.py" />
     <Compile Include="core\__init__.py" />
+    <Compile Include="judge\admin.py" />
+    <Compile Include="judge\apps.py" />
+    <Compile Include="judge\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="judge\tests.py" />
+    <Compile Include="judge\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="judge\views.py" />
+    <Compile Include="judge\__init__.py" />
     <Compile Include="leader\apps.py" />
     <Compile Include="leader\forms.py">
       <SubType>Code</SubType>
@@ -128,6 +139,9 @@
     </Content>
     <Content Include="core\react\horizontal-form-group.jsx" />
     <Content Include="core\react\perf-input.jsx" />
+    <Content Include="judge\templates\judge\create.html" />
+    <Content Include="judge\templates\judge\manage.html" />
+    <Content Include="judge\templates\widgets\voierencontre-option.html" />
     <Content Include="leader\react\equipe.jsx" />
     <Content Include="leader\templates\leader\create.html" />
     <Content Include="leader\templates\leader\equipe.html" />
@@ -235,6 +249,10 @@
     <Folder Include="core\" />
     <Folder Include="core\migrations\" />
     <Folder Include="core\react\" />
+    <Folder Include="judge\" />
+    <Folder Include="judge\templates\" />
+    <Folder Include="judge\templates\judge\" />
+    <Folder Include="judge\templates\widgets\" />
     <Folder Include="leader\" />
     <Folder Include="leader\react\" />
     <Folder Include="leader\templates\" />

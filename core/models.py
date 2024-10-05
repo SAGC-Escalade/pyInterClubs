@@ -209,6 +209,25 @@ class PerformanceQuerySet(models.QuerySet):
     def with_temps(self):
         return self.filter(temps__isnull=False)
 
+class RencontreVoieQuerySet(models.QuerySet):
+    def global_filter(self, *, rencontre=None, voie=None, juge=None):
+        qs = self
+        if rencontre: qs = qs.filter(rencontre_id=rencontre)
+        if voie:      qs = qs.filter(voie_id=voie)
+        if juge:      qs = qs.filter(juge_id=juge)
+        return qs
+    def with_related(self):
+        return self.select_related('voie')
+
+    def order_by__nom(self):
+        is_tete = Case(
+            When(voie__nom__startswith='M', then=False),
+            When(voie__nom__startswith='T', then=True),
+            output_field=models.BooleanField()
+        )
+        numero_voie = Cast(Substr('voie__nom', 2), models.IntegerField())
+        return self.annotate(tete=is_tete, numero=numero_voie).order_by('tete', 'numero')
+
 
 ########################################################
 # Définition des Models
@@ -480,6 +499,7 @@ class RencontreVoie(CleanModel):
         constraints = [
             models.UniqueConstraint(fields=['rencontre', 'voie'], name='unique_rencontre_voie')
         ]
+    objects = RencontreVoieQuerySet().as_manager()
 
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
