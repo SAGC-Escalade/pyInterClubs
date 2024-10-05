@@ -4,7 +4,7 @@
     <Name>pyInterClubs</Name>
     <RootNamespace>pyInterClubs</RootNamespace>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
-    <InterpreterId>MSBuild|venv|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|venv-3.10|$(MSBuildProjectFullPath)</InterpreterId>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
     <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
   </PropertyGroup>
@@ -277,6 +277,15 @@
     <Folder Include="pyInterClubs\templates\registration\" />
   </ItemGroup>
   <ItemGroup>
+    <Interpreter Include="venv-3.10\">
+      <Id>venv-3.10</Id>
+      <Version>3.10</Version>
+      <Description>venv-3.10 (Python 3.10 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
     <Interpreter Include="venv\">
       <Id>venv</Id>
       <Version>3.9</Version>

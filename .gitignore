@@ -362,7 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-venv/
+venv*/
 /static
 /pyInterClubs.dt
 /django.sqlite

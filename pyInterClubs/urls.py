@@ -22,6 +22,8 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from django_js_reverse.views import urls_js
+import django_eventstream
+
 from .views import *
 
 urlpatterns = [
@@ -34,6 +36,12 @@ urlpatterns = [
 
     path('accounts/club', ClubAuthenticationView.as_view(), name='auth-club'),
     path('', TemplateView.as_view(template_name="index.html")),
+
+    # TODO: Prévoir un channel par rencontre (en ajoutant l'id de la rencontre dans l'uri par exemple)
+    # Avec la dernière version de django-eventstream :
+    # path('events/<id>/', include(django_eventstream.urls), {'format-channels': ['rencontre-{id}']})
+    # Ca permettrait d'avoir plusieurs rencontres lancées en même temps sans qu'elles ne se perturbent entre elles.
+    path('events/', include(django_eventstream.urls), {"channels": ["events"]}),
 
     re_path(r"^react/(?P<path>.*.jsx)$", serve_react, name='react'),
     re_path(r'^js/reverse/$', urls_js, name='js_reverse'),
