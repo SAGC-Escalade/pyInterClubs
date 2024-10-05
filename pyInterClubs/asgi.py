@@ -20,6 +20,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pyInterClubs.settings')
 
 application = ProtocolTypeRouter({
     'http': URLRouter([
+        # TODO: Prévoir un channel par rencontre (en ajoutant l'id de la rencontre dans l'uri par exemple)
         path('events/', consumers.EventsConsumer.as_asgi(), {'channels': ['events']}),
         re_path(r'', get_asgi_application()),
     ]),

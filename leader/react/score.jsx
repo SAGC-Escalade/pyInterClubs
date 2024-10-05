@@ -31,7 +31,7 @@ export default function Score({ id }) {
                                     <>
                                         <i className={icon} style={{ lineHeight: 1 }}></i>
                                         <span className="text-truncate">{score.grimpeur?.nom} {score.grimpeur?.prenom}</span>
-                                        {score.clubPreteur && <sup><Badge pill bg="secondary" className="ms-1">{score.clubPreteur.nom}</Badge></sup>}
+                                        {score.clubPreteur && <sup className="text-truncate"><Badge pill bg="secondary" className="ms-1">{score.clubPreteur.nom}</Badge></sup>}
                                         <Badge bg={score.valide ? "success" : "primary"} className="me-3 ms-auto">
                                             {score.points || 0}<span className="d-none d-sm-inline ms-1">pts</span>
                                         </Badge>
@@ -52,7 +52,7 @@ export default function Score({ id }) {
                                     <>
                                         <ListGroupItem variant="secondary" action className="text-center" onClick={() => setShowParameters(!showParameters)}>
                                             <i className="fa-solid fa-gear fa-fw me-2"></i>
-                                            Paramètres
+                                            ParamÃ¨tres
                                         </ListGroupItem>
                                         <Collapse in={showParameters}>
                                             <ListGroupItem className="border-bottom">
@@ -64,7 +64,7 @@ export default function Score({ id }) {
                                                         />
                                                     </HorizontalFormGroup>
                                                 )}
-                                                <HorizontalFormGroup label="Club prêteur">
+                                                <HorizontalFormGroup label="Club prÃªteur">
                                                         <Autocomplete endpoint="clubs" value={score.clubPreteur}
                                                             onChange={(c) => (c != score.clubPreteur) ? action('patch', { "clubPreteur": c?.id ?? null }) : null}>
                                                         {({ nom, ville }) => {

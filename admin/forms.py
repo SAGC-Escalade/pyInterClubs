@@ -70,12 +70,13 @@ class RencontreCreateForm(forms.ModelForm):
 
     voies = forms.ModelMultipleChoiceField(
         required=False,
-        queryset=Voie.objects.actifs().order_by("categorie", "type"),
+        queryset=Voie.objects.actifs().order_by__nom().order_by("categorie", "type"),
         to_field_name='id',
-        widget=VoiesSelectWidget(attrs={'size':'15'}),
+        widget=VoiesSelectWidget(attrs={'size':'16'}),
     )
 
     def clean_voies(self):
+        # Je traite le required=True ici pour que l'erreur soit visible sur le formulaire
         data = self.cleaned_data["voies"]
         if len(data) == 0: raise ValidationError('Sélectionnez les voies de la rencontre.')
         return data

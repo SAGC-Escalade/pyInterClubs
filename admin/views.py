@@ -41,20 +41,6 @@ class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
         return super().get_context_data(**kwargs)
 
 
-#class ResultsView(StaffRequiredMixin, WithRencontreRequiredMixin, TemplateView):
-#    model = Score
-#    template_name = 'admin/resultats.html'
-#
-#    def get_queryset(self):
-#        rencontre = self.request.interclub.rencontre
-#        return super().get_queryset() \
-#            .select_related('grimpeur__club') \
-#            .prefetch_related('performances') \
-#            .globale_filter(rencontre=rencontre) \
-#            .with_valide_and_points() \
-#            .in_order()
-
-
 class RencontreSelectionView(SuperUserRequiredMixin, FormView):
     success_url = reverse_lazy('rencontre:qrcode-clubs')
     form_class = RencontreSelectionForm
