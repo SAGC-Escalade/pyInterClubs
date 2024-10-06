@@ -16,6 +16,15 @@ export default function Score({ id }) {
             {({ data: score, errors, status, action }) => {
                 if (score === null) return;
 
+                if (status.isError) {
+                    return (
+                        <span className="w-100 d-flex px-4 py-3">
+                            <i className="fa-solid fa-triangle-exclamation text-danger fa-fw fa-lg me-2"></i>
+                            <span className="text-truncate">{ errors.detail || errors }</span>
+                        </span>
+                    );
+                }
+
                 let icon;
                 icon = "d-none";
                 if (score?.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; }

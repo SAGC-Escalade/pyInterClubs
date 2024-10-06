@@ -2,42 +2,42 @@ const { useState, useEffect, useRef, useCallback } = React;
 const { useQuery, useMutation, useQueryClient, QueryClient } = window.ReactQuery;
 
 const eventSource = new EventSource('/events/', { withCredentials: true });
-eventSource.onerror = () => { console.log("Erreur de connexion avec le canal temps réel..."); };
-eventSource.onmessage = (event) => { console.log("message non traité :", event); };
+eventSource.onerror = () => { console.log("Erreur de connexion avec le canal temps rÃ©el..."); };
+eventSource.onmessage = (event) => { console.log("message non traitÃ© :", event); };
 
 export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined, queryString = undefined }) {
-    /* Fonctions et valeurs possibles des paramètres :
+    /* Fonctions et valeurs possibles des paramÃ¨tres :
      * 
-     * endpoint (string): C'est la seconde partie du chemin de l'API, c'est aussi la première partie de l'id des events SSE
+     * endpoint (string): C'est la seconde partie du chemin de l'API, c'est aussi la premiÃ¨re partie de l'id des events SSE
      *   exemple: rencontres, scores, equipes, performances
-     * id (int, null, undefined): Défini l'id de l'objet à surveiller ou le comportement (trap d'événements SSE ou polling).
-     *   int: L'id de l'objet à surveiller. La structure JSX enfant sera mise à jour en cas de modification des champs de cette instance du modèle
-     *   null: Surveille la liste complète des instances du modèle. La structure JSX est MAJ en cas d'ajout/suppression ou certaines modifications des instances du modèle
-     *   undefined: Désactive la surveillance. La structure JSX est MAJ par polling
-     * initialData (object): Initialise les données à passer à la structure JSX enfant avant même le premier GET du modèle
-     * csrf (string): Définie la chaîne CSRF utilisé lors de cette session HTML
-     * querystring (string): Définie une chaîne de requête supplémentaire à ajouter à l'URI de l'API juste avant d'envoyer la requête.
-     *   Permet de configurer du filtrage ou des paramètres supplémentaires attendus côté serveur.
-     * children (object): Défini la structure JSX à mettre à jour
+     * id (int, null, undefined): DÃ©fini l'id de l'objet Ã  surveiller ou le comportement (trap d'Ã©vÃ©nements SSE ou polling).
+     *   int: L'id de l'objet Ã  surveiller. La structure JSX enfant sera mise Ã  jour en cas de modification des champs de cette instance du modÃ¨le
+     *   null: Surveille la liste complÃ¨te des instances du modÃ¨le. La structure JSX est MAJ en cas d'ajout/suppression ou certaines modifications des instances du modÃ¨le
+     *   undefined: DÃ©sactive la surveillance. La structure JSX est MAJ par polling
+     * initialData (object): Initialise les donnÃ©es Ã  passer Ã  la structure JSX enfant avant mÃªme le premier GET du modÃ¨le
+     * csrf (string): DÃ©finie la chaÃ®ne CSRF utilisÃ© lors de cette session HTML
+     * querystring (string): DÃ©finie une chaÃ®ne de requÃªte supplÃ©mentaire Ã  ajouter Ã  l'URI de l'API juste avant d'envoyer la requÃªte.
+     *   Permet de configurer du filtrage ou des paramÃ¨tres supplÃ©mentaires attendus cÃ´tÃ© serveur.
+     * children (object): DÃ©fini la structure JSX Ã  mettre Ã  jour
      * 
-     * Dans la structure JSX enfant, il est possible d'utiliser les paramètres suivants pour la personnaliser :
+     * Dans la structure JSX enfant, il est possible d'utiliser les paramÃ¨tres suivants pour la personnaliser :
      * 
-     * data (object, array, null, undefined): Ce sont les données récupérées par l'API.
-     *   object: Les données d'une instance d'un modèle
-     *   array: Les données de plusieurs instances d'un même modèle
-     *   null: Aucune donnée n'a été récupérée ou elles ont été supprimées
-     *   undefined: Les données sont en cours de récupération
-     * errors (object): Défini la totalité des erreurs rencontrées durant les opérations CRUDS sur le modèle
+     * data (object, array, null, undefined): Ce sont les donnÃ©es rÃ©cupÃ©rÃ©es par l'API.
+     *   object: Les donnÃ©es d'une instance d'un modÃ¨le
+     *   array: Les donnÃ©es de plusieurs instances d'un mÃªme modÃ¨le
+     *   null: Aucune donnÃ©e n'a Ã©tÃ© rÃ©cupÃ©rÃ©e ou elles ont Ã©tÃ© supprimÃ©es
+     *   undefined: Les donnÃ©es sont en cours de rÃ©cupÃ©ration
+     * errors (object): DÃ©fini la totalitÃ© des erreurs rencontrÃ©es durant les opÃ©rations CRUDS sur le modÃ¨le
      * status (object):
-     *   isLoading:  Une requête est en cours de chargement,
-     *   isError:    Une requête a terminé en erreur,
-     *   isSuccess:  La requête s'est terminée correctement, se référer à "data" pour utiliser les données récupérées
-     *   isDeleting: Une requête de suppression est en cours d'envoi,
-     * action (function): C'est une fonction utilisable pour agir sur l'API (permet de gérer les opérations CRUDS)
-     * resetErrors (function): Permet de supprimer les erreurs de l'appel précédent
+     *   isLoading:  Une requÃªte est en cours de chargement,
+     *   isError:    Une requÃªte a terminÃ© en erreur,
+     *   isSuccess:  La requÃªte s'est terminÃ©e correctement, se rÃ©fÃ©rer Ã  "data" pour utiliser les donnÃ©es rÃ©cupÃ©rÃ©es
+     *   isDeleting: Une requÃªte de suppression est en cours d'envoi,
+     * action (function): C'est une fonction utilisable pour agir sur l'API (permet de gÃ©rer les opÃ©rations CRUDS)
+     * resetErrors (function): Permet de supprimer les erreurs de l'appel prÃ©cÃ©dent
      */
 
-    const queryClient = useQueryClient();       // Le gestionnaire de requêtes
+    const queryClient = useQueryClient();       // Le gestionnaire de requÃªtes
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
     const isSingle = !!id;
@@ -47,9 +47,9 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     const subscriptions = useRef({});
 
     /*************************************************************/
-    /* Gestion des événements (MAJ modèle => interface)          */
+    /* Gestion des Ã©vÃ©nements (MAJ modÃ¨le => interface)          */
 
-    // MAJ des datas en fonction des événements
+    // MAJ des datas en fonction des Ã©vÃ©nements
     const handleSSEMessage = useCallback((event) => {
         //console.log(event.type, event.data);
         const newData = event.data ? JSON.parse(event.data) : null;
@@ -77,7 +77,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     }, [endpoint, queryClient]);
 
-    // Abonnement aux événements d'un objet
+    // Abonnement aux Ã©vÃ©nements d'un objet
     const subscribe = useCallback((id) => {
         if (!subscriptions.current[id]) {
             //console.log(`subscribe ${endpoint}/${id}`);
@@ -86,7 +86,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     }, [handleSSEMessage]);
 
-    // Désabonnement des événements d'un objet
+    // DÃ©sabonnement des Ã©vÃ©nements d'un objet
     const unsubscribe = useCallback((id) => {
         const handler = subscriptions.current[id];
         if (handler) {
@@ -98,7 +98,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
 
 
     /*************************************************************/
-    /* Gestion des requêtes                                      */
+    /* Gestion des requÃªtes                                      */
 
     async function send({ method, url, data = null }) {
         const response = await fetch(url, {
@@ -116,7 +116,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                 error = JSON.parse(error);
             } catch {
                 error = {
-                    non_field_errors: "Une erreur est survenue, réessayez ou contactez un administrateur.",
+                    non_field_errors: "Une erreur est survenue, rÃ©essayez ou contactez un administrateur.",
                     message: "Erreur " + response.status + ": " + response.statusText,
                     debug: error,
                 };
@@ -165,7 +165,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     );
 
-    // Abonnement/Désabonnement global
+    // Abonnement/DÃ©sabonnement global
     useEffect(() => {
         if (id !== undefined) {
             //console.log(`subscribe ${endpoint}`);
@@ -179,7 +179,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     }, [endpoint, handleSSEMessage, unsubscribe]);
 
-    // On s'abonne à chaque sous-objet quand les données récupérées sont une liste d'objets
+    // On s'abonne Ã  chaque sous-objet quand les donnÃ©es rÃ©cupÃ©rÃ©es sont une liste d'objets
     useEffect(() => {
         if (id !== undefined && Array.isArray(data)) {
             data.forEach((item) => {
@@ -207,7 +207,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                 await queryClient.cancelQueries(endpoint);
                 const previousData = queryClient.getQueryData(endpoint);
 
-                // Optimistic update (Les modifications sont déjà appliquées par le composant enfant ou le formulaire HTML)
+                // Optimistic update (Les modifications sont dÃ©jÃ  appliquÃ©es par le composant enfant ou le formulaire HTML)
                 /*if (method !== 'DELETE') {
                     queryClient.setQueryData(endpoint, (oldData) => {
                         if (Array.isArray(oldData)) {
@@ -258,7 +258,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                     }
                     return responseData !== undefined ? responseData : oldData;
                 });
-                // On invalide pas la requête, mais cela pourrai être nécessaire en cas de polling (que l'on rajoutera plus tard)
+                // On invalide pas la requÃªte, mais cela pourrai Ãªtre nÃ©cessaire en cas de polling (que l'on rajoutera plus tard)
                 //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
             },
             onSettled: () => {
@@ -267,7 +267,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         }
     );
 
-    // Méthode asynchrone de mutation pré-paramétrée pour les sous-composants
+    // MÃ©thode asynchrone de mutation prÃ©-paramÃ©trÃ©e pour les sous-composants
     const mutateAsync = useCallback((action = 'read', data = null) => {
         const methods = { create: "POST", read: "GET", update: "PUT", delete: "DELETE", patch: "PATCH" };
         return mutation.mutateAsync({
@@ -281,14 +281,17 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     /*************************************************************/
     /* Gestion du rendu                                          */
 
-    if (queryError) return <div>Error: {queryError.message}</div>;
-
     const statuses = {
         isLoading: status === 'loading' || mutation.isLoading || isFetching,
-        isError:   status === 'error' || mutation.isError,
+        isError: status === 'error' || mutation.isError,
         isSuccess: status === 'success' || mutation.isSuccess,
         isDeleting: isDeleting.current,
     };
+
+    //if (queryError) {
+    //    console.log(queryError, data, errors, statuses);
+    //    return <div>Error: {queryError.message}</div>;
+    //}
 
     return children({
         data,

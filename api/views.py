@@ -112,9 +112,11 @@ class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
         interclub = self.request.interclub
+        # On filtre sur les scores du club uniquement quand on demande la liste complète
+        club = interclub.club if self.action == 'list' else None
         if not interclub.rencontre: return Score.objects.none()
         queryset = Score.objects.with_related() \
-            .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
+            .global_filter(rencontre=interclub.rencontre, club=club) \
             .with_valide_and_points()
 
         order = self.request.query_params.get('order_by')
