@@ -81,7 +81,7 @@ class GrimpeurQuerySet(models.QuerySet):
         amin, amax = 8, 13  # Ages correspondants à la catégorie 'Enfant'
         amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
         return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
-    def adolescents(self, annee):
+    def adolescents(self, saison):
         amin, amax = 13, 19  # Ages correspondants à la catégorie 'Adolescent'
         amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
         return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
@@ -497,7 +497,6 @@ class Performance(CleanModel):
                     raise ValidationError({'voie': ["Les voies ne sont faisables qu'une seule fois"]})
 
 
-
 class RencontreVoie(CleanModel):
     class Meta:
         verbose_name = "rencontre-voie"
@@ -510,11 +509,7 @@ class RencontreVoie(CleanModel):
     id = models.BigAutoField(primary_key=True)
     rencontre = models.ForeignKey(Rencontre, on_delete=models.CASCADE)
     voie = models.ForeignKey(Voie, on_delete=models.CASCADE)
-    # TODO: Il ne faut pas cascader la suppression d'un juge !
-    # Les juges et les coach vont être supprimé à la fin de chaque rencontre,
-    # Si on cascade, on va supprimer les voies d'une rencontre ?
-    # Au mieux on met NULL (SET_NULL ?)
-    juge = models.ForeignKey(Juge, on_delete=models.CASCADE, null=True, blank=True)#, related_name="voies")
+    juge = models.ForeignKey(Juge, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.rencontre} - {self.voie}"
