@@ -1,0 +1,37 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Arrêter la rencontre{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="card-header">
+                    <span class="{% if form.non_field_errors or form.club.errors %}is-invalid{% endif %}">Arrêter la rencontre ?</span>
+                    {% if form.non_field_errors %}
+                        <span class="invalid-feedback">{{ form.non_field_errors }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <p>Voulez-vous vraiment arrêter la rencontre <strong>{{ object.get_categorie_display }} du {{ object.date }} à {{ object.club.ville }}</strong> ?</p>
+                    <p>Cette action entrainera la <u>déconnexion et la suppression</u> de tous les coachs et les juges.</p>
+                    {{ form }}
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary"><i class="fa-solid fa-stop me-1"></i>Arrêter la rencontre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

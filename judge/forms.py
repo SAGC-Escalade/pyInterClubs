@@ -4,9 +4,6 @@ from django import forms
 #from itertools import groupby
 #from operator import attrgetter
 
-import hashlib
-from datetime import datetime
-
 from core.models import *
 from admin.models import *
 from admin.forms import VoiesSelectWidget
@@ -48,19 +45,16 @@ class JugeCreationForm(forms.ModelForm):
         rencontre = self.rencontre
         nom = self.cleaned_data['nom']
         voies = self.cleaned_data['rencontre_voies']
-
-        token_input = f"{datetime.now()}:{rencontre}:" + ":".join(map(str, voies))
-        token = hashlib.md5(token_input.encode()).hexdigest()
+        juge = super().save(commit=False)
+        juge.rencontre = Rencontre.objects.get(pk=rencontre)
 
         # Création du User
-        user = User.objects.create(username=token, first_name=nom, last_name=", ".join([str(voie) for voie in voies]))
-        #user.set_unusable_password()  # Empêche l'utilisateur de se connecter via mot de passe
+        user = User.objects.create(username=juge.get_token(voies), first_name=nom, last_name=", ".join([str(voie) for voie in voies]))
+        user.set_unusable_password()
         user.save()
 
         # Associer cet utilisateur au profil de juge
-        juge = super().save(commit=False)
         juge.user = user
-        juge.rencontre = Rencontre.objects.get(pk=rencontre)
         juge.save()
         
         # Mettre à jour la relation entre le juge et les voies sélectionnées

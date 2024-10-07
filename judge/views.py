@@ -34,10 +34,6 @@ class JugeCreateView(LoginRequiredMixin, WithRencontreRequiredMixin, CreateView)
     def get_context_data(self, **kwargs):
         rencontre = self.request.interclub.rencontre
         juges = Juge.objects.prefetch_related('voies').filter(rencontre=rencontre)
-        for juge in juges:
-            token_input = f"{datetime.now()}:{rencontre}:" + ":".join(map(str, juge.voies.all()))
-            juge.token = hashlib.md5(token_input.encode()).hexdigest()
-
         kwargs['object_list'] = juges
         return super().get_context_data(**kwargs)
 

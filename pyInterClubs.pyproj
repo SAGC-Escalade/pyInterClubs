@@ -126,6 +126,7 @@
     <Content Include="admin\react\ranking.jsx" />
     <Content Include="admin\static\css\collapsible.css" />
     <Content Include="admin\templates\admin\create.html" />
+    <Content Include="admin\templates\admin\stop.html" />
     <Content Include="admin\templates\admin\delete.html" />
     <Content Include="admin\templates\admin\resultats.html" />
     <Content Include="admin\templates\admin\select.html" />

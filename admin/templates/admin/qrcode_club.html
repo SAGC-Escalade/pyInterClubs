@@ -42,23 +42,23 @@
             <h2 class="accordion-header" id="hdr{{ o.id }}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdy{{ o.id }}" aria-expanded="true" aria-controls="bdy{{ o.id }}">
                     <i class="fa-solid fa-fw me-2"></i>
-                    {{ o.nom }} ({{ o.ville }})
+                    {{ o.club.nom }} ({{ o.club.ville }})
                 </button>
             </h2>
             <div id="bdy{{ o.id }}" class="accordion-collapse collapse" aria-labelledby="hdr{{ o.id }}" data-bs-parent="#qrcodes">
                 <div class="accordion-body row row-cols-1 row-cols-md-2">
                     <div class="col d-flex justify-content-center">
-                        <div qrcode="http://{{ server_ip }}:{{ environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.md5 }}&rencontre={{ request.GET.rencontre }}"></div>
+                        <div qrcode="http://{{ server_ip }}:{{ environ.SERVER_PORT }}{% url 'auth-club' %}?token={{ o.token }}"></div>
                     </div>
                     <div class="col">
                         <div class="vstack gap-1">
-                            <span>Nom : {{ o.nom }}</span>
-                            <span>Ville : {{ o.ville }}</span>
-                            <span>Nombre de grimpeurs : {{ o.grimpeurs.count }}</span>
-                            <span>MD5 : {{ o.md5 }}</span>
+                            <span>Nom : {{ o.club.nom }}</span>
+                            <span>Ville : {{ o.club.ville }}</span>
+                            <span>Nombre de grimpeurs : {{ o.club.grimpeurs.count }}</span>
+                            <span>Token : {{ o.token }}</span>
                             <form method="post" action="{% url 'auth-club' %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="token" value="{{ o.md5 }}" />
+                                <input type="hidden" name="token" value="{{ o.token }}" />
                                 <div class="col s12 input-field">
                                     <button class="btn btn-primary" type="submit" name="action"><i class="fa-solid fa-id-card me-1"></i> Se connecter en tant que...</button>
                                 </div>

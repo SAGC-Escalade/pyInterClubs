@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Prefetch
 from django.forms.models import ModelChoiceIterator
 from django.core.exceptions import ValidationError
 from itertools import groupby
@@ -36,7 +37,13 @@ class RencontreChoiceField(forms.ModelChoiceField):
 class RencontreSelectionForm(forms.Form):
     rencontre = RencontreChoiceField(
         required=True,
-        queryset=Rencontre.objects.select_related('club').prefetch_related('equipes__membres', 'profil_set').order_by("-saison", "date"),
+        queryset=Rencontre.objects \
+            .select_related('club') \
+            .prefetch_related(
+                'equipes__membres',
+                Prefetch('profil_set', queryset=Profil.objects.select_related('user').filter(user__is_superuser=False))
+            ) \
+            .order_by("-saison", "-date"),
         empty_label=None,
         to_field_name='id',
         widget=RencontreWidget
@@ -87,3 +94,6 @@ class RencontreCreateForm(forms.ModelForm):
         voies = cleaned_data.get('voies')
         if voies and any(v.categorie != categorie for v in voies):
             raise ValidationError({'voies': 'Sélectionnez uniquement les voies de la catégorie concernée.'})
+
+class ConfirmationForm(forms.Form):
+    pass

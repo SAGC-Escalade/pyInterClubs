@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from polymorphic.models import PolymorphicModel
+import hashlib
 
 class Types(models.TextChoices):
     bool    = 'bool',   'Booléen'
@@ -45,10 +46,25 @@ class Profil(PolymorphicModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rencontre = models.ForeignKey('core.Rencontre', on_delete=models.SET_NULL, null=True)
 
+
 # Profil coach (gestion des grimpeurs d'un même club)
 class Coach(Profil):
     club = models.ForeignKey('core.Club', on_delete=models.CASCADE)
 
+    @property
+    def token(self):
+        token = f"{self.rencontre}:{self.club.nom}"
+        return hashlib.md5(token.encode()).hexdigest()
+
+
 # Profil juge (gestion des grimpeurs inscrits sur une même voie)
 class Juge(Profil):
     voies = models.ManyToManyField('core.Voie', through='core.RencontreVoie', related_name='juges')
+
+    def get_token(self, voies):
+        token = f"{self.rencontre}:" + ":".join(map(str, voies))
+        return hashlib.md5(token.encode()).hexdigest()
+
+    @property
+    def token(self):
+        return self.get_token(self.voies.all())

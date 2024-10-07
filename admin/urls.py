@@ -11,4 +11,6 @@ urlpatterns = [
     path('', RencontreSelectionView.as_view(), name='select'),
     path('create', RencontreCreateView.as_view(), name='create'),
     path('<int:pk>/delete', RencontreDeleteView.as_view(), name='delete'),
+    path('<int:pk>/start', RencontreStartView.as_view(), name='start'),
+    path('<int:pk>/stop', RencontreStopView.as_view(), name='stop'),
 ]

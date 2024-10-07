@@ -1,7 +1,11 @@
-from django.views.generic import FormView, CreateView, DeleteView, ListView, TemplateView
+from django.views.generic.edit import FormView, CreateView, DeleteView
+from django.views.generic.base import RedirectView, TemplateView
+from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.views.generic.list import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models.functions import MD5, Concat
 from django.db.models import Value as V
+from django.db import transaction
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 
@@ -22,13 +26,11 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
 
 class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
-    model = Club
+    model = Coach
     template_name = 'admin/qrcode_club.html'
 
     def get_queryset(self):
-        # TODO: Simplifier la requête en comptant directement le nombre de grimpeurs plutôt que de les récupérer
-        return super().get_queryset().prefetch_related('grimpeurs') \
-            .annotate(md5=MD5(Concat('nom', V(f"-{self.request.interclub.rencontre}"))))
+        return super().get_queryset().select_related('club').prefetch_related('club__grimpeurs')
 
     def get_context_data(self, **kwargs):
         import socket
@@ -45,6 +47,9 @@ class RencontreSelectionView(SuperUserRequiredMixin, FormView):
     success_url = reverse_lazy('rencontre:qrcode-clubs')
     form_class = RencontreSelectionForm
     template_name = 'admin/select.html'
+
+    # TODO: Vérifier que le queryset est optimum (une seule requête)
+    # Filtrer le queryset pour n'afficher QUE les profils liés à la rencontre SAUF les admins.
 
     def get_initial(self):
         initial = super().get_initial()
@@ -84,3 +89,68 @@ class RencontreDeleteView(SuperUserRequiredMixin, DeleteView):
     model = Rencontre
     template_name = 'admin/delete.html'
     context_object_name = 'object'
+
+
+class RencontreStartView(SuperUserRequiredMixin, DetailView, RedirectView):
+    model = Rencontre
+    url = reverse_lazy('rencontre:qrcode-clubs')
+    query = "rencontre=%(pk)s"
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = super().get_redirect_url(*args, **kwargs)
+        if self.query:
+            url += '?' + (self.query % kwargs)
+        return url
+
+    @transaction.atomic
+    def get(self, request, *args, **kwargs):
+        rencontre = self.object = self.get_object()
+        clubs = Club.objects.all()
+
+        for club in clubs:
+            coach = Coach(club=club, rencontre=rencontre)
+            user = User(username=coach.token, first_name=club.nom, last_name=club.ville)
+            user.set_unusable_password()
+            user.save()
+            coach.user = user
+            coach.save()
+
+        return HttpResponseRedirect(self.get_redirect_url(*args, **kwargs))
+
+class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
+    model = Rencontre
+    success_url = reverse_lazy('rencontre:select')
+    form_class = ConfirmationForm
+    template_name = 'admin/stop.html'
+    context_object_name = 'object'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+
+    @transaction.atomic
+    def form_valid(self, form):
+        rencontre = self.object.pk
+        # Sélection des users et profils à supprimer (pour forcer la déconnexion)
+        # NOTE: La suppression automatique de django-polymorphism ne fonctionne pas.
+        users = User.objects.select_related('profil') \
+            .filter(profil__rencontre_id=rencontre) \
+            .exclude(is_superuser=True)
+        users_id = list(users.values_list('id', flat=True))
+        users = User.objects.filter(id__in=users_id)
+        profils = Profil.objects.filter(user_id__in=users_id)
+        profils_id = list(profils.values_list('id', flat=True))
+        juges = Juge.objects.filter(profil_ptr_id__in=profils_id)
+        coachs = Coach.objects.filter(profil_ptr_id__in=profils_id)
+
+        # Suppression des objets
+        # (les profils sont supprimés à la suppression de l'objet enfant)
+        juges.delete()
+        coachs.delete()
+        users.delete()
+
+        return super().form_valid(form)
