@@ -5,7 +5,10 @@
         <div class="vstack gap-2 position-relative align-items-center">
             <div class="hstack position-absolute top-0 start-0 end-0">
                 <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                <a role="button" class="btn" href="{% url 'logout' %}" title="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn" title="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </form>
             </div>
             <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
             <span class="fw-bold"><span class="text-capitalize">{{ user.first_name|default:"Utilisateur Anonyme" }}</span></span>
@@ -46,7 +49,11 @@
                 </a>
             {% endif %}
             {# Menu Club #}
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user.profil.club %}
+                <a href="{% url 'leader:mes-grimpeurs' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fa-solid fa-users fa-fw me-2"></i>
+                    Mes grimpeurs
+                </a>
                 <div class="accordion accordion-flush">
                     <div class="accordion-item">
                         <div id="hdrEquipes" class="accordion-header">

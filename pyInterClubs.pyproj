@@ -140,12 +140,14 @@
     </Content>
     <Content Include="core\react\horizontal-form-group.jsx" />
     <Content Include="core\react\perf-input.jsx" />
+    <Content Include="judge\react\judge.jsx" />
     <Content Include="judge\templates\judge\create.html" />
     <Content Include="judge\templates\judge\manage.html" />
     <Content Include="judge\templates\widgets\voierencontre-option.html" />
     <Content Include="leader\react\equipe.jsx" />
     <Content Include="leader\templates\leader\create.html" />
     <Content Include="leader\templates\leader\equipe.html" />
+    <Content Include="leader\templates\leader\mes-grimpeurs.html" />
     <Content Include="leader\templates\widgets\club-option.html" />
     <Content Include="leader\templates\widgets\club.html" />
     <Content Include="pyInterClubs\static\3rd\bootstrap-5.2.0-beta1-dist\css\bootstrap-grid.css" />
@@ -251,6 +253,7 @@
     <Folder Include="core\migrations\" />
     <Folder Include="core\react\" />
     <Folder Include="judge\" />
+    <Folder Include="judge\react\" />
     <Folder Include="judge\templates\" />
     <Folder Include="judge\templates\judge\" />
     <Folder Include="judge\templates\widgets\" />

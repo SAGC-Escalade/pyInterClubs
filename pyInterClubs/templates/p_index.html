@@ -1,4 +1,6 @@
 {% load static babel_transpiling %}
+
+<div class="container">
 {% if not user.is_authenticated %}
     <div class="container-fluid py-5">
         <h1 class="display-5 fw-bold">pyInterClubs</h1>
@@ -9,7 +11,7 @@
         </p>
         <a role="button" class="btn btn-primary btn-lg" href="{% url 'login' %}" title="S'authentifier"><i class="fa-solid fa-right-to-bracket me-1 fa-beat"></i> S'authentifier</a>
     </div>
-{% elif not user.profil.rencontre and user.is_superuser %}
+{% elif user.is_superuser and not user.profil.rencontre %}
     <div class="container-fluid py-5">
         <h1 class="display-5 fw-bold">pyInterClubs</h1>
         <p class="col-md-8 fs-4">
@@ -18,19 +20,17 @@
         </p>
         <a role="button" class="btn btn-primary btn-lg" href="{% url 'rencontre:select' %}" title="Sélectionner une rencontre"><i class="fa-solid fa-map-location fa-fw me-2 fa-shake"></i> Sélectionner une rencontre</a>
     </div>
-{% else %}
-    <div class="container">
-        <div class="card">
-            <div class="card-header p-3">
-                <i class="fa-solid fa-users me-2"></i>Mes équipes
-            </div>
-            <div id="react-list-equipe-index"></div>
-            <div class="card-footer hstack">
-                <a class="btn d-flex align-items-center" href="{% url 'equipe:create' %}">
-                    <i class="fa-solid fa-fw fa-plus me-2"></i>
-                    Ajouter une équipe
-                </a>
-            </div>
+{% elif user.profil.club or user.is_superuser %}
+    <div class="card">
+        <div class="card-header p-3">
+            <i class="fa-solid fa-users me-2"></i>Mes équipes
+        </div>
+        <div id="react-list-equipe-index"></div>
+        <div class="card-footer hstack">
+            <a class="btn d-flex align-items-center" href="{% url 'equipe:create' %}">
+                <i class="fa-solid fa-fw fa-plus me-2"></i>
+                Ajouter une équipe
+            </a>
         </div>
     </div>
     <script type="module">
@@ -45,4 +45,27 @@
         )
         {% endtranspiling %}
     </script>
+{% elif user.profil.voies %}
+    <div id="react-list-grimpeurs-index"></div>
+    <script type="module">
+        import ListPerfs from "/react/judge.jsx";
+        const { QueryClient, QueryClientProvider } = window.ReactQuery;
+        const queryClient = new QueryClient();
+        {% transpiling %}
+        ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
+            <QueryClientProvider client={queryClient}>
+                <ListPerfs />
+            </QueryClientProvider>
+        )
+        {% endtranspiling %}
+    </script>
+{% else %}
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">pyInterClubs</h1>
+        <p class="col-md-8 fs-4">
+            Vous n'êtes pas un utilisateur autorisé.
+            Merci de contacter un administrateur rapidement.
+        </p>
+    </div>
 {% endif %}
+</div>

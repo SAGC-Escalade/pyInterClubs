@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q, F, Count, Case, When, Sum, Prefetch, BooleanField
 
 from core.models import *
+from admin.models import *
 from admin.middleware import WithRencontreRequiredMixin
 from .serializers import *
 
@@ -114,13 +115,14 @@ class ScoreViewSet(DjangoModelViewSet):
         interclub = self.request.interclub
         # On filtre sur les scores du club uniquement quand on demande la liste complète
         club = interclub.club if self.action == 'list' else None
+        voies = interclub.voies if self.action == 'list' else None
         if not interclub.rencontre: return Score.objects.none()
         queryset = Score.objects.with_related() \
-            .global_filter(rencontre=interclub.rencontre, club=club) \
+            .global_filter(rencontre=interclub.rencontre, club=club, voies=voies) \
             .with_valide_and_points()
 
-        order = self.request.query_params.get('order_by')
-        if order: queryset = queryset.order_by(order)
+        order = self.request.query_params.getlist('order_by')
+        if order: queryset = queryset.order_by(*order)
 
         return queryset
 
@@ -143,4 +145,20 @@ class ScoreViewSet(DjangoModelViewSet):
 
 class PerformanceViewSet(DjangoModelViewSet):
     serializer_class = PerformanceSerializer
-    queryset = Performance.objects.select_related('voie', 'score__equipe')
+    queryset = Performance.objects.select_related('voie')
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Performance.objects.select_related('voie')
+        if hasattr(user, 'profil'):
+            queryset = queryset.select_related('score__equipe__rencontre').global_filter(rencontre=user.profil.rencontre)
+        if hasattr(user, 'profil') and isinstance(user.profil, Juge):
+            voies = user.profil.voies.values_list('id', flat=True)
+            queryset = queryset.select_related('score__grimpeur').global_filter(voies=voies)
+        return queryset
+
+    def get_serializer_class(self):
+        user = self.request.user
+        if hasattr(user, 'profil') and isinstance(user.profil, Juge):
+            return FullPerformanceSerializer
+        return super().get_serializer_class()

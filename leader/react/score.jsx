@@ -1,6 +1,6 @@
 const { useState } = React;
 const { Badge, Button, ButtonToolbar, ButtonGroup, ListGroup, ListGroupItem } = ReactBootstrap;
-const { AccordionItem, AccordionHeader, AccordionCollapse, Collapse } = ReactBootstrap;
+const { Accordion, AccordionItem, AccordionHeader, AccordionCollapse, Collapse } = ReactBootstrap;
 
 import Observer from "./observer.jsx";
 import Autocomplete from "./autocomplete.jsx";
@@ -110,6 +110,37 @@ export default function Score({ id }) {
                             </ListGroup>
                         </AccordionCollapse>
                     </AccordionItem>
+                );
+            }}
+        </Observer>
+    );
+}
+
+export function ListScore({ flush = true }) {
+    return (
+        <Observer endpoint='scores' id={null} queryString="?order_by=grimpeur__nom&order_by=grimpeur__prenom" csrf={csrf}>
+            {({ data: scores = [], status }) => {
+                if (status.isLoading)
+                    return (
+                        <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i><span className="placeholder w-75"></span></li>
+                        </ul>
+                    );
+                if (scores.length == 0)
+                    return (
+                        <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i> Aucun grimpeur, veuillez d'abord créer une équipe.</li>
+                        </ul>
+                    );
+
+                return (
+                    <Accordion flush={flush}>
+                        {scores.map(function (score, index) {
+                            return (
+                                <Score id={score.id} key={score.id} />
+                            );
+                        })}
+                    </Accordion>
                 );
             }}
         </Observer>

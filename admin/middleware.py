@@ -40,6 +40,12 @@ class pyInterclubDetails:
             return self.__profil.club_id
         return None
 
+    @property
+    def voies(self):
+        if hasattr(self.__profil, 'voies'):
+            return self.__profil.voies.all().values_list('id', flat=True)
+        return None
+
 
 class WithRencontreRequiredMixin:
     # Classe permettant de s'assurer que la rencontre est sélectionnée au niveau du middleware

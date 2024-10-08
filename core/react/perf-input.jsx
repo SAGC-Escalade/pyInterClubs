@@ -10,8 +10,8 @@ export function VoieInput({ value, choices = niveaux, onChange, size, isValid, i
     const selected = !!value ? (choices.some(voie => voie.id === value) ? value : -1) : 0;
     return (
         <FormSelect value={selected} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid}>
-            {selected == -1 && <option value={-1} disabled>La voie sélectionnée n'est pas autorisée</option>}
-            <option value={0} disabled>Sélectionnez une voie</option>
+            {selected == -1 && <option value={-1} disabled>La voie sÃ©lectionnÃ©e n'est pas autorisÃ©e</option>}
+            <option value={0} disabled>SÃ©lectionnez une voie</option>
             {choices.map(function (voie) {
                 return (<option key={voie.id} value={voie.id}>{voie.nom} ({voie.niveau})</option>);
             })}
@@ -20,14 +20,14 @@ export function VoieInput({ value, choices = niveaux, onChange, size, isValid, i
 }
 export function EtatInput({ value, choices = undefined, onChange, size, isValid, isInvalid }) {
     if (choices === undefined)
-        choices = { "A réaliser": null, "Chute": 0, "Valorisée": 0, "Réussie": 0 }
+        choices = { "A rÃ©aliser": null, "Chute": 0, "ValorisÃ©e": 0, "RÃ©ussie": 0 }
     choices = Object.entries(choices);
-    // On désactive le select si la valeur sélectionnée rapporte 0 points (sauf si c'est la chute)
+    // On dÃ©sactive le select si la valeur sÃ©lectionnÃ©e rapporte 0 points (sauf si c'est la chute)
     const disabled = (choices[value] || [])[0] != "Chute" && (choices[value] || [])[1] === 0;
     return (
         <FormSelect value={value | ""} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
             {choices.map(([label, points], index) => {
-                // Si l'option ne rapporte pas de points, on ne l'affiche pas (sauf si c'est celle qui est sélectionnée)
+                // Si l'option ne rapporte pas de points, on ne l'affiche pas (sauf si c'est celle qui est sÃ©lectionnÃ©e)
                 if (points === 0 && label != "Chute" && value != index) return;
                 return (<option value={index} key={index}>{label}</option>);
             })}
@@ -46,8 +46,8 @@ export function Points({ value }) {
 export function Vitesse({ value, onChange }) {
     const defaultTime = "00:00:00.00";
     function format(time) {
-        if (time === null) return 'A réaliser';
-        if (time === 'Chute' || time === 'Abandon' || time === 'A réaliser') return time;
+        if (time === null) return 'A rÃ©aliser';
+        if (time === 'Chute' || time === 'Abandon' || time === 'A rÃ©aliser') return time;
         time = time.replace(/\D/g, '');
         time = time.match(/(?:(?:([0-2]?\d)??([0-5]?\d))??([0-5]?\d))??(\d\d?)$/);
         if (time === null) return defaultTime;
@@ -84,12 +84,12 @@ export function Vitesse({ value, onChange }) {
                     </DropdownItem>
                     <DropdownDivider />
                     <DropdownHeader>Cas particuliers</DropdownHeader>
-                    <DropdownItem onClick={() => handleChange("A réaliser")}>
+                    <DropdownItem onClick={() => handleChange("A rÃ©aliser")}>
                         <span className="fa-layers fa-fw me-2">
                             <i className="fa-solid fa-slash" data-fa-mask="fa-regular fa-clock" data-fa-transform="flip-h down-1 right-1"></i>
                             <i className="fa-solid fa-slash" data-fa-transform="flip-h" ></i>
                         </span>
-                        A réaliser
+                        A rÃ©aliser
                     </DropdownItem>
                     <DropdownItem onClick={() => handleChange("Chute")}>
                         <span className="fa-layers fa-fw me-2">
@@ -111,22 +111,22 @@ export function Vitesse({ value, onChange }) {
     );
 }
 
-export default function PerfInput({ id, index }) {
+export default function PerfInput({ id, index, label=undefined, className="mb-3", hideState=false, sm=9 }) {
     return (
         <Observer endpoint="perfs" id={id} csrf={csrf}>
             {({ data: perf, status, errors, action }) => {
                 if (perf === undefined) {
                     return (
-                        <HorizontalFormGroup label="Chargement">
+                        <HorizontalFormGroup label="Chargement" className={className} sm={sm}>
                             <span className="placeholder col-4" />
                         </HorizontalFormGroup>
                     );
                 } else if (perf.voie === null || perf.voie.type == 2) { // Diff
                     return (
-                        <HorizontalFormGroup label={"Voie " + index}>
+                        <HorizontalFormGroup label={label ?? "Voie " + index} className={className} sm={sm}>
                             <InputGroup className={errors ? "is-invalid" : ""}>
-                                {rencontre.voiesGroupees ? (
-                                    <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
+                                {rencontre.voiesGroupees | hideState ? (
+                                    <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "SÃ©lectionnez un groupe"}</span>
                                 ) : (
                                     <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />
                                 )}
@@ -140,7 +140,7 @@ export default function PerfInput({ id, index }) {
                     );
                 } else if (perf.voie.type == 1) { // Bloc
                     return (
-                        <HorizontalFormGroup label={"Bloc " + index}>
+                        <HorizontalFormGroup label={label ?? "Bloc " + index} className={className} sm={sm}>
                             <InputGroup>
                                 <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
                                 <Points value={perf.points} />
@@ -149,7 +149,7 @@ export default function PerfInput({ id, index }) {
                     );
                 } else if (perf.voie.type == 3) { // Vitesse
                     return (
-                        <HorizontalFormGroup label={"Temps " + index}>
+                        <HorizontalFormGroup label={label ?? "Temps " + index} className={className} sm={sm}>
                             <InputGroup>
                                 <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} />
                                 <Points value={perf.points} />
@@ -158,7 +158,7 @@ export default function PerfInput({ id, index }) {
                     );
                 } else {
                     return (
-                        <HorizontalFormGroup label="Erreur">
+                        <HorizontalFormGroup label="Erreur" className={className} sm={sm}>
                             <span className="hstack">
                                 <i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Type inconnu : {perf?.voie?.type?.toString()}
                             </span>

@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+{% load babel_transpiling %}
+
+{% block title %}Mes grimpeurs{% endblock %}
+
+{% block nav-items %}
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ request.path }}">
+            <i class="d-md-none fa-solid fa-users fa-fw me-2"></i>Mes grimpeurs
+        </a>
+    </li>
+{% endblock %}
+
+{% block head %}
+    <style>
+        .sexe  { color: rgba(0,0,0,.3); }
+        .femme { color: lightpink; }
+        .homme { color: lightblue; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header p-3">
+                <i class="fa-solid fa-users me-2"></i>Mes grimpeurs
+            </div>
+            <div id="react-list-grimpeurs-index"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="module">
+        import { ListScore } from "/react/score.jsx";
+        const { QueryClient, QueryClientProvider } = window.ReactQuery;
+        const queryClient = new QueryClient();
+        {% transpiling %}
+        ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
+            <QueryClientProvider client={queryClient}>
+                <ListScore />
+            </QueryClientProvider>
+        )
+        {% endtranspiling %}
+    </script>
+{% endblock %}

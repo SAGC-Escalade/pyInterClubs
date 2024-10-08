@@ -14,7 +14,7 @@ __all__ = (
     "VoieSerializer", "ClubSerializer",
     "GrimpeurSerializer",
     "RencontreSerializer", "EquipeSerializer",
-    "ScoreSerializer", "PerformanceSerializer",
+    "ScoreSerializer", "PerformanceSerializer", "FullPerformanceSerializer"
 )
 
 
@@ -109,6 +109,24 @@ class GrimpeurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grimpeur
         fields = ['id', 'nom', 'prenom', 'sexe', 'club_nom']
+class GrimpeurField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        request = self.context.get('request', {})
+        interclub = getattr(request, 'interclub', None)
+        if interclub is None or interclub.rencontre is None:
+            return Grimpeur.objects.none()
+
+        queryset = Grimpeur.objects.global_filter(club=interclub.club)
+        if request and request.user and not request.user.is_superuser:
+            rencontre = Rencontre.objects.get(pk=interclub.rencontre)
+            # On filtre les grimpeurs par rapport à leur âge
+            if rencontre.categorie == Categorie.enfants:
+                queryset = queryset.enfants(rencontre.saison)
+            else:
+                queryset = queryset.adolescents(rencontre.saison)
+
+        # On ne garde que les grimpeurs qui ne sont pas inscrits
+        return queryset.exclude_inscrits(rencontre=interclub.rencontre)
 
 
 class RencontreSerializer(SSESerializer):
@@ -136,6 +154,13 @@ class EquipeSerializer(SSESerializer):
         if hasattr(user.profil, 'rencontre'): context['rencontre'] = user.profil.rencontre
         context.update(validated_data)
         return super().create(context)
+class EquipeField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        interclub = getattr(self.context.get('request', {}), 'interclub', None)
+        if interclub is None or interclub.rencontre is None: return Equipe.objects.none()
+        return Equipe.objects \
+            .global_filter(rencontre=interclub.rencontre, club=interclub.club)
+
 
 
 class ScoreSerializer(SSESerializer):
@@ -147,32 +172,6 @@ class ScoreSerializer(SSESerializer):
         if m is None: return None
         l,n = m.groups()
         return l,int(n)
-
-    class EquipeField(serializers.PrimaryKeyRelatedField):
-        def get_queryset(self):
-            interclub = getattr(self.context.get('request', {}), 'interclub', None)
-            if interclub is None or interclub.rencontre is None: return Equipe.objects.none()
-            return Equipe.objects \
-                .global_filter(rencontre=interclub.rencontre, club=interclub.club)
-
-    class GrimpeurField(serializers.PrimaryKeyRelatedField):
-        def get_queryset(self):
-            request = self.context.get('request', {})
-            interclub = getattr(request, 'interclub', None)
-            if interclub is None or interclub.rencontre is None:
-                return Grimpeur.objects.none()
-
-            queryset = Grimpeur.objects.global_filter(club=interclub.club)
-            if request and request.user and not request.user.is_superuser:
-                rencontre = Rencontre.objects.get(pk=interclub.rencontre)
-                # On filtre les grimpeurs par rapport à leur âge
-                if rencontre.categorie == Categorie.enfants:
-                    queryset = queryset.enfants(rencontre.saison)
-                else:
-                    queryset = queryset.adolescents(rencontre.saison)
-
-            # On ne garde que les grimpeurs qui ne sont pas inscrits
-            return queryset.exclude_inscrits(rencontre=interclub.rencontre)
 
     class Meta:
         model = Score
@@ -242,34 +241,34 @@ class ScoreSerializer(SSESerializer):
 
 
 from datetime import timedelta
+class DurationField(serializers.DurationField):
+    values = {
+        'A réaliser': None,
+        'Chute': timedelta(minutes=-1),
+        'Abandon': timedelta(minutes=-2),
+    }
+    rvalues = {v:k for k,v in values.items()}
+    def to_representation(self, duration):
+        if duration in self.rvalues: return self.rvalues[duration]
+
+        days = duration.days
+        seconds = duration.seconds
+        hundredths = duration.microseconds//10000
+        minutes = seconds // 60
+        seconds %= 60
+        hours = minutes // 60
+        minutes %= 60
+
+        string = "{:02d}:{:02d}:{:02d}.{:02d}".format(hours, minutes, seconds, hundredths)
+        if days:
+            string = "{} ".format(days) + string
+        return string
+
+    def to_internal_value(self, value):
+        if value in self.values: return self.values[value]
+        return super().to_internal_value(value)
+
 class PerformanceSerializer(SSESerializer):
-    class DurationField(serializers.DurationField):
-        values = {
-            'A réaliser': None,
-            'Chute': timedelta(minutes=-1),
-            'Abandon': timedelta(minutes=-2),
-        }
-        rvalues = {v:k for k,v in values.items()}
-        def to_representation(self, duration):
-            if duration in self.rvalues: return self.rvalues[duration]
-
-            days = duration.days
-            seconds = duration.seconds
-            hundredths = duration.microseconds//10000
-            minutes = seconds // 60
-            seconds %= 60
-            hours = minutes // 60
-            minutes %= 60
-
-            string = "{:02d}:{:02d}:{:02d}.{:02d}".format(hours, minutes, seconds, hundredths)
-            if days:
-                string = "{} ".format(days) + string
-            return string
-
-        def to_internal_value(self, value):
-            if value in self.values: return self.values[value]
-            return super().to_internal_value(value)
-
     temps = DurationField(required=False)
     voie = ForeignKeyField(model_class=Voie, serializer=VoieSerializer)
 
@@ -279,4 +278,18 @@ class PerformanceSerializer(SSESerializer):
         fields = [
             'id', 'voie',
             'temps', 'points', 'etat'
+        ]
+
+class FullPerformanceSerializer(SSESerializer):
+    temps = DurationField(required=False)
+    voie = ForeignKeyField(model_class=Voie, serializer=VoieSerializer)
+    grimpeur = GrimpeurSerializer(source='score.grimpeur', read_only=True)
+
+    url_list = 'perfs'
+    class Meta:
+        model = Performance
+        fields = [
+            'id', 'voie',
+            'temps', 'points', 'etat',
+            'grimpeur',
         ]
