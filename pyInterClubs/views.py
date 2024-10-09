@@ -13,6 +13,36 @@ from pathlib import Path
 from core.models import *
 from .forms import TokenAuthenticationForm
 
+# Classe mixin d'ajout de log pour l'optimisation des requêtes SQL
+# Elle est conservée (inutilisée) dans le code pour faire du debug
+from django.db import connection
+import logging
+logger = logging.getLogger(__name__)
+class SQLLoggingMixin:
+    @staticmethod
+    def _log_sql_queries():
+        total_time = 0.0
+        for query in connection.queries:
+            sql = query['sql']
+            time_taken = float(query['time'])
+            total_time += time_taken
+
+            # Filtrer les requêtes (ex: requêtes > 100ms)
+            logger.debug(f"{sql}")
+            if time_taken > 0.1:
+                logger.warning(f"Long SQL query ({time_taken} ms): {sql}")
+
+        logger.info(f"# Total SQL time for this request: {total_time} ms")
+
+    # Surcharge DRF
+    def finalize_response(self, request, response, *args, **kwargs):
+        self._log_sql_queries()
+        return super().finalize_response(request, response, *args, **kwargs)
+    # Surcharge Django
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        self._log_sql_queries()
+        return response
 
 class ClubAuthenticationView(LoginView):
     template_name = 'auth_club.html'

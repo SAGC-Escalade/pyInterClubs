@@ -8,11 +8,11 @@
     </div>
     <div class="col-3">{{ r.date }}</div>
     <div class="col-2">{{ r.club.ville }}</div>
-    <div class="col">{{ r.equipes.count }}</div>
-    <div class="col">{{ r.scores_count }}</div>
+    <div class="col">{{ r.equipes_count }}</div>
+    <div class="col">{{ r.grimpeurs_count }}</div>
     <div class="col-2 d-flex">
         <button class="btn btn-link btn-sm py-0" disabled><i class="fa-solid fa-eye"></i></button>
-        {% if r.profil_set.count %}
+        {% if r.users_count %}
             <a href="{% url 'rencontre:stop' r.id %}" class="btn btn-link btn-sm py-0">
                 <i class="fa-solid fa-stop"></i>
             </a>

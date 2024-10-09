@@ -70,6 +70,8 @@ class VoieQuerySet(models.QuerySet):
         return self.filter(type=TypeVoie.diff)
     def vitesses(self):
         return self.filter(type=TypeVoie.vitesse)
+    def categorie(self, categorie):
+        return self.filter(categorie=categorie)
 
 class GrimpeurQuerySet(models.QuerySet):
     def hommes(self):
@@ -101,11 +103,9 @@ class RencontreQuerySet(models.QuerySet):
         if club:      qs = qs.filter(club_id=club)
         if rencontre: qs = qs.get(pk=rencontre)
         return qs
-    def with_related(self, with_valide_and_points=False):
-        e_qs = Equipe.objects.with_related(with_valide_and_points)
-        if with_valide_and_points: e_qs = e_qs.with_valide_and_points()
+    def with_related(self):
         return self.prefetch_related(
-                Prefetch('equipes', queryset=e_qs),
+                Prefetch('equipes', queryset=Equipe.objects.with_related()),
                 'voies'
             ).select_related(
                 'club'
@@ -117,13 +117,10 @@ class EquipeQuerySet(models.QuerySet):
         if rencontre: qs = qs.filter(rencontre_id=rencontre)
         if club:      qs = qs.filter(club_id=club)
         return qs
-    def with_related(self, with_valide_and_points=False):
-        s_qs = Score.objects.with_related()
-        if with_valide_and_points: s_qs = s_qs.with_valide_and_points()
-        s_qs = s_qs.in_order()
+    def with_related(self):
         return self.prefetch_related(
-                Prefetch('membres', queryset=s_qs)
-            ).select_related('club', 'rencontre')
+                Prefetch('membres', queryset=Score.objects.in_order())
+            ).select_related('club')
     def with_valide_and_points(self):
         return self.annotate(
                 points=Sum('membres__performances__points'),
@@ -136,7 +133,7 @@ class EquipeQuerySet(models.QuerySet):
                 # Vérification de la validité en comparant les performances réelles avec les attentes
                 valide=Case(
                     When((
-                        (Q(nb_blocs_valide__gt=0) | Q(nb_diffs_valide__gt=0) | Q(nb_vitesses_valide__gt=0)) &
+                        Q(nb_membres__gt=0) &
                         Q(nb_blocs_valide = F('nb_membres') * F('rencontre__nbBloc')) &
                         Q(nb_diffs_valide = F('nb_membres') * F('rencontre__nbDiff')) &
                         Q(nb_vitesses_valide=F('nb_membres') * F('rencontre__nbVitesse'))
@@ -167,7 +164,8 @@ class ScoreQuerySet(models.QuerySet):
     def with_related(self):
         return self.prefetch_related(
                 Prefetch('performances', queryset=Performance.objects.with_related()),
-            ).select_related('equipe__rencontre__club', 'equipe__club', 'clubPreteur', 'grimpeur__club')
+            ).select_related('equipe__rencontre', 'clubPreteur', 'grimpeur__club')
+            #).select_related('equipe__rencontre__club', 'equipe__club', 'clubPreteur', 'grimpeur__club')
     def with_valide_and_points(self):
         return self.annotate(
                 points=Sum('performances__points'),
@@ -179,7 +177,7 @@ class ScoreQuerySet(models.QuerySet):
                 # Vérification de la validité en comparant les performances réelles avec les attentes
                 valide=Case(
                     When((
-                        (Q(nb_blocs_valide__gt=0) | Q(nb_diffs_valide__gt=0) | Q(nb_vitesses_valide__gt=0)) &
+                        #(Q(nb_blocs_valide__gt=0) | Q(nb_diffs_valide__gt=0) | Q(nb_vitesses_valide__gt=0)) &
                         Q(nb_blocs_valide=F('equipe__rencontre__nbBloc')) &
                         Q(nb_diffs_valide=F('equipe__rencontre__nbDiff')) &
                         Q(nb_vitesses_valide=F('equipe__rencontre__nbVitesse'))

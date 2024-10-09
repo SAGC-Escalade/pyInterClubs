@@ -81,7 +81,7 @@ class RencontreCreateView(SuperUserRequiredMixin, CreateView):
         if categorie == Categorie.enfants:
             initial['voiesGroupees'] = True
         if not categorie is None:
-            initial['voies'] = Voie.objects.filter(actif=True, categorie=categorie)
+            initial['voies'] = Voie.objects.actifs().categorie(categorie)
         return initial
 
 class RencontreDeleteView(SuperUserRequiredMixin, DeleteView):
@@ -137,13 +137,13 @@ class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
         rencontre = self.object.pk
         # Sélection des users et profils à supprimer (pour forcer la déconnexion)
         # NOTE: La suppression automatique de django-polymorphism ne fonctionne pas.
-        users = User.objects.select_related('profil') \
+        ids = User.objects.select_related('profil') \
             .filter(profil__rencontre_id=rencontre) \
-            .exclude(is_superuser=True)
-        users_id = list(users.values_list('id', flat=True))
+            .exclude(is_superuser=True) \
+            .values_list('id', 'profil__id')
+        users_id = [u for u,p in ids]
+        profils_id = [p for u,p in ids]
         users = User.objects.filter(id__in=users_id)
-        profils = Profil.objects.filter(user_id__in=users_id)
-        profils_id = list(profils.values_list('id', flat=True))
         juges = Juge.objects.filter(profil_ptr_id__in=profils_id)
         coachs = Coach.objects.filter(profil_ptr_id__in=profils_id)
 

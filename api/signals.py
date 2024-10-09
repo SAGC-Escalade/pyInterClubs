@@ -1,4 +1,5 @@
 from django.db.models.signals import pre_save, post_save, post_delete
+from django.db.models import Prefetch
 from django.db import transaction
 from django.dispatch import receiver
 from django_eventstream import send_event
@@ -34,7 +35,7 @@ def send_notification(sender, instance, created=False, **kwargs):
     def send(instance, created, changed):
         # Reload complete instance
         equipe = instance.equipe
-        equipe = Equipe.objects.with_related(with_valide_and_points=True).with_valide_and_points().get(pk=equipe.pk)
+        equipe = Equipe.objects.with_related().with_valide_and_points().get(pk=equipe.pk)
         instance = next(s for s in equipe.membres.all() if s.pk == instance.pk)
 
         serializer = ScoreSerializer(instance, read_only=True)
@@ -54,7 +55,7 @@ def send_notification(sender, instance, created=False, **kwargs):
 @receiver(post_delete, sender=Score, dispatch_uid='SSE_signal')
 def send_notification(sender, instance, created=False, **kwargs):
     equipe = instance.equipe
-    equipe = Equipe.objects.with_related(with_valide_and_points=True).with_valide_and_points().get(pk=equipe.pk)
+    equipe = Equipe.objects.with_related().with_valide_and_points().get(pk=equipe.pk)
 
     send_event('events', ScoreSerializer.url_list, {'deleted': {'id': instance.id}})
     serializer = EquipeSerializer(equipe, read_only=True)
@@ -71,7 +72,13 @@ def send_notification(sender, instance, created=False, **kwargs):
 
         # Reload complete instance
         equipe = instance.score.equipe
-        equipe = Equipe.objects.with_related(with_valide_and_points=True).with_valide_and_points().get(pk=equipe.pk)
+        equipe = Equipe.objects.prefetch_related(
+                Prefetch('membres',
+                    queryset=Score.objects.prefetch_related(
+                        Prefetch('performances', queryset=Performance.objects.with_related()),
+                    ).in_order()
+                )
+            ).select_related('club').with_valide_and_points().get(pk=equipe.pk)
         score = next(s for s in equipe.membres.all() if s.pk == instance.score.pk)
         instance = next(p for p in score.performances.all() if p.pk == instance.pk)
 

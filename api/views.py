@@ -25,6 +25,7 @@ def Response400(data):
 def Response204():
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+# Classe (et fonction) permettant de passer les ValidationError de Django à DRF
 def django2drfValidation(exc):
     detail = as_serializer_error(exc)
     return {k if k != DJANGO_NON_FIELD_ERRORS else api_settings.NON_FIELD_ERRORS_KEY:v for k,v in detail.items()}
@@ -61,9 +62,11 @@ class ClubViewSet(DjangoModelViewSet):
         if filter: queryset = queryset.filter(Q(nom__icontains=filter) | Q(ville__icontains=filter))
         return queryset
 
+
 class VoieViewSet(DjangoModelViewSet):
     serializer_class = VoieSerializer
     queryset = Voie.objects.all()
+
 
 class GrimpeurViewSet(DjangoModelViewSet):
     serializer_class = GrimpeurSerializer
@@ -88,12 +91,13 @@ class GrimpeurViewSet(DjangoModelViewSet):
                 Q(nom__icontains=filter) |
                 Q(prenom__icontains=filter)
             )
-        return queryset #.order_by('nom', 'prenom') Normalement déjà ordonné par nom/prénom
+        return queryset
 
 
 class RencontreViewSet(DjangoModelViewSet):
     serializer_class = RencontreSerializer
     queryset = Rencontre.objects.all()
+
 
 class EquipeViewSet(DjangoModelViewSet):
     serializer_class = EquipeSerializer
@@ -113,7 +117,7 @@ class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
         interclub = self.request.interclub
-        # On filtre sur les scores du club uniquement quand on demande la liste complète
+        # On filtre sur les scores du club ou du juge uniquement quand on demande la liste complète
         club = interclub.club if self.action == 'list' else None
         voies = interclub.voies if self.action == 'list' else None
         if not interclub.rencontre: return Score.objects.none()
@@ -150,11 +154,10 @@ class PerformanceViewSet(DjangoModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = Performance.objects.select_related('voie')
-        if hasattr(user, 'profil'):
-            queryset = queryset.select_related('score__equipe__rencontre').global_filter(rencontre=user.profil.rencontre)
         if hasattr(user, 'profil') and isinstance(user.profil, Juge):
+            # Juge: il a besoin du grimpeur et de son club
             voies = user.profil.voies.values_list('id', flat=True)
-            queryset = queryset.select_related('score__grimpeur').global_filter(voies=voies)
+            queryset = queryset.select_related('score__grimpeur__club').global_filter(voies=voies)
         return queryset
 
     def get_serializer_class(self):
