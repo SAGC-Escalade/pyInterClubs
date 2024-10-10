@@ -52,6 +52,17 @@ class TypeVoie(models.IntegerChoices):
 ########################################################
 # Définition des Manager et des QuerySet
 
+# TODO: remplacer les méthodes 'with_related' par une simple méthode 'prefetch'
+# Il faut donc revoir toutes les fois où on utilise 'with_related' pour rajouter le select_related correspondant
+# Il faut également permettre de sélectionner les prefetch à inclure :
+# def prefetch(self, *models):
+#   queryset = self
+#   if 'equipe' in models:
+#     q = Equipe.objects.all()
+#     if 'equipe__*' in models: q = q.prefetch('*')
+#     queryset = queryset.prefetch_related(Prefetch('equipe', queryset=q)
+#   ...
+
 class VoieQuerySet(models.QuerySet):
     def order_by__nom(self):
         is_tete = Case(
