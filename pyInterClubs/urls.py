@@ -46,3 +46,9 @@ urlpatterns = [
     re_path(r"^react/(?P<path>.*.jsx)$", serve_react, name='react'),
     re_path(r'^js/reverse/$', urls_js, name='js_reverse'),
 ]
+
+#if settings.DEBUG:
+#    import debug_toolbar
+#    urlpatterns = [
+#        path('__debug__/', include(debug_toolbar.urls)),
+#    ] + urlpatterns
