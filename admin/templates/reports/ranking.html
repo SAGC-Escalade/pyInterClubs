@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Classements de la journée{% endblock %}
+
+{% block head %}
+    <style>
+        .sexe {
+            color: rgba(0,0,0,.3);
+        }
+
+        .femme {
+            color: lightpink;
+        }
+
+        .homme {
+            color: lightblue;
+        }
+
+        .svg-inline--fa.gold, i.gold {
+            color: #FFD700;
+        }
+        /* gold */
+        .svg-inline--fa.silver, i.silver {
+            color: #C0C0C0;
+        }
+        /* silver */
+        .svg-inline--fa.bronze, i.bronze {
+            color: #B8860B;
+        }
+        /* darkgoldenrod */
+
+        i.gold {
+            background-color: #FFD70020;
+        }
+
+        i.silver {
+            background-color: #C0C0C020;
+        }
+
+        i.bronze {
+            background-color: #B8860B20;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<ul class="list-group">
+    <li class="list-group-item hstack fw-bold sticky-top" style='border-bottom: 2px solid black; top: 50px'>
+        <div class="me-2" style='width: 3ch'>#</div>
+        <div class="me-2">
+            <i class="fa-solid fa-person-half-dress fa-fw fa-lg lh-1"></i>
+        </div>
+        <div class="col-8 col-md-9 row">
+            <div class="col-12 col-sm-8 text-truncate">Nom</div>
+            <div class="d-none d-sm-block col-sm-4  text-truncate">Club</div>
+        </div>
+        <div class="text-end text-nowrap ms-auto">Score</div>
+    </li>
+    {% for score in object_list %}
+    <li class="list-group-item d-flex">
+        <div class="me-2" style='width: 3ch'>{{score.rank}}.</div>
+        <div class="me-2">
+            {% if score.grimpeur.sexe == 2 %}
+            <i class="sexe homme fa-solid fa-person            fa-fw fa-lg lh-1"></i>
+            {% elif score.grimpeur.sexe == 1 %}
+            <i class="sexe femme fa-solid fa-person-dress      fa-fw fa-lg lh-1"></i>
+            {% else %}
+            <i class="sexe femme fa-solid fa-person-half-dress fa-fw fa-lg lh-1"></i>
+            {% endif %}
+        </div>
+        <div class="col-8 col-md-9 row">
+            <div class="col-12 col-sm-8 text-truncate">
+                {{score.grimpeur.nom}} {{score.grimpeur.prenom}}
+            </div>
+            <div class="col-12 col-sm-4 text-truncate">
+                <small class="text-muted">{{score.grimpeur.club.nom}}</small>
+            </div>
+        </div>
+        <div class="text-end text-nowrap ms-auto">
+            <span class="badge {% if score.valide %}bg-success{% else %}bg-primary{% endif %}">
+                {{score.points}} pts
+            </span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

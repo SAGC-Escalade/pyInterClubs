@@ -7,7 +7,9 @@ from django.db.models.functions import MD5, Concat
 from django.db.models import Value as V
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 from datetime import datetime
 
@@ -16,6 +18,8 @@ from admin.middleware import WithRencontreRequiredMixin
 from .forms import *
 from .models import *
 
+# TODO: Faire en sorte d'utiliser l'id de la rencontre passée en paramètre pour les queryset de ces View
+# Sinon l'admin est obligé de sélectionner la rencontre sur laquelle il veut travailler.
 
 class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -23,6 +27,35 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
 class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff
+
+
+class PDFTemplateMixin:
+    """Ce mixin permet de rendre un fichier pdf en lieu et place du document HTML"""
+    pdf_filename = 'document.pdf'   # Nom du document pdf téléchargé
+    pdf_template_name = None        # Utilise le template HTML par défaut
+    always_render_pdf = True
+
+    def get_pdf_template_name(self):
+        if self.pdf_template_name:
+            return self.pdf_template_name
+        return self.template_name
+
+    def render_to_pdf(self, context, **kwargs):
+        template_name = self.get_pdf_template_name()
+        html = get_template(template_name).render(context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{self.pdf_filename}"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Une erreur est survenue lors de la génération du PDF', status=400)
+        return response
+
+    def render_to_response(self, context, **kwargs):
+        if self.always_render_pdf or \
+            self.request.META.get('HTTP_ACCEPT') == 'application/pdf' or \
+            self.request.GET.get('format') == 'pdf':
+            return self.render_to_pdf(context, **kwargs)
+        super().render_to_response(context, **kwargs)
 
 
 class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
@@ -44,12 +77,9 @@ class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
 
 
 class RencontreSelectionView(SuperUserRequiredMixin, FormView):
-    success_url = reverse_lazy('rencontre:qrcode-clubs')
+    success_url = reverse_lazy('rencontre:select')
     form_class = RencontreSelectionForm
     template_name = 'admin/select.html'
-
-    # TODO: Vérifier que le queryset est optimum (une seule requête)
-    # Filtrer le queryset pour n'afficher QUE les profils liés à la rencontre SAUF les admins.
 
     def get_initial(self):
         initial = super().get_initial()
@@ -154,3 +184,20 @@ class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
         users.delete()
 
         return super().form_valid(form)
+
+class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, ListView):
+    model = Score
+    template_name = 'reports/ranking.html'
+    pdf_filename = 'ranking.pdf'
+
+    def get_queryset(self):
+        interclub = self.request.interclub
+        if not interclub.rencontre: return Score.objects.none()
+        rencontre = Rencontre.objects.get(pk=interclub.rencontre)
+        queryset = Score.objects.with_related() \
+            .filter(equipe__rencontre__date=rencontre.date) \
+            .annotate(categorie=F('equipe__rencontre__categorie')) \
+            .with_valide_and_points() \
+            .order_by('-points')
+
+        return queryset

@@ -130,6 +130,7 @@
     <Content Include="admin\templates\admin\delete.html" />
     <Content Include="admin\templates\admin\resultats.html" />
     <Content Include="admin\templates\admin\select.html" />
+    <Content Include="admin\templates\reports\ranking.html" />
     <Content Include="admin\templates\widgets\rencontre-option.html">
       <SubType>Code</SubType>
     </Content>
@@ -244,6 +245,7 @@
     <Folder Include="admin\react\" />
     <Folder Include="admin\static\" />
     <Folder Include="admin\static\css\" />
+    <Folder Include="admin\templates\reports\" />
     <Folder Include="admin\templates\widgets\" />
     <Folder Include="admin\templates\" />
     <Folder Include="admin\templates\admin\" />

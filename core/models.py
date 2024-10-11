@@ -121,6 +121,25 @@ class RencontreQuerySet(models.QuerySet):
             ).select_related(
                 'club'
             )
+    def with_counts(self):
+        return self.annotate(
+                nb_equipes=Count('equipes', distinct=True),
+                nb_grimpeurs=Count('equipes__membres', distinct=True),
+                nb_users=Count('profil__user', filter=Q(profil__user__is_superuser=False), distinct=True),
+                nb_perfs_valides=Count('equipes__membres__performances', filter=Q(equipes__membres__performances__points__isnull=False), distinct=True),
+            )
+    def with_valide(self):
+        return self.annotate(
+                valide=Case(
+                    When((
+                        Q(nb_perfs_valides = F('nb_grimpeurs') * (F('nbBloc') + F('nbDiff') + F('nbVitesse')))
+                        ), then=True
+                    ),
+                    default=False,
+                    output_field=BooleanField()
+                )
+            )
+
 
 class EquipeQuerySet(models.QuerySet):
     def global_filter(self, *, rencontre=None, club=None):

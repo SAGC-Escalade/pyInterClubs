@@ -8,11 +8,13 @@
     </div>
     <div class="col-3">{{ r.date }}</div>
     <div class="col-2">{{ r.club.ville }}</div>
-    <div class="col">{{ r.equipes_count }}</div>
-    <div class="col">{{ r.grimpeurs_count }}</div>
+    <div class="col">{{ r.nb_equipes }}</div>
+    <div class="col">{{ r.nb_grimpeurs }}</div>
     <div class="col-2 d-flex">
-        <button class="btn btn-link btn-sm py-0" disabled><i class="fa-solid fa-eye"></i></button>
-        {% if r.users_count %}
+        <a href="{% url 'rencontre:resultats' %}" class="btn btn-link btn-sm py-0">
+            <i class="fa-solid fa-eye"></i>
+        </a>
+        {% if r.nb_users %}
             <a href="{% url 'rencontre:stop' r.id %}" class="btn btn-link btn-sm py-0">
                 <i class="fa-solid fa-stop"></i>
             </a>
@@ -24,6 +26,28 @@
                 <i class="fa-solid fa-play"></i>
             </a>
         {% endif %}
+        <div class="dropdown">
+            <button class="btn btn-link btn-sm py-0 link-underline-opacity-0" {% if not r.valide %}disabled{% endif %} type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-file-export" data-fa-transform="up-4"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url 'rencontre:report' r.id %}" class="dropdown-item">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'rencontre:report' r.id %}" class="dropdown-item">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'rencontre:report' r.id %}" class="dropdown-item">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Liste des participants (pour la journée)
+                    </a>
+                </li>
+            </ul>
+        </div>
         <a href="{% url 'rencontre:delete' r.id %}" class="btn btn-link text-danger btn-sm py-0 ms-auto">
             <i class="fa-solid fa-trash"></i>
         </a>

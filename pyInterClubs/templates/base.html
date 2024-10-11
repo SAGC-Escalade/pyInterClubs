@@ -8,9 +8,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% filter default:0|add:' - ' %}{% block title %}{% endblock %}{% endfilter %}pyInterClubs</title>
+    {% block head %}{% endblock %}
 </head>
 <body>
-    {% block head %}{% endblock %}
     {% block body %}{% endblock %}
     {% block script %}{% endblock %}
 </body>

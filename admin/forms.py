@@ -1,5 +1,4 @@
 from django import forms
-from django.db.models import Prefetch, Q, F, Count, Sum
 from django.forms.models import ModelChoiceIterator
 from django.core.exceptions import ValidationError
 from itertools import groupby
@@ -38,11 +37,8 @@ class RencontreSelectionForm(forms.Form):
     rencontre = RencontreChoiceField(
         required=True,
         queryset=Rencontre.objects \
-            .annotate(
-                equipes_count=Count('equipes', distinct=True),
-                grimpeurs_count=Count('equipes__membres', distinct=True),
-                users_count=Count('profil__user', filter=Q(profil__user__is_superuser=False), distinct=True)
-            ) \
+            .with_counts() \
+            .with_valide() \
             .select_related('club') \
             .order_by("-saison", "-date"),
         empty_label=None,
