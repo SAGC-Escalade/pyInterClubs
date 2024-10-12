@@ -196,7 +196,7 @@ class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, ListView):
         rencontre = Rencontre.objects.get(pk=interclub.rencontre)
         queryset = Score.objects.with_related() \
             .filter(equipe__rencontre__date=rencontre.date) \
-            .annotate(categorie=F('equipe__rencontre__categorie')) \
+            .with_categorie() \
             .with_valide_and_points() \
             .order_by('-points')
 

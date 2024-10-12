@@ -217,6 +217,9 @@ class ScoreQuerySet(models.QuerySet):
                     output_field=BooleanField()
                 )
             )
+    def with_categorie(self):
+        return self.annotate(categorie=F('equipe__rencontre__categorie'))
+
 
 class PerformanceQuerySet(models.QuerySet):
     def global_filter(self, *, score=None, equipe=None, rencontre=None, club=None, sexe=None, voie=None, voies=None):
