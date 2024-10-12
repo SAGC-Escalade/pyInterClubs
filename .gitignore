@@ -366,3 +366,4 @@ venv*/
 /static
 /pyInterClubs.dt
 /django.sqlite
+.idea/
