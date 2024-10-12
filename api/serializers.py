@@ -218,7 +218,7 @@ class ScoreSerializer(SSESerializer):
         if instance.clubPreteur:
             ret['clubPreteur'] = ClubSerializer(instance.clubPreteur, context=self.context).data
         if not 'points' in ret:
-            print(list(p.points for p in instance.performances.all()))
+            #print(list(p.points for p in instance.performances.all()))
             ret['points'] = sum(p.points for p in instance.performances.all() if p.points)
         return ret
 
