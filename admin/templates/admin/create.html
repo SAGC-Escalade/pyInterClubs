@@ -50,10 +50,10 @@
 
                 <div class="tab-content">
                     <div class="card-body tab-pane fade show active" id="parameters-pane" role="tabpanel">
-                        {% bootstrap_field form.saison layout='horizontal' %}
-                        {% bootstrap_field form.date layout='horizontal' %}
-                        {% bootstrap_field form.club layout='horizontal' %}
-                        {% bootstrap_field form.categorie layout='horizontal' %}
+                        {% bootstrap_field form.saison layout='horizontal' horizontal_label_class="col-sm-3 col-md-2" horizontal_field_class="col-sm-9 col-md-10" %}
+                        {% bootstrap_field form.date layout='horizontal' horizontal_label_class="col-sm-3 col-md-2" horizontal_field_class="col-sm-9 col-md-10" %}
+                        {% bootstrap_field form.club layout='horizontal' horizontal_label_class="col-sm-3 col-md-2" horizontal_field_class="col-sm-9 col-md-10" %}
+                        {% bootstrap_field form.categorie layout='horizontal' horizontal_label_class="col-sm-3 col-md-2" horizontal_field_class="col-sm-9 col-md-10" %}
 
                         <div class="d-flex">
                             <button class="ms-auto btn btn-outline-primary"><i class="fa-solid fa-floppy-disk me-1"></i>Créer la rencontre</button>
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="card-body tab-pane fade" id="lines-pane" role="tabpanel">
-                        {% bootstrap_field form.voies layout='horizontal' field_class='size' %}
+                        {% bootstrap_field form.voies layout='horizontal' field_class='size' horizontal_label_class="col-sm-3 col-md-2" horizontal_field_class="col-sm-9 col-md-10" %}
 
                         <div class="d-flex">
                             <button class="ms-auto btn btn-outline-primary"><i class="fa-solid fa-floppy-disk me-1"></i>Créer la rencontre</button>
@@ -69,9 +69,9 @@
                         </div>
                     </div>
                     <div class="card-body tab-pane fade" id="advanced-pane" role="tabpanel">
-                        {% bootstrap_field form.nbBloc layout='horizontal' %}
-                        {% bootstrap_field form.nbDiff layout='horizontal' %}
-                        {% bootstrap_field form.nbVitesse layout='horizontal' %}
+                        {% bootstrap_field form.nbBloc layout='horizontal'    horizontal_label_class="col-sm-6 col-md-4" horizontal_field_class="col-sm-6 col-md-8" %}
+                        {% bootstrap_field form.nbDiff layout='horizontal'    horizontal_label_class="col-sm-6 col-md-4" horizontal_field_class="col-sm-6 col-md-8" %}
+                        {% bootstrap_field form.nbVitesse layout='horizontal' horizontal_label_class="col-sm-6 col-md-4" horizontal_field_class="col-sm-6 col-md-8" %}
                         {% bootstrap_field form.voiesReutilisables layout='horizontal' %}
                         {% bootstrap_field form.voiesGroupees layout='horizontal' %}
 
