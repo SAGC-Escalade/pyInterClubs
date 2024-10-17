@@ -80,7 +80,7 @@ export default function Equipe({ id }) {
                                                 {status.isLoading && <div className="spinner-border spinner-border-sm text-primary ms-1"></div>}
                                             </label>
                                             <div className={"col row" + (errors ? " is-invalid" : "")}>
-                                                <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">Numéro</label>
+                                                <label className="d-none d-sm-inline col-6 col-form-label text-end" htmlFor="id_numero">NumÃ©ro</label>
                                                 <div className="col-12 col-sm-6">
                                                     <FormControl name="numero" type="number" value={equipe.numero}
                                                         onChange={(e) => action('patch', { numero: e.target.value })}
@@ -186,7 +186,7 @@ export default function Equipe({ id }) {
                                     <span className="d-none d-md-inline ms-2">Ajouter un grimpeur</span>
                                 </Button>
                                 <Button className="ms-auto" variant="danger" disabled={!equipe} onClick={() => setShowDelete(true)}>
-                                    <i className="fa-solid fa-trash fa-fw"></i><span className="d-none d-md-inline ms-2">Supprimer l'équipe</span>
+                                    <i className="fa-solid fa-trash fa-fw"></i><span className="d-none d-md-inline ms-2">Supprimer l'Ã©quipe</span>
                                 </Button>
                             </div>
                         </div>
@@ -194,10 +194,10 @@ export default function Equipe({ id }) {
                         {equipe && (
                             <Modal show={showDelete} onHide={() => { setShowDelete(false); resetErrors(); }}>
                                 <ModalHeader closeButton>
-                                    <ModalTitle>Supprimer l'équipe ?</ModalTitle>
+                                    <ModalTitle>Supprimer l'Ã©quipe ?</ModalTitle>
                                 </ModalHeader>
                                 <ModalBody>
-                                    <span className={errors?.delete ? "is-invalid" : ""}>Voulez-vous vraiment supprimer l'équipe {equipe.numero} ?</span>
+                                    <span className={errors?.delete ? "is-invalid" : ""}>Voulez-vous vraiment supprimer l'Ã©quipe {equipe.numero} ?</span>
                                     {errors?.delete && <span className="invalid-feedback">{errors.delete}</span>}
                                 </ModalBody>
                                 <ModalFooter>
@@ -217,9 +217,9 @@ export default function Equipe({ id }) {
     );
 }
 
-export function ListEquipe({ flush = true }) {
+export function ListEquipe({ flush = true, club = undefined }) {
     return (
-        <Observer endpoint='equipes' id={null} csrf={csrf}>
+        <Observer endpoint={(club ? `club/${club}/` : '') + "equipes"} id={null} csrf={csrf}>
             {({ data: equipes = [], status }) => {
                 if (status.isLoading)
                     return (
@@ -230,7 +230,7 @@ export function ListEquipe({ flush = true }) {
                 if (equipes.length == 0)
                     return (
                         <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
-                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i> Aucune équipe</li>
+                            <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i> Aucune Ã©quipe</li>
                         </ul>
                     );
 
@@ -240,7 +240,7 @@ export function ListEquipe({ flush = true }) {
                             return (
                                 <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center">
                                     <i className="fa-solid fa-fw me-2"></i>
-                                    {equipe.club?.nom || 'Nouvelle équipe'} {equipe.numero}
+                                    {equipe.club?.nom || 'Nouvelle Ã©quipe'} {equipe.numero}
                                     <sup><span className="badge text-bg-light text-muted">{equipe.membres?.length || 0}</span></sup>
                                     <span className={"badge ms-auto " + (equipe.valide ? "text-bg-success" : "text-bg-primary")}>{equipe.points || 0} pts</span>
                                 </a>

@@ -105,6 +105,7 @@ class EquipeViewSet(DjangoModelViewSet):
     def get_queryset(self):
         interclub = self.request.interclub
         if not interclub.rencontre: return Equipe.objects.none()
+        club = self.kwargs.get('club')
         queryset = Equipe.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
             .with_valide_and_points()
@@ -117,12 +118,10 @@ class ScoreViewSet(DjangoModelViewSet):
     serializer_class = ScoreSerializer
     def get_queryset(self):
         interclub = self.request.interclub
-        # On filtre sur les scores du club ou du juge uniquement quand on demande la liste complète
-        club = interclub.club if self.action == 'list' else None
-        voies = interclub.voies if self.action == 'list' else None
         if not interclub.rencontre: return Score.objects.none()
+        club = self.kwargs.get('club')
         queryset = Score.objects.with_related() \
-            .global_filter(rencontre=interclub.rencontre, club=club, voies=voies) \
+            .global_filter(rencontre=interclub.rencontre, club=club) \
             .with_valide_and_points()
 
         order = self.request.query_params.getlist('order_by')
@@ -152,12 +151,14 @@ class PerformanceViewSet(DjangoModelViewSet):
     queryset = Performance.objects.select_related('voie')
 
     def get_queryset(self):
+        interclub = self.request.interclub
+        if not interclub.rencontre: return Performance.objects.none()
+
         user = self.request.user
-        queryset = Performance.objects.select_related('voie')
-        if hasattr(user, 'profil') and isinstance(user.profil, Juge):
+        queryset = Performance.objects.select_related('voie').global_filter(rencontre=interclub.rencontre)
+        if 'voie' in self.kwargs.keys():
             # Juge: il a besoin du grimpeur et de son club
-            voies = user.profil.voies.values_list('id', flat=True)
-            queryset = queryset.select_related('score__grimpeur__club').global_filter(voies=voies)
+            queryset = queryset.select_related('score__grimpeur__club').global_filter(voie=self.kwargs.get('voie'))
         return queryset
 
     def get_serializer_class(self):

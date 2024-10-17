@@ -7,9 +7,9 @@ import Autocomplete from "./autocomplete.jsx";
 import PerfInput from "./perf-input.jsx";
 
 
-export default function ListPerfs({ voies, flush = true }) {
+export default function ListPerfs({ voie, flush = true }) {
     return (
-        <Observer endpoint='perfs' id={null} queryString="?order_by=grimpeur__nom&order_by=grimpeur__prenom" csrf={csrf}>
+        <Observer endpoint={`voie/${voie}/perfs`} id={null} queryString="?order_by=grimpeur__nom&order_by=grimpeur__prenom" csrf={csrf}>
             {({ data: perfs = [], status }) => {
                 if (status.isLoading)
                     return (

@@ -5,9 +5,13 @@ const eventSource = new EventSource('/events/', { withCredentials: true });
 eventSource.onerror = () => { console.log("Erreur de connexion avec le canal temps réel..."); };
 eventSource.onmessage = (event) => { console.log("message non traité :", event); };
 
-export default function Observer({ endpoint, children, id = undefined, initialData = undefined, csrf = undefined, queryString = undefined }) {
+const defaultBaseUri = "/api/";
+
+export default function Observer({ baseUri = undefined, endpoint, children, id = undefined, initialData = undefined, csrf = undefined, queryString = undefined }) {
     /* Fonctions et valeurs possibles des paramètres :
      * 
+     * baseUri (string): C'est la première partie du chemin de l'API, la partie fixe, généralement https://x.x.x.x/api.
+     *   exemple: rencontres, scores, equipes, performances
      * endpoint (string): C'est la seconde partie du chemin de l'API, c'est aussi la première partie de l'id des events SSE
      *   exemple: rencontres, scores, equipes, performances
      * id (int, null, undefined): Défini l'id de l'objet à surveiller ou le comportement (trap d'événements SSE ou polling).
@@ -42,7 +46,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     const isDeleting = useRef(false);
     const isSingle = !!id;
     endpoint = endpoint + (isSingle && id ? `/${id}` : '');
-    const apiEndpoint = `/api/${endpoint}/`;
+    const apiEndpoint = `${baseUri ?? defaultBaseUri}${endpoint}/`;
 
     const subscriptions = useRef({});
 
@@ -51,23 +55,28 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
 
     // MAJ des datas en fonction des événements
     const handleSSEMessage = useCallback((event) => {
-        //console.log(event.type, event.data);
+        console.log("receive", event);
         const newData = event.data ? JSON.parse(event.data) : null;
         if (newData) {
             queryClient.setQueryData(endpoint, (oldData) => {
                 if (Array.isArray(oldData)) {
                     if (newData.deleted) {
-                        unsubscribe(newData.deleted.id);
+                        console.log("tableau: delete");
+                        //unsubscribe(newData.deleted.id);
                         return oldData.filter((oldItem) => oldItem.id !== newData.deleted.id);
                     } else if (oldData.findIndex((item) => item.id === newData.id) !== -1) {
+                        console.log("tableau: update");
                         return oldData.map((item) => (item.id === newData.id ? newData : item));
                     } else {
-                        subscribe(newData.id);
+                        console.log("tableau: create");
+                        //subscribe(newData.id);
                         return [...oldData, newData];
                     }
                 } else if (oldData && oldData.id === newData.id) {
+                    console.log("item: update");
                     return { ...oldData, ...newData };
                 } else if (newData.deleted) {
+                    console.log("item: delete");
                     return null;
                 }
                 return oldData;
@@ -79,8 +88,10 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
 
     // Abonnement aux événements d'un objet
     const subscribe = useCallback((id) => {
+        // TODO: Il faudrait extraire la fin du endpoint pour faire la souscription
+        // Pb: Comment justifier cela dans un composant réutilisable ?
         if (!subscriptions.current[id]) {
-            //console.log(`subscribe ${endpoint}/${id}`);
+            console.log(`subscribe ${endpoint}/${id}`);
             eventSource.addEventListener(`${endpoint}/${id}`, handleSSEMessage);
             subscriptions.current[id] = handleSSEMessage;
         }
@@ -90,7 +101,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     const unsubscribe = useCallback((id) => {
         const handler = subscriptions.current[id];
         if (handler) {
-            //console.log(`unsubscribe ${endpoint}/${id}`);
+            console.log(`unsubscribe ${endpoint}/${id}`);
             eventSource.removeEventListener(`${endpoint}/${id}`, handler);
             delete subscriptions.current[id];
         }
@@ -168,7 +179,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
     // Abonnement/Désabonnement global
     useEffect(() => {
         if (id !== undefined) {
-            //console.log(`subscribe ${endpoint}`);
+            console.log(`subscribe ${endpoint}`);
             eventSource.addEventListener(endpoint, handleSSEMessage);
 
             return () => {
@@ -205,31 +216,7 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
         {
             onMutate: async ({ method, data }) => {
                 await queryClient.cancelQueries(endpoint);
-                const previousData = queryClient.getQueryData(endpoint);
-
-                // Optimistic update (Les modifications sont déjà appliquées par le composant enfant ou le formulaire HTML)
-                /*if (method !== 'DELETE') {
-                    queryClient.setQueryData(endpoint, (oldData) => {
-                        if (Array.isArray(oldData)) {
-                            if (method === 'POST') {
-                                return [...oldData, { ...data, id: 0 }];
-                            } else if (method === 'PUT' || method === 'PATCH') {
-                                return oldData.map((oldItem) => (oldItem.id === data.id ? { ...oldItem, ...data } : oldItem));
-                                //} else if (method === 'DELETE') {
-                                //    return oldData.filter((oldItem) => oldItem.id !== id);
-                            }
-                        } else {
-                            if (method === 'PUT' || method === 'PATCH') {
-                                return { ...oldData, ...data };
-                                //} else if (method === 'DELETE') {
-                                //    return null;
-                            }
-                        }
-                        return oldData;
-                    });
-                }*/
-
-                return { previousData };
+                return queryClient.getQueryData(endpoint);
             },
             onError: (error, variables, context) => {
                 handleErrors(error);
@@ -241,12 +228,12 @@ export default function Observer({ endpoint, children, id = undefined, initialDa
                 queryClient.setQueryData(endpoint, (oldData) => {
                     if (Array.isArray(oldData)) {
                         if (method === 'POST') {
-                            subscribe(responseData.id);
+                            //subscribe(responseData.id);
                             return oldData.map((oldItem) => (oldItem.id === 0 ? responseData : oldItem));
                         } else if (method === 'PUT' || method === 'PATCH') {
                             return oldData.map((oldItem) => (oldItem.id === responseData.id ? responseData : oldItem));
                         } else if (method === 'DELETE') {
-                            unsubscribe(responseData.id);
+                            //unsubscribe(responseData.id);
                             return oldData.filter((oldItem) => oldItem.id !== data.id);
                         }
                     } else {

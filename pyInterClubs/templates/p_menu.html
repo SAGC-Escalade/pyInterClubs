@@ -78,7 +78,7 @@
                     {% transpiling %}
                     ReactDOM.createRoot(document.querySelector('#react-list-equipe')).render(
                         <QueryClientProvider client={queryClient}>
-                            <ListEquipe />
+                            <ListEquipe {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
                         </QueryClientProvider>
                     )
                     {% endtranspiling %}

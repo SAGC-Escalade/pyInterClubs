@@ -183,13 +183,11 @@ class ScoreQuerySet(models.QuerySet):
     def in_order(self):
         return self.order_by('ordre')
 
-    def global_filter(self, *, rencontre=None, equipe=None, club=None, voie=None, voies=None):
+    def global_filter(self, *, rencontre=None, equipe=None, club=None):
         qs = self
         if equipe:    qs = qs.filter(equipe_id=equipe)
         if rencontre: qs = qs.filter(equipe__rencontre_id=rencontre)
         if club:      qs = qs.filter(grimpeur__club_id=club)
-        if voie:      qs = qs.filter(performances__voie_id=voie)
-        if voies:     qs = qs.filter(performances__voie_id__in=voies)
         return qs
     def with_related(self):
         return self.prefetch_related(
@@ -222,13 +220,9 @@ class ScoreQuerySet(models.QuerySet):
 
 
 class PerformanceQuerySet(models.QuerySet):
-    def global_filter(self, *, score=None, equipe=None, rencontre=None, club=None, sexe=None, voie=None, voies=None):
+    def global_filter(self, *, rencontre=None, voie=None, voies=None):
         qs = self
-        if score:     qs = qs.filter(score_id=score)
-        if equipe:    qs = qs.filter(score__equipe_id=equipe)
         if rencontre: qs = qs.filter(score__equipe__rencontre_id=rencontre)
-        if club:      qs = qs.filter(score__grimpeur__club_id=club)
-        if sexe:      qs = qs.filter(score__grimpeur__sexe=sexe)
         if voie:      qs = qs.filter(voie_id=voie)
         if voies:     qs = qs.filter(voie_id__in=voies)
         return qs

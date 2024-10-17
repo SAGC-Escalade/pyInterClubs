@@ -8,7 +8,7 @@ export default function Ranking({ gender }) {
         let currentRank = 1;
         let lastPoints = scores[0]?.points || 0;
 
-        // Ajouter le rang à chaque enfant
+        // Ajouter le rang Ã  chaque enfant
         return scores.map((score, index) => {
             if (index > 0 && score.points !== lastPoints) {
                 currentRank = index + 1;
@@ -33,22 +33,16 @@ export default function Ranking({ gender }) {
                     </ul>
                 );
 
-                // On classe les résultats
+                // On classe les rÃ©sultats
                 const sorted = [...scores].sort((a, b) => b.points - a.points);
-                console.log(sorted);
-                // On sépare les garçons des filles
+                // On sÃ©pare les garÃ§ons des filles
                 const femmes = sorted.filter((score) => score.grimpeur?.sexe == 1);
                 const hommes = sorted.filter((score) => score.grimpeur?.sexe == 2);
-                console.log(hommes);
-                console.log(femmes);
                 // On applique les rangs
                 const rankedFemmes = ranking(femmes);
                 const rankedHommes = ranking(hommes);
-                console.log(rankedHommes);
-                console.log(rankedFemmes);
                 // On reforme le classement global
                 const ranked = [...rankedFemmes, ...rankedHommes].sort((a, b) => b.points - a.points);
-                console.log(ranked);
 
                 return (
                     <ul className="list-group">

@@ -40,7 +40,7 @@
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-equipe-index')).render(
             <QueryClientProvider client={queryClient}>
-                <ListEquipe />
+                <ListEquipe {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
             </QueryClientProvider>
         )
         {% endtranspiling %}
@@ -54,7 +54,9 @@
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
             <QueryClientProvider client={queryClient}>
-                <ListPerfs />
+                {% for voie in user.profil.voies.all %}
+                    <ListPerfs voie={ {{voie.id}} } />
+                {% endfor %}
             </QueryClientProvider>
         )
         {% endtranspiling %}

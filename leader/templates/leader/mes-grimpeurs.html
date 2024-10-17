@@ -38,7 +38,7 @@
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
             <QueryClientProvider client={queryClient}>
-                <ListScore />
+                <ListScore {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
             </QueryClientProvider>
         )
         {% endtranspiling %}

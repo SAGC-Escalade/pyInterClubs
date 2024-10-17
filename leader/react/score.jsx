@@ -116,9 +116,9 @@ export default function Score({ id }) {
     );
 }
 
-export function ListScore({ flush = true }) {
+export function ListScore({ flush = true, club = undefined }) {
     return (
-        <Observer endpoint='scores' id={null} queryString="?order_by=grimpeur__nom&order_by=grimpeur__prenom" csrf={csrf}>
+        <Observer endpoint={(club ? `club/${club}/` : '') + "scores"} id={null} queryString="?order_by=grimpeur__nom&order_by=grimpeur__prenom" csrf={csrf}>
             {({ data: scores = [], status }) => {
                 if (status.isLoading)
                     return (
