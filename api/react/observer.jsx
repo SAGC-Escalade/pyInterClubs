@@ -55,28 +55,23 @@ export default function Observer({ baseUri = undefined, endpoint, children, id =
 
     // MAJ des datas en fonction des événements
     const handleSSEMessage = useCallback((event) => {
-        console.log("receive", event);
+        //console.log("receive", event);
         const newData = event.data ? JSON.parse(event.data) : null;
         if (newData) {
             queryClient.setQueryData(endpoint, (oldData) => {
                 if (Array.isArray(oldData)) {
                     if (newData.deleted) {
-                        console.log("tableau: delete");
                         //unsubscribe(newData.deleted.id);
                         return oldData.filter((oldItem) => oldItem.id !== newData.deleted.id);
                     } else if (oldData.findIndex((item) => item.id === newData.id) !== -1) {
-                        console.log("tableau: update");
                         return oldData.map((item) => (item.id === newData.id ? newData : item));
                     } else {
-                        console.log("tableau: create");
                         //subscribe(newData.id);
                         return [...oldData, newData];
                     }
                 } else if (oldData && oldData.id === newData.id) {
-                    console.log("item: update");
                     return { ...oldData, ...newData };
                 } else if (newData.deleted) {
-                    console.log("item: delete");
                     return null;
                 }
                 return oldData;
@@ -91,7 +86,7 @@ export default function Observer({ baseUri = undefined, endpoint, children, id =
         // TODO: Il faudrait extraire la fin du endpoint pour faire la souscription
         // Pb: Comment justifier cela dans un composant réutilisable ?
         if (!subscriptions.current[id]) {
-            console.log(`subscribe ${endpoint}/${id}`);
+            //console.log(`subscribe ${endpoint}/${id}`);
             eventSource.addEventListener(`${endpoint}/${id}`, handleSSEMessage);
             subscriptions.current[id] = handleSSEMessage;
         }
@@ -101,7 +96,7 @@ export default function Observer({ baseUri = undefined, endpoint, children, id =
     const unsubscribe = useCallback((id) => {
         const handler = subscriptions.current[id];
         if (handler) {
-            console.log(`unsubscribe ${endpoint}/${id}`);
+            //console.log(`unsubscribe ${endpoint}/${id}`);
             eventSource.removeEventListener(`${endpoint}/${id}`, handler);
             delete subscriptions.current[id];
         }
@@ -179,7 +174,7 @@ export default function Observer({ baseUri = undefined, endpoint, children, id =
     // Abonnement/Désabonnement global
     useEffect(() => {
         if (id !== undefined) {
-            console.log(`subscribe ${endpoint}`);
+            //console.log(`subscribe ${endpoint}`);
             eventSource.addEventListener(endpoint, handleSSEMessage);
 
             return () => {
