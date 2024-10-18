@@ -191,6 +191,7 @@ class PerformanceNotifier(Notifier):
         self.notify(f"perfs/{self.instance.id}")
 
         if 'points' in changed:
+            self.notify(f"voie/{self.instance.voie_id}/perfs")
             self.score.update(changed)
 
 

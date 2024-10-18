@@ -122,8 +122,16 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
                         </HorizontalFormGroup>
                     );
                 } else if (perf.voie === null || perf.voie.type == 2) { // Diff
+                    const lbl = (<>
+                        {label ?? "Voie " + index}
+                        {status.isLoading ? (
+                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                                <span className="visually-hidden">Chargement...</span>
+                            </div>
+                        ) : ""}
+                    </>);
                     return (
-                        <HorizontalFormGroup label={label ?? "Voie " + index} className={className} sm={sm}>
+                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                             <InputGroup className={errors ? "is-invalid" : ""}>
                                 {rencontre.voiesGroupees | hideState ? (
                                     <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
@@ -139,8 +147,16 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
                         </HorizontalFormGroup>
                     );
                 } else if (perf.voie.type == 1) { // Bloc
+                    const lbl = (<>
+                        {label ?? "Bloc " + index}
+                        {status.isLoading ? (
+                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                                <span className="visually-hidden">Chargement...</span>
+                            </div>
+                        ) : ""}
+                    </>);
                     return (
-                        <HorizontalFormGroup label={label ?? "Bloc " + index} className={className} sm={sm}>
+                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                             <InputGroup>
                                 <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
                                 <Points value={perf.points} />
@@ -148,8 +164,16 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
                         </HorizontalFormGroup>
                     );
                 } else if (perf.voie.type == 3) { // Vitesse
+                    const lbl = (<>
+                        {label ?? "Temps " + index}
+                        {status.isLoading ? (
+                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                                <span className="visually-hidden">Chargement...</span>
+                            </div>
+                        ) : ""}
+                    </>);
                     return (
-                        <HorizontalFormGroup label={label ?? "Temps " + index} className={className} sm={sm}>
+                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                             <InputGroup>
                                 <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} />
                                 <Points value={perf.points} />
@@ -157,10 +181,11 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
                         </HorizontalFormGroup>
                     );
                 } else {
+                    const lbl = (<><i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Erreur</>);
                     return (
-                        <HorizontalFormGroup label="Erreur" className={className} sm={sm}>
+                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                             <span className="hstack">
-                                <i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Type inconnu : {perf?.voie?.type?.toString()}
+                                Type inconnu : {perf?.voie?.type?.toString()}
                             </span>
                         </HorizontalFormGroup>
                     );

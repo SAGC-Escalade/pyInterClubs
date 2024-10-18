@@ -48,15 +48,14 @@
 {% elif user.profil.voies %}
     <div id="react-list-grimpeurs-index"></div>
     <script type="module">
-        import ListPerfs from "/react/judge.jsx";
+        import { ListVoies } from "/react/judge.jsx";
         const { QueryClient, QueryClientProvider } = window.ReactQuery;
         const queryClient = new QueryClient();
+        const voies = [{% for voie in user.profil.voies.all %}{{voie.id}}, {% endfor %}];
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
             <QueryClientProvider client={queryClient}>
-                {% for voie in user.profil.voies.all %}
-                    <ListPerfs voie={ {{voie.id}} } />
-                {% endfor %}
+                <ListVoies voies={rencontre.voies.filter((voie) => voies.includes(voie.id))} />
             </QueryClientProvider>
         )
         {% endtranspiling %}
