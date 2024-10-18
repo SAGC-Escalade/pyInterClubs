@@ -15,9 +15,9 @@ export default function Autocomplete({
     nullable = true, minLength = 3, csrf,
     className, isValid, isInvalid, placeholder = "Rechercher...", size
 }) {
-    const [searchTerm, setSearchTerm] = useState('');       // Ce qui est affiché dans le input
-    const [searchQuery, setSearchQuery] = useState('');     // Ce qui est recherché
-    const [selectedItem, setSelectedItem] = useState(null); // L'élement sélectionné
+    const [searchTerm, setSearchTerm] = useState('');       // Ce qui est affichÃ© dans le input
+    const [searchQuery, setSearchQuery] = useState('');     // Ce qui est recherchÃ©
+    const [selectedItem, setSelectedItem] = useState(null); // L'Ã©lement sÃ©lectionnÃ©
     const [hasFocus, setHasFocus] = useState(false);
     const inputRef = useRef(null);
     const timeout = useRef(null);
@@ -27,8 +27,8 @@ export default function Autocomplete({
         updateSearchQuery(event.target.value, searchQuery);
     };
 
-    // TODO : Gérer le debounce en interne de cette fonction de manière à le zapper quand le searchTerm n'est pas valide
-    // (et supprimer direct le searchQuery de manière à ne pas afficher la liste durant 300ms)
+    // TODO : GÃ©rer le debounce en interne de cette fonction de maniÃ¨re Ã  le zapper quand le searchTerm n'est pas valide
+    // (et supprimer direct le searchQuery de maniÃ¨re Ã  ne pas afficher la liste durant 300ms)
     const updateSearchQuery = useCallback(
         (query, current) => {
             clearTimeout(timeout.current);
@@ -110,7 +110,7 @@ export default function Autocomplete({
                                         </DropdownItem>
                                     ))
                                 ) : (
-                                    <DropdownItem>Aucun résultat</DropdownItem>
+                                    <DropdownItem>Aucun rÃ©sultat</DropdownItem>
                                 )}
                             </DropdownMenu>
                         )}

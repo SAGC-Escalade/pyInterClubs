@@ -5,13 +5,18 @@ from django.utils._os import safe_join
 from django.apps import apps
 from django.conf import settings
 
-from babel_transpiling.utils import get_options, get_file_content, get_transpiler
+from babel_transpiling.utils import get_options, get_transpiler
 
 import os.path
 from pathlib import Path
 
 from core.models import *
 from .forms import TokenAuthenticationForm
+
+def get_file_content(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        code = file.read()
+    return code
 
 # Classe mixin d'ajout de log pour l'optimisation des requêtes SQL
 # Elle est conservée (inutilisée) dans le code pour faire du debug
@@ -67,7 +72,7 @@ def serve_react(request, path, document_root=None):
     def compile(path):
         result = transpiler.call('Babel.transform', get_file_content(path), options['options'])
         _, file_suffix = os.path.splitext(path)
-        return HttpResponse(content=result['code'], content_type=options['mimetypes'][file_suffix])
+        return HttpResponse(content=result['code'], content_type=f"{options['mimetypes'][file_suffix]}; charset=utf-8")
 
     if document_root is None: document_root = getattr(settings, 'REACT_URL', 'react')
     for app in apps.get_app_configs():
