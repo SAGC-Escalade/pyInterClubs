@@ -131,7 +131,7 @@ export function ListScore({ flush = true, club = undefined }) {
         );
 
     return (
-        <Accordion flush={flush}>
+        <Accordion flush={flush} className="rounded-bottom">
             {scores.map(function (score, index) {
                 return (
                     <Score id={score.id} key={score.id} />

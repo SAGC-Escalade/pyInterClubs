@@ -1,12 +1,33 @@
-const { useState, useRef } = React;
-const { Badge, Button, InputGroup, ListGroup, ListGroupItem } = ReactBootstrap;
+const { useState, useRef, CSSProperties } = React;
+const { Badge, Button, InputGroup, ListGroup, ListGroupItem, Collapse } = ReactBootstrap;
+const { Accordion, AccordionItem, AccordionHeader, AccordionCollapse } = ReactBootstrap;
 
 import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import Autocomplete from "./autocomplete.jsx";
 import PerfInput from "./perf-input.jsx";
 
+function ListPerfItem({ perf, show, disabled }) {
+    let icon, color;
+    icon = "fa-solid fa-person-half-dress fa-fw me-2 fa-lg"; color = "rgba(0,0,0,.3)";
+    if (perf.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; color = "lightblue"; }
+    if (perf.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; color = "lightpink"; }
 
+    const label = (
+        <span className="d-inline-block text-truncate">
+            <i className={icon} style={{ color: color }}></i>
+            {perf.grimpeur?.nom} {perf.grimpeur?.prenom}
+            <sup className="d-none d-lg-inline ms-2"><Badge bg="secondary">{perf.grimpeur?.club_nom}</Badge></sup>
+        </span>
+    );
+
+    return (
+        <ListGroupItem className={show ? "" : "d-none"} key={perf.id}>
+            <PerfInput id={perf.id} key={perf.id} label={label} className="" hideState={true} sm={7} disabled={disabled} />
+        </ListGroupItem>
+    );
+}
 export default function ListPerf({ voie, exclude }) {
+    //const [open, setOpen] = useState(false);
     const { data: perfs, status } = useCRUDHandler({ endpoint: `voie/${voie}/perfs/`, id: null, queryString: "order_by=grimpeur__nom&order_by=grimpeur__prenom", initialData: [] });
     useSSEUpdater({ endpoint: `voie/${voie}/perfs/` });
 
@@ -29,30 +50,30 @@ export default function ListPerf({ voie, exclude }) {
         <>
             <ListGroup variant="flush">
                 {invalides.map(function (perf, index) {
-                    let icon;
-                    icon = "d-none";
-                    if (perf.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; }
-                    if (perf.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; }
-
-                    const label = (
-                        <span className="d-inline-block text-truncate">
-                            <i className={icon}></i>
-                            {perf.grimpeur?.nom} {perf.grimpeur?.prenom}
-                            <sup className="d-none d-lg-inline ms-2"><Badge bg="secondary">{perf.grimpeur?.club_nom}</Badge></sup>
-                        </span>
-                    );
-
                     const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
-
-                    return (
-                        <ListGroupItem className={show ? "" : "d-none"} key={perf.id}>
-                            <PerfInput id={perf.id} key={perf.id} label={label} className="" hideState={true} sm={7} />
-                        </ListGroupItem>
-                    );
+                    return (<ListPerfItem key={perf.id} perf={perf} show={show} />);
                 })}
             </ListGroup>
-            <div className="card-footer">
-                Grimpeurs déjà passés : {valides.length}
+            <div className="card-footer p-0">
+                <Accordion flush={true} style={{
+                    "--bs-accordion-btn-bg": "rgba(0,0,0,0.03)",
+                    "--bs-accordion-active-bg": "rgba(0,0,0,0.03)",
+                    "--bs-accordion-active-color": "var(--bs-body-color)"
+                }} >
+                    <AccordionItem eventKey={voie} className="rounded-bottom">
+                        <AccordionHeader>
+                            Grimpeurs déjà passés : {valides.length}
+                        </AccordionHeader>
+                        <AccordionCollapse eventKey={voie}>
+                            <ListGroup variant="flush" className="rounded-bottom">
+                                {valides.map(function (perf, index) {
+                                    const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
+                                    return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={true} />);
+                                })}
+                            </ListGroup>
+                        </AccordionCollapse>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </>
     );

@@ -6,10 +6,10 @@ import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
 
 
-export function VoieInput({ value, choices = niveaux, onChange, size, isValid, isInvalid }) {
+export function VoieInput({ value, choices = niveaux, onChange, size, isValid, isInvalid, disabled }) {
     const selected = !!value ? (choices.some(voie => voie.id === value) ? value : -1) : 0;
     return (
-        <FormSelect value={selected} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid}>
+        <FormSelect value={selected} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
             {selected == -1 && <option value={-1} disabled>La voie sélectionnée n'est pas autorisée</option>}
             <option value={0} disabled>Sélectionnez une voie</option>
             {choices.map(function (voie) {
@@ -18,12 +18,12 @@ export function VoieInput({ value, choices = niveaux, onChange, size, isValid, i
         </FormSelect>
     );
 }
-export function EtatInput({ value, choices = undefined, onChange, size, isValid, isInvalid }) {
+export function EtatInput({ value, choices = undefined, onChange, size, isValid, isInvalid, disabled }) {
     if (choices === undefined)
         choices = { "A réaliser": null, "Chute": 0, "Valorisée": 0, "Réussie": 0 }
     choices = Object.entries(choices);
     // On désactive le select si la valeur sélectionnée rapporte 0 points (sauf si c'est la chute)
-    const disabled = (choices[value] || [])[0] != "Chute" && (choices[value] || [])[1] === 0;
+    disabled = disabled || ((choices[value] || [])[0] != "Chute" && (choices[value] || [])[1] === 0);
     return (
         <FormSelect value={value | ""} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
             {choices.map(([label, points], index) => {
@@ -43,7 +43,7 @@ export function Points({ value }) {
     );
 }
 
-export function Vitesse({ value, onChange }) {
+export function Vitesse({ value, onChange, disabled }) {
     const defaultTime = "00:00:00.00";
     function format(time) {
         if (time === null) return 'A réaliser';
@@ -72,8 +72,8 @@ export function Vitesse({ value, onChange }) {
 
     return (
         <>
-            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={time} onChange={(ev) => handleChange(ev.target.value)} />
-            <Dropdown as={ButtonGroup}>
+            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={time} onChange={(ev) => handleChange(ev.target.value)} disabled={disabled} />
+            <Dropdown as={ButtonGroup} disabled={disabled}>
                 <DropdownToggle split variant="outline-secondary" align="end">
                     <span className="visually-hidden">Cas particuliers</span>
                 </DropdownToggle>
@@ -111,7 +111,7 @@ export function Vitesse({ value, onChange }) {
     );
 }
 
-export default function PerfInput({ id, index, label=undefined, className="mb-3", hideState=false, sm=9 }) {
+export default function PerfInput({ id, index, label=undefined, className="mb-3", hideState=false, sm=9, disabled }) {
     const { data: perf, errors, status, action } = useCRUDHandler({ endpoint: "perfs/", id: id });
     useSSEUpdater({ endpoint: `perfs/${id}/` });
 
@@ -139,9 +139,9 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
                     {rencontre.voiesGroupees | hideState ? (
                         <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
                     ) : (
-                        <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />
+                            <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} disabled={disabled} />
                     )}
-                    <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
+                    <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} disabled={disabled} />
                     <Points value={perf.points} />
                 </InputGroup>
                 {errors && Object.keys(errors).map((key) => (
@@ -164,7 +164,7 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
         return (
             <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                 <InputGroup>
-                    <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
+                    <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} disabled={disabled} />
                     <Points value={perf.points} />
                 </InputGroup>
             </HorizontalFormGroup>
@@ -184,7 +184,7 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
         return (
             <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                 <InputGroup>
-                    <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} />
+                    <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} disabled={disabled} />
                     <Points value={perf.points} />
                 </InputGroup>
             </HorizontalFormGroup>
