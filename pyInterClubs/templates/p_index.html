@@ -34,29 +34,28 @@
         </div>
     </div>
     <script type="module">
+        import App from "/react/app.jsx";
         import { ListEquipe } from "/react/equipe.jsx";
-        const { QueryClient, QueryClientProvider } = window.ReactQuery;
-        const queryClient = new QueryClient();
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-equipe-index')).render(
-            <QueryClientProvider client={queryClient}>
+            <App csrf={ "{{ csrf_token }}" }>
                 <ListEquipe {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
-            </QueryClientProvider>
+            </App>
         )
         {% endtranspiling %}
     </script>
 {% elif user.profil.voies %}
     <div id="react-list-grimpeurs-index"></div>
     <script type="module">
+        import App from "/react/app.jsx";
         import { ListVoies } from "/react/judge.jsx";
-        const { QueryClient, QueryClientProvider } = window.ReactQuery;
-        const queryClient = new QueryClient();
         const voies = [{% for voie in user.profil.voies.all %}{{voie.id}}, {% endfor %}];
+
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
-            <QueryClientProvider client={queryClient}>
+            <App csrf={ "{{ csrf_token }}" }>
                 <ListVoies voies={rencontre.voies.filter((voie) => voies.includes(voie.id))} />
-            </QueryClientProvider>
+            </App>
         )
         {% endtranspiling %}
     </script>

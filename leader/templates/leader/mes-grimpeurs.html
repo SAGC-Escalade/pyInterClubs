@@ -32,14 +32,13 @@
 
 {% block script %}
     <script type="module">
+        import App from "/react/app.jsx";
         import { ListScore } from "/react/score.jsx";
-        const { QueryClient, QueryClientProvider } = window.ReactQuery;
-        const queryClient = new QueryClient();
         {% transpiling %}
         ReactDOM.createRoot(document.querySelector('#react-list-grimpeurs-index')).render(
-            <QueryClientProvider client={queryClient}>
+            <App csrf={ "{{ csrf_token }}" }>
                 <ListScore {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
-            </QueryClientProvider>
+            </App>
         )
         {% endtranspiling %}
     </script>

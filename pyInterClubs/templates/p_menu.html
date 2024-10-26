@@ -72,14 +72,13 @@
                     </div>
                 </div>
                 <script type="module">
+                    import App from "/react/app.jsx";
                     import { ListEquipe } from "/react/equipe.jsx";
-                    const { QueryClient, QueryClientProvider } = window.ReactQuery;
-                    const queryClient = new QueryClient();
                     {% transpiling %}
                     ReactDOM.createRoot(document.querySelector('#react-list-equipe')).render(
-                        <QueryClientProvider client={queryClient}>
+                        <App csrf={ "{{ csrf_token }}" }>
                             <ListEquipe {% if user.profil.club %}club={ {{ user.profil.club.id }} }{% endif %} />
-                        </QueryClientProvider>
+                        </App>
                     )
                     {% endtranspiling %}
                 </script>

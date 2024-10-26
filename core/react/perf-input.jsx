@@ -2,7 +2,7 @@ const { useState, useCallback, useEffect, useRef } = React;
 const { Button, InputGroup, FormSelect, FormControl, ButtonGroup } = ReactBootstrap;
 const { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, DropdownDivider, DropdownHeader } = ReactBootstrap;
 
-import Observer from "./observer.jsx";
+import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
 
 
@@ -112,85 +112,92 @@ export function Vitesse({ value, onChange }) {
 }
 
 export default function PerfInput({ id, index, label=undefined, className="mb-3", hideState=false, sm=9 }) {
+    const { data: perf, errors, status, action } = useCRUDHandler({ endpoint: "perfs/", id: id });
+    useSSEUpdater({ endpoint: `perfs/${id}/` });
+
+    if (perf === undefined) {
+        return (
+            <HorizontalFormGroup label="Chargement" className={className} sm={sm}>
+                <span className="placeholder col-4" />
+            </HorizontalFormGroup>
+        );
+    }
+
+    // Diff
+    if (perf.voie === null || perf.voie.type == 2) {
+        const lbl = (<>
+            {label ?? "Voie " + index}
+            {status.isLoading ? (
+                <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                    <span className="visually-hidden">Chargement...</span>
+                </div>
+            ) : ""}
+        </>);
+        return (
+            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+                <InputGroup className={errors ? "is-invalid" : ""}>
+                    {rencontre.voiesGroupees | hideState ? (
+                        <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
+                    ) : (
+                        <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />
+                    )}
+                    <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
+                    <Points value={perf.points} />
+                </InputGroup>
+                {errors && Object.keys(errors).map((key) => (
+                    errors[key].map((msg, i) => (<span key={`${key}-${i}`} className="invalid-feedback">{msg}</span>))
+                ))}
+            </HorizontalFormGroup>
+        );
+    }
+
+    // Bloc
+    if (perf.voie.type == 1) {
+        const lbl = (<>
+            {label ?? "Bloc " + index}
+            {status.isLoading ? (
+                <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                    <span className="visually-hidden">Chargement...</span>
+                </div>
+            ) : ""}
+        </>);
+        return (
+            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+                <InputGroup>
+                    <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
+                    <Points value={perf.points} />
+                </InputGroup>
+            </HorizontalFormGroup>
+        );
+    }
+
+    // Vitesse
+    if (perf.voie.type == 3) {
+        const lbl = (<>
+            {label ?? "Temps " + index}
+            {status.isLoading ? (
+                <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                    <span className="visually-hidden">Chargement...</span>
+                </div>
+            ) : ""}
+        </>);
+        return (
+            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+                <InputGroup>
+                    <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} />
+                    <Points value={perf.points} />
+                </InputGroup>
+            </HorizontalFormGroup>
+        );
+    }
+
+    // Erreur: type de voie inconnu
+    const lbl = (<><i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Erreur</>);
     return (
-        <Observer endpoint="perfs" id={id} csrf={csrf}>
-            {({ data: perf, status, errors, action }) => {
-                if (perf === undefined) {
-                    return (
-                        <HorizontalFormGroup label="Chargement" className={className} sm={sm}>
-                            <span className="placeholder col-4" />
-                        </HorizontalFormGroup>
-                    );
-                } else if (perf.voie === null || perf.voie.type == 2) { // Diff
-                    const lbl = (<>
-                        {label ?? "Voie " + index}
-                        {status.isLoading ? (
-                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
-                                <span className="visually-hidden">Chargement...</span>
-                            </div>
-                        ) : ""}
-                    </>);
-                    return (
-                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
-                            <InputGroup className={errors ? "is-invalid" : ""}>
-                                {rencontre.voiesGroupees | hideState ? (
-                                    <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
-                                ) : (
-                                    <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} />
-                                )}
-                                <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
-                                <Points value={perf.points} />
-                            </InputGroup>
-                            {errors && Object.keys(errors).map((key) => (
-                                errors[key].map((msg, i) => (<span key={`${key}-${i}`} className="invalid-feedback">{msg}</span>))
-                            ))}
-                        </HorizontalFormGroup>
-                    );
-                } else if (perf.voie.type == 1) { // Bloc
-                    const lbl = (<>
-                        {label ?? "Bloc " + index}
-                        {status.isLoading ? (
-                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
-                                <span className="visually-hidden">Chargement...</span>
-                            </div>
-                        ) : ""}
-                    </>);
-                    return (
-                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
-                            <InputGroup>
-                                <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} />
-                                <Points value={perf.points} />
-                            </InputGroup>
-                        </HorizontalFormGroup>
-                    );
-                } else if (perf.voie.type == 3) { // Vitesse
-                    const lbl = (<>
-                        {label ?? "Temps " + index}
-                        {status.isLoading ? (
-                            <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
-                                <span className="visually-hidden">Chargement...</span>
-                            </div>
-                        ) : ""}
-                    </>);
-                    return (
-                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
-                            <InputGroup>
-                                <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} />
-                                <Points value={perf.points} />
-                            </InputGroup>
-                        </HorizontalFormGroup>
-                    );
-                } else {
-                    const lbl = (<><i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Erreur</>);
-                    return (
-                        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
-                            <span className="hstack">
-                                Type inconnu : {perf?.voie?.type?.toString()}
-                            </span>
-                        </HorizontalFormGroup>
-                    );
-                }
-            }}
-        </Observer>
+        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+            <span className="hstack">
+                Type inconnu : {perf?.voie?.type?.toString()}
+            </span>
+        </HorizontalFormGroup>
     );
 }
