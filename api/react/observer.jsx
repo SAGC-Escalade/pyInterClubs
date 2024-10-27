@@ -56,10 +56,11 @@ export const CRUDProvider = ({ baseUri = '/api/', csrf, children }) => {
 /* CRUD Handler                                                       */
 /**********************************************************************/
 
-export function useCRUDHandler({ endpoint, id, initialData, queryString, pollInterval }) {
+export function useCRUDHandler({ queryKey, endpoint, initialData, queryString, pollInterval, enabled=true }) {
     const { queryClient, send } = useCRUD();
     const [errors, setErrors] = useState(null);
     const isDeleting = useRef(false);
+    queryKey = queryKey ?? endpoint;
 
     // Gestion des erreurs
     const handleErrors = (error) => {
@@ -75,14 +76,14 @@ export function useCRUDHandler({ endpoint, id, initialData, queryString, pollInt
 
     // Requête GET pour récupérer les données
     const { data, status, isFetching } = useQuery(
-        `${endpoint}${id ? id + '/' : ''}`,
+        queryKey,
         () => {
-            if (id === undefined) return Promise.resolve(initialData);
-            return send({ method: 'GET', endpoint: `${endpoint}${id ? id + '/' : ''}${queryString ? '?' + queryString : ''}` })
+            if (!enabled) return Promise.resolve(initialData);
+            return send({ method: 'GET', endpoint: `${endpoint}${queryString ? '?' + queryString : ''}` })
         },
         {
             initialData,
-            enabled: id !== undefined,
+            enabled,
             onError: (error) => handleErrors(error),
             refetchOnWindowFocus: false,    // NOTE: Supprimer une fois en Production
             retry: 3,
@@ -96,24 +97,24 @@ export function useCRUDHandler({ endpoint, id, initialData, queryString, pollInt
             setErrors(null);
             isDeleting.current = (method === 'DELETE');
 
-            const qs = `${queryString || extraQuery ? '?' : ''}${queryString ?? ''}${queryString && extraQuery ? '&' : ''}${extraQuery ?? ''}`
-            const url = `${endpoint}${id ? id + '/' : ''}${action ? action + '/' : ''}${qs}`;
+            const qs = `${queryString || extraQuery ? '?' : ''}${queryString ?? ''}${queryString && extraQuery ? '&' : ''}${extraQuery ?? ''}`;
+            const url = `${endpoint}${action ? action + '/' : ''}${qs}`;
             return send({ method, endpoint: url, data });
         },
         {
             onMutate: async () => {
-                await queryClient.cancelQueries(endpoint);
-                const previousData = queryClient.getQueryData(endpoint);
+                await queryClient.cancelQueries(queryKey);
+                const previousData = queryClient.getQueryData(queryKey);
                 return { previousData };
             },
             onError: (error, variables, context) => {
                 handleErrors(error);
                 // Rollback
-                queryClient.setQueryData(endpoint, context.previousData);
+                queryClient.setQueryData(queryKey, context.previousData);
             },
             onSuccess: (responseData, { method }) => {
                 // Met à jour le cache en fonction de la méthode
-                queryClient.setQueryData(endpoint, (oldData) => {
+                queryClient.setQueryData(queryKey, (oldData) => {
                     if (Array.isArray(oldData)) {
                         if (method === 'POST') {
                             if (oldData.some(item => item.id === 0)) {
@@ -136,7 +137,7 @@ export function useCRUDHandler({ endpoint, id, initialData, queryString, pollInt
                     return responseData !== undefined ? responseData : oldData;
                 });
                 // On invalide pas la requête, mais cela pourrai être nécessaire en cas de polling (que l'on rajoutera plus tard)
-                //queryClient.invalidateQueries(endpoint, { refetchInactive: false });
+                //queryClient.invalidateQueries(queryKey, { refetchInactive: false });
             },
             onSettled: () => {
                 isDeleting.current = false;
@@ -237,11 +238,11 @@ export const SSEProvider = ({ uri = '/events/', children }) => {
 /* SSE Handler                                                        */
 /**********************************************************************/
 
-export function useSSEUpdater({ endpoint, endpointCollection, debounceTime = 0, enabled = true }) {
+export function useSSEUpdater({ queryKey, endpoint, debounceTime = 0, enabled = true }) {
     const { subscribe, unsubscribe } = useSSE();
-    const queryClient = useQueryClient();
+    const { queryClient } = useCRUD();
     const debounceUpdate = useRef(null);
-    endpointCollection = endpointCollection ?? endpoint;
+    queryKey = queryKey ?? endpoint;
 
     const updateCache = (oldData, newData) => {
         if (Array.isArray(oldData)) {
@@ -264,28 +265,29 @@ export function useSSEUpdater({ endpoint, endpointCollection, debounceTime = 0, 
     // Ainsi, l'utilisateur à le choix de la nomenclature des endpoints. Il devra mentionner l'endpoint
     // de la collection afin que les requêtes et les data soient correctements mises à jour.
     const handleSSEMessage = useCallback((event) => {
-        //console.log("receive", event);
+        //console.log("receive", queryKey, event);
         const newData = event.data ? JSON.parse(event.data) : null;
         if (newData) {
             if (debounceTime > 0) {
                 clearTimeout(debounceUpdate.current);
                 debounceUpdate.current = setTimeout(() => {
-                    queryClient.setQueryData(endpointCollection, (oldData) => updateCache(oldData, newData));
+                    queryClient.setQueryData(queryKey, (oldData) => updateCache(oldData, newData));
                 }, debounceTime);
             } else {
-                queryClient.setQueryData(endpointCollection, (oldData) => updateCache(oldData, newData));
+                queryClient.setQueryData(queryKey, (oldData) => updateCache(oldData, newData));
             }
         } else {
-            queryClient.invalidateQueries(endpointCollection);
+            queryClient.invalidateQueries(queryKey);
         }
-    }, [endpointCollection, queryClient]);
-
+    }, [queryKey, queryClient]);
 
     useEffect(() => {
         if (enabled) {
+            //console.log('subscribe', endpoint);
             subscribe(endpoint, handleSSEMessage);
 
             return () => {
+                //console.log('unsubscribe', endpoint);
                 unsubscribe(endpoint, handleSSEMessage);
             };
         }

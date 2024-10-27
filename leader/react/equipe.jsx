@@ -10,7 +10,7 @@ import Score from "./score.jsx";
 
 export function AddScore({ equipe }) {
     const [grimpeur, setGrimpeur] = useState(null);
-    const { errors, status, action } = useCRUDHandler({ endpoint: "scores/" });
+    const { errors, status, action } = useCRUDHandler({ endpoint: "scores/", enabled: false });
 
     return (
         <HorizontalFormGroup label="Grimpeur" className="">
@@ -38,8 +38,9 @@ export function AddScore({ equipe }) {
 export default function Equipe({ id }) {
     const [showDelete, setShowDelete] = useState(false);
     const [showAdd, setShowAdd] = useState(false);
-    const { data: equipe, errors, status, action, resetErrors } = useCRUDHandler({ endpoint: "equipes/", id: id });
-    useSSEUpdater({ endpoint: `equipes/${id}/` });
+    const endpoint = `equipes/${id}/`;
+    const { data: equipe, errors, status, action, resetErrors } = useCRUDHandler({ endpoint });
+    useSSEUpdater({ endpoint });
 
     if (equipe === null) return (
         <div className="hstack gap-1">
@@ -207,8 +208,8 @@ export default function Equipe({ id }) {
 }
 
 
-function ListEquipeItem({ equipe, club }) {
-    useSSEUpdater({ endpoint: `equipes/${equipe.id}/`, collectionEndpoint: `${club ? `club/${club}/` : ''}equipes/` });
+function ListEquipeItem({ equipe, queryKey }) {
+    useSSEUpdater({ queryKey, endpoint: `equipes/${equipe.id}/` });
 
     return (
         <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center">
@@ -220,8 +221,9 @@ function ListEquipeItem({ equipe, club }) {
     );
 }
 export function ListEquipe({ flush = true, club }) {
-    const { data: equipes, status } = useCRUDHandler({ endpoint: (club ? `club/${club}/` : '') + "equipes/", id: null, initialData: [] });
-    useSSEUpdater({ endpoint: `${club ? `club/${club}/` : ''}equipes/` });
+    const endpoint = `${club ? `club/${club}/` : ''}equipes/`
+    let { data: equipes, status } = useCRUDHandler({ endpoint, initialData: [] });
+    useSSEUpdater({ endpoint });
 
     if (status.isLoading)
         return (
@@ -236,10 +238,15 @@ export function ListEquipe({ flush = true, club }) {
             </ul>
         );
 
+    // On ne trie pas pour les clubs
+    if (!club) {
+        equipes = equipes.sort((a, b) => b.points - a.points);
+    }
+
     return (
         <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
             { equipes.map(function (equipe, index) {
-                return (<ListEquipeItem key={equipe.id} equipe={equipe} club={club} />);
+                return (<ListEquipeItem key={equipe.id} equipe={equipe} queryKey={endpoint} />);
             })}
         </ul>
     );

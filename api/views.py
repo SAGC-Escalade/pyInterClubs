@@ -109,8 +109,8 @@ class EquipeViewSet(DjangoModelViewSet):
         queryset = Equipe.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=interclub.club) \
             .with_valide_and_points()
-        if self.request.user.is_superuser:
-            queryset = queryset.order_by('-points')
+        #if self.request.user.is_superuser:
+        #    queryset = queryset.order_by('-points')
         return queryset
 
 
@@ -124,8 +124,8 @@ class ScoreViewSet(DjangoModelViewSet):
             .global_filter(rencontre=interclub.rencontre, club=club) \
             .with_valide_and_points()
 
-        order = self.request.query_params.getlist('order_by')
-        if order: queryset = queryset.order_by(*order)
+        #order = self.request.query_params.getlist('order_by')
+        #if order: queryset = queryset.order_by(*order)
 
         return queryset
 

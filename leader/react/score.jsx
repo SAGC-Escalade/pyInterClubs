@@ -8,10 +8,12 @@ import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import PerfInput, { VoieInput } from "./perf-input.jsx";
 
 
-export default function Score({ id }) {
+export default function Score({ id, score, queryKey }) {
     const [showParameters, setShowParameters] = useState(false);
-    const { data: score, errors, status, action } = useCRUDHandler({ endpoint: "scores/", id: id });
-    useSSEUpdater({ endpoint: `scores/${id}/` });
+    const endpoint = `scores/${id}/`;
+    const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: !score });
+    useSSEUpdater({ queryKey, endpoint });
+    score = data || score;
 
     if (score === null) return;
 
@@ -83,8 +85,8 @@ export default function Score({ id }) {
                                     <HorizontalFormGroup label="Actions">
                                         <ButtonToolbar>
                                             <ButtonGroup className={"me-3" + (errors?.ordre ? " is-invalid" : "")}>
-                                                <Button onClick={() => action("ordre/up/")}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
-                                                <Button onClick={() => action("ordre/down/")}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
+                                                <Button onClick={() => action("ordre/up/")} disabled={!!queryKey}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
+                                                <Button onClick={() => action("ordre/down/")} disabled={!!queryKey}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
                                             </ButtonGroup>
                                             <ButtonGroup>
                                                 <Button variant="danger" onClick={() => action('delete')}>
@@ -114,8 +116,9 @@ export default function Score({ id }) {
 
 
 export function ListScore({ flush = true, club = undefined }) {
-    const { data: scores, status } = useCRUDHandler({ endpoint: (club ? `club/${club}/` : '') + "scores/", id: null, queryString:"order_by=grimpeur__nom&order_by=grimpeur__prenom", initialData: [] });
-    useSSEUpdater({ endpoint: (club ? `club/${club}/` : '') + "scores/" });
+    const endpoint = `${club ? `club/${club}/` : ''}scores/`;
+    const { data: scores, status } = useCRUDHandler({ endpoint, initialData: [] });
+    useSSEUpdater({ endpoint });
 
     if (status.isLoading)
         return (
@@ -130,13 +133,20 @@ export function ListScore({ flush = true, club = undefined }) {
             </ul>
         );
 
+    const sorted = scores.sort((a, b) => `${a.grimpeur?.nom} ${a.grimpeur?.prenom}`.localeCompare(`${b.grimpeur?.nom} ${b.grimpeur?.prenom}`))
+
     return (
-        <Accordion flush={flush} className="rounded-bottom">
-            {scores.map(function (score, index) {
-                return (
-                    <Score id={score.id} key={score.id} />
-                );
-            })}
-        </Accordion>
+        <>
+            <Accordion flush={flush} className="rounded-bottom">
+                {sorted.map(function (score, index) {
+                    return (
+                        <Score key={score.id} queryKey={endpoint} id={score.id} score={score} />
+                    );
+                })}
+            </Accordion>
+            <div className="card-footer">
+                Score cumulés : {scores.reduce((n, {points}) => n + points, 0)} pts
+            </div>
+        </>
     );
 }

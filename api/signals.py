@@ -75,12 +75,12 @@ class EquipeNotifier(Notifier):
     def delete(self):
         self.notify(f"club/{self.instance.club_id}/equipes/")
         self.notify(f"equipes/")
-        self.notify(f"equipes/{self.instance.id}/")
+        #self.notify(f"equipes/{self.instance.id}/")
 
     def update(self, changed):
-        self.notify(f"club/{self.instance.club_id}/equipes/")
-        self.notify(f"equipes/")
-        if any(f in changed for f in ['ordre', 'numero', 'score.deleted', 'score.created']):
+        #self.notify(f"club/{self.instance.club_id}/equipes/")
+        #self.notify(f"equipes/")
+        if any(f in changed for f in ['ordre', 'numero', 'score.deleted', 'score.created', 'points']):
             self.notify(f"equipes/{self.instance.id}/")
 
 
@@ -121,13 +121,13 @@ class ScoreNotifier(Notifier):
     def delete(self):
         self.notify(f"club/{self.instance.equipe.club_id}/scores/")
         self.notify(f"scores/")
-        self.notify(f"scores/{self.instance.id}/")
+        #self.notify(f"scores/{self.instance.id}/")
         self.equipe.update({'score.deleted': True})
 
     def update(self, changed):
         self.notify(f"scores/{self.instance.id}/")
-        if 'points' in changed:
-            self.notify(f"scores/")
+        #if 'points' in changed:
+        #    self.notify(f"scores/")
         if any(f in changed for f in ['ordre', 'points']):
             self.equipe.update(changed)
 
@@ -191,7 +191,7 @@ class PerformanceNotifier(Notifier):
         self.notify(f"perfs/{self.instance.id}/")
 
         if 'points' in changed:
-            self.notify(f"voie/{self.instance.voie_id}/perfs/")
+            #self.notify(f"voie/{self.instance.voie_id}/perfs/")
             self.score.update(changed)
 
 

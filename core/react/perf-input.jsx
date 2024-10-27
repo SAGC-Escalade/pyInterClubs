@@ -111,9 +111,11 @@ export function Vitesse({ value, onChange, disabled }) {
     );
 }
 
-export default function PerfInput({ id, index, label=undefined, className="mb-3", hideState=false, sm=9, disabled }) {
-    const { data: perf, errors, status, action } = useCRUDHandler({ endpoint: "perfs/", id: id });
-    useSSEUpdater({ endpoint: `perfs/${id}/` });
+export default function PerfInput({ id, index, label = undefined, className = "mb-3", hideVoie = false, sm = 9, disabled, perf, queryKey }) {
+    const endpoint = `perfs/${id}/`;
+    const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: !perf });
+    perf = data || perf;
+    useSSEUpdater({ queryKey, endpoint });
 
     if (perf === undefined) {
         return (
@@ -136,10 +138,10 @@ export default function PerfInput({ id, index, label=undefined, className="mb-3"
         return (
             <HorizontalFormGroup label={lbl} className={className} sm={sm}>
                 <InputGroup className={errors ? "is-invalid" : ""}>
-                    {rencontre.voiesGroupees | hideState ? (
+                    {rencontre.voiesGroupees | hideVoie ? (
                         <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
                     ) : (
-                            <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} disabled={disabled} />
+                        <VoieInput value={perf.voie?.id} choices={rencontre.voies.filter((v) => v.type == 2)} onChange={(ev) => action('patch', { "voie": ev.target.value })} disabled={disabled} />
                     )}
                     <EtatInput value={perf.etat} choices={perf.voie?.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} disabled={disabled} />
                     <Points value={perf.points} />

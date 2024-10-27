@@ -6,30 +6,11 @@ import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import Autocomplete from "./autocomplete.jsx";
 import PerfInput from "./perf-input.jsx";
 
-function ListPerfItem({ perf, show, disabled }) {
-    let icon, color;
-    icon = "fa-solid fa-person-half-dress fa-fw me-2 fa-lg"; color = "rgba(0,0,0,.3)";
-    if (perf.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; color = "lightblue"; }
-    if (perf.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; color = "lightpink"; }
 
-    const label = (
-        <span className="d-inline-block text-truncate">
-            <i className={icon} style={{ color: color }}></i>
-            {perf.grimpeur?.nom} {perf.grimpeur?.prenom}
-            <sup className="d-none d-lg-inline ms-2"><Badge bg="secondary">{perf.grimpeur?.club_nom}</Badge></sup>
-        </span>
-    );
-
-    return (
-        <ListGroupItem className={show ? "" : "d-none"} key={perf.id}>
-            <PerfInput id={perf.id} key={perf.id} label={label} className="" hideState={true} sm={7} disabled={disabled} />
-        </ListGroupItem>
-    );
-}
 export default function ListPerf({ voie, exclude }) {
-    //const [open, setOpen] = useState(false);
-    const { data: perfs, status } = useCRUDHandler({ endpoint: `voie/${voie}/perfs/`, id: null, queryString: "order_by=grimpeur__nom&order_by=grimpeur__prenom", initialData: [] });
-    useSSEUpdater({ endpoint: `voie/${voie}/perfs/` });
+    const endpoint = `voie/${voie}/perfs/`;
+    const { data: perfs, status } = useCRUDHandler({ endpoint, initialData: [] });
+    useSSEUpdater({ endpoint });
 
     if (status.isLoading)
         return (
@@ -44,14 +25,40 @@ export default function ListPerf({ voie, exclude }) {
             </ul>
         );
 
-    const valides = perfs.filter((perf) => perf.points !== null);
-    const invalides = perfs.filter((perf) => perf.points === null);
+    const sorted = perfs.sort((a, b) => `${a.grimpeur?.nom} ${a.grimpeur?.prenom}`.localeCompare(`${b.grimpeur?.nom} ${b.grimpeur?.prenom}`))
+    const valides = sorted.filter((perf) => perf.points !== null);
+    const invalides = sorted.filter((perf) => perf.points === null);
+
+    const renderItem = ({ perf, show, disabled, queryKey }) => {
+        let icon, color;
+        icon = "fa-solid fa-person-half-dress fa-fw me-2 fa-lg"; color = "rgba(0,0,0,.3)";
+        if (perf.grimpeur?.sexe === 2) { icon = "sexe homme fa-solid fa-person       fa-fw me-2 fa-lg"; color = "lightblue"; }
+        if (perf.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; color = "lightpink"; }
+
+        const label = (
+            <span className="d-inline-block text-truncate">
+                <i className={icon} style={{ color: color }}></i>
+                <span className={disabled ? "text-muted" : ""}>
+                    {perf.grimpeur?.nom} {perf.grimpeur?.prenom}
+                    <sup className="d-none d-lg-inline ms-2"><Badge bg="secondary">{perf.grimpeur?.club_nom}</Badge></sup>
+                </span>
+            </span>
+        );
+
+        if (perf.id === 6307) console.log(perf);
+        return (
+            <ListGroupItem className={show ? "" : "d-none"} key={perf.id}>
+                <PerfInput id={perf.id} label={label} className="" hideVoie={true} sm={7} disabled={disabled} perf={perf} queryKey={queryKey} />
+            </ListGroupItem>
+        );
+    };
+
     return (
         <>
             <ListGroup variant="flush">
                 {invalides.map(function (perf, index) {
                     const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
-                    return (<ListPerfItem key={perf.id} perf={perf} show={show} />);
+                    return renderItem({ perf, show, queryKey: endpoint });
                 })}
             </ListGroup>
             <div className="card-footer p-0">
@@ -68,7 +75,7 @@ export default function ListPerf({ voie, exclude }) {
                             <ListGroup variant="flush" className="rounded-bottom">
                                 {valides.map(function (perf, index) {
                                     const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
-                                    return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={true} />);
+                                    return renderItem({ perf, show, disabled: true, queryKey: endpoint });
                                 })}
                             </ListGroup>
                         </AccordionCollapse>
@@ -81,8 +88,9 @@ export default function ListPerf({ voie, exclude }) {
 
 
 function ListVoiesHeader({ voie, index }) {
-    const { data: perfs } = useCRUDHandler({ endpoint: `voie/${voie.id}/perfs/`, id: null, initialData: [] });
-    useSSEUpdater({ endpoint: `voie/${voie.id}/perfs/` });
+    const endpoint = `voie/${voie.id}/perfs/`;
+    const { data: perfs } = useCRUDHandler({ endpoint, initialData: [] });
+    useSSEUpdater({ endpoint });
 
     const valides = perfs.filter((perf) => perf.points !== null);
     const invalides = perfs.filter((perf) => perf.points === null);

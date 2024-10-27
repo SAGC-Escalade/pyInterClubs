@@ -14,7 +14,7 @@ export default function Autocomplete({
     const [hasFocus, setHasFocus] = useState(false);
     const inputRef = useRef(null);
     const timeout = useRef(null);
-    const { data, errors, status, action } = useCRUDHandler({ endpoint: endpoint });
+    const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: false });
 
     const handleInputChange = (event) => {
         handleSelectItem(null, event.target.value, false);
