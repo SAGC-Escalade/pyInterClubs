@@ -27,6 +27,11 @@ class Notifier(SingleObjectMixin):
         else:
             self.serializer = self.get_serializer()
 
+    def get_object(self):
+        if 'instance' in self.kwargs:
+            return self.kwargs['instance']
+        return super().get_object()
+
     def get_serializer_class(self):
         return self.serializer_class
 
@@ -102,6 +107,11 @@ def send_notification(sender, instance, created=False, **kwargs):
 class ScoreNotifier(Notifier):
     serializer_class = ScoreSerializer
 
+    def get_queryset(self):
+        return Score.objects.select_related('grimpeur__club').prefetch_related(
+                Prefetch('performances', queryset=Performance.objects.with_related()),
+            ).in_order()
+
     def get_object(self):
         self.equipe = None
         if 'equipe_id' in self.kwargs:
@@ -109,9 +119,9 @@ class ScoreNotifier(Notifier):
             equipe = self.equipe.instance
             if 'pk' in self.kwargs:
                 return next(s for s in equipe.membres.all() if s.pk == self.kwargs['pk'])
-        if 'instance' in self.kwargs:
-            return self.kwargs.get('instance')
-        return super().get_object()
+        score = super().get_object()
+        self.equipe = EquipeNotifier(pk=score.equipe_id)
+        return score
 
     def create(self):
         self.notify(f"club/{self.instance.equipe.club_id}/scores/")
@@ -170,9 +180,9 @@ class PerformanceNotifier(Notifier):
                 self.score.equipe = self.equipe
             if 'pk' in self.kwargs:
                 return next(p for p in score.performances.all() if p.pk == self.kwargs['pk'])
-        if 'instance' in self.kwargs:
-            return self.kwargs.get('instance')
-        return super().get_object()
+        perf = super().get_object()
+        self.score = ScoreNotifier(pk=perf.score_id)
+        return perf
 
     def create(self):
         self.notify(f"voie/{self.instance.voie_id}/perfs/")
