@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, forwardRef } = React;
 const { Badge, Button, ButtonToolbar, ButtonGroup, ListGroup, ListGroupItem } = ReactBootstrap;
 const { Accordion, AccordionItem, AccordionHeader, AccordionCollapse, Collapse } = ReactBootstrap;
 
@@ -8,7 +8,7 @@ import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import PerfInput, { VoieInput } from "./perf-input.jsx";
 
 
-export default function Score({ id, score, queryKey }) {
+const Score = forwardRef(({ id, score, queryKey }, ref) => {
     const [showParameters, setShowParameters] = useState(false);
     const endpoint = `scores/${id}/`;
     const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: !score });
@@ -21,7 +21,7 @@ export default function Score({ id, score, queryKey }) {
         return (
             <span className="w-100 d-flex px-4 py-3">
                 <i className="fa-solid fa-triangle-exclamation text-danger fa-fw fa-lg me-2"></i>
-                <span className="text-truncate">{ errors.detail || errors }</span>
+                <span className="text-truncate">{errors.detail || errors}</span>
             </span>
         );
     }
@@ -32,7 +32,7 @@ export default function Score({ id, score, queryKey }) {
     if (score?.grimpeur?.sexe === 1) { icon = "sexe femme fa-solid fa-person-dress fa-fw me-2 fa-lg"; }
 
     return (
-        <AccordionItem className={status.isDeleting ? "deleting" : ""} eventKey={id}>
+        <AccordionItem className={status.isDeleting ? "deleting" : ""} eventKey={id} ref={ref}>
             <AccordionHeader>
                 <span className="w-100 d-flex">
                     {score === undefined ? (
@@ -75,8 +75,8 @@ export default function Score({ id, score, queryKey }) {
                                         </HorizontalFormGroup>
                                     )}
                                     <HorizontalFormGroup label="Club prêteur">
-                                            <Autocomplete endpoint="clubs" value={score.clubPreteur}
-                                                onChange={(c) => (c != score.clubPreteur) ? action('patch', { "clubPreteur": c?.id ?? null }) : null}>
+                                        <Autocomplete endpoint="clubs" value={score.clubPreteur}
+                                            onChange={(c) => (c != score.clubPreteur) ? action('patch', { "clubPreteur": c?.id ?? null }) : null}>
                                             {({ nom, ville }) => {
                                                 return `${nom} (${ville})`;
                                             }}
@@ -112,7 +112,8 @@ export default function Score({ id, score, queryKey }) {
             </AccordionCollapse>
         </AccordionItem>
     );
-}
+});
+export default Score;
 
 
 export function ListScore({ flush = true, club = undefined }) {
@@ -138,11 +139,13 @@ export function ListScore({ flush = true, club = undefined }) {
     return (
         <>
             <Accordion flush={flush} className="rounded-bottom">
+                <FlipMove enterAnimation="fade" leaveAnimation={true} maintainContainerHeight={true}>
                 {sorted.map(function (score, index) {
                     return (
                         <Score key={score.id} queryKey={endpoint} id={score.id} score={score} />
                     );
                 })}
+                </FlipMove>
             </Accordion>
             <div className="card-footer">
                 Score cumulés : {scores.reduce((n, {points}) => n + points, 0)} pts

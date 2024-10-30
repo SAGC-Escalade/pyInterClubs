@@ -1,4 +1,4 @@
-const { useState, useCallback, useEffect, useRef } = React;
+const { useState, useCallback, useEffect, useRef, forwardRef } = React;
 const { Button, InputGroup, FormSelect, FormControl, ButtonGroup } = ReactBootstrap;
 const { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, DropdownDivider, DropdownHeader } = ReactBootstrap;
 
@@ -111,7 +111,7 @@ export function Vitesse({ value, onChange, disabled }) {
     );
 }
 
-export default function PerfInput({ id, index, label = undefined, className = "mb-3", hideVoie = false, sm = 9, disabled, perf, queryKey }) {
+const PerfInput = forwardRef(({ id, index, label = undefined, className = "mb-3", hideVoie = false, sm = 9, disabled, perf, queryKey }, ref) => {
     const endpoint = `perfs/${id}/`;
     const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: !perf });
     perf = data || perf;
@@ -119,7 +119,7 @@ export default function PerfInput({ id, index, label = undefined, className = "m
 
     if (perf === undefined) {
         return (
-            <HorizontalFormGroup label="Chargement" className={className} sm={sm}>
+            <HorizontalFormGroup label="Chargement" className={className} sm={sm} ref={ref}>
                 <span className="placeholder col-4" />
             </HorizontalFormGroup>
         );
@@ -136,7 +136,7 @@ export default function PerfInput({ id, index, label = undefined, className = "m
             ) : ""}
         </>);
         return (
-            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+            <HorizontalFormGroup label={lbl} className={className} sm={sm} ref={ref}>
                 <InputGroup className={errors ? "is-invalid" : ""}>
                     {rencontre.voiesGroupees | hideVoie ? (
                         <span className="input-group-text">{perf.voie ? `${perf.voie.nom} (${perf.voie.niveau})` : "Sélectionnez un groupe"}</span>
@@ -164,7 +164,7 @@ export default function PerfInput({ id, index, label = undefined, className = "m
             ) : ""}
         </>);
         return (
-            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+            <HorizontalFormGroup label={lbl} className={className} sm={sm} ref={ref}>
                 <InputGroup>
                     <EtatInput value={perf.etat} choices={perf.voie.zones} onChange={(ev) => action('patch', { "etat": ev.target.value })} disabled={disabled} />
                     <Points value={perf.points} />
@@ -184,7 +184,7 @@ export default function PerfInput({ id, index, label = undefined, className = "m
             ) : ""}
         </>);
         return (
-            <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+            <HorizontalFormGroup label={lbl} className={className} sm={sm} ref={ref}>
                 <InputGroup>
                     <Vitesse value={perf.temps} onChange={(value) => action('patch', { "temps": value })} disabled={disabled} />
                     <Points value={perf.points} />
@@ -196,10 +196,11 @@ export default function PerfInput({ id, index, label = undefined, className = "m
     // Erreur: type de voie inconnu
     const lbl = (<><i className="fa-solid fa-triangle-exclamation fa-fw me-2 text-danger"></i> Erreur</>);
     return (
-        <HorizontalFormGroup label={lbl} className={className} sm={sm}>
+        <HorizontalFormGroup label={lbl} className={className} sm={sm} ref={ref}>
             <span className="hstack">
                 Type inconnu : {perf?.voie?.type?.toString()}
             </span>
         </HorizontalFormGroup>
     );
-}
+});
+export default PerfInput;

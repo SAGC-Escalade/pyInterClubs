@@ -1,10 +1,10 @@
-const { useState } = React;
+const { useState, forwardRef } = React;
 const { Badge, Button, FormControl } = ReactBootstrap;
 
 import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 
 
-function RankingItem({ score, queryKey }) {
+const RankingItem = forwardRef(({ score, queryKey }, ref) => {
     const endpoint = `scores/${score.id}/`;
     useSSEUpdater({ queryKey, endpoint });
 
@@ -50,7 +50,7 @@ function RankingItem({ score, queryKey }) {
     }
 
     return (
-        <li className={`list-group-item d-flex ${background}`} key={score.id}>
+        <li className={`list-group-item d-flex ${background}`} key={score.id} ref={ref}>
             <div className="me-2" style={{ width: "3ch" }}>{score.rank}.</div>
             <div className="me-2">
                 <i className={icon}></i>
@@ -71,7 +71,7 @@ function RankingItem({ score, queryKey }) {
             </div>
         </li>
     );
-}
+});
 export default function Ranking({ gender }) {
     const endpoint = "scores/";
     const { data: scores, status } = useCRUDHandler({ endpoint, initialData: [] });
@@ -115,7 +115,7 @@ export default function Ranking({ gender }) {
     const ranked = [...rankedFemmes, ...rankedHommes].sort((a, b) => b.points - a.points);
 
     return (
-        <ul className="list-group">
+        <FlipMove typeName="ul" className="list-group">
             <li className="list-group-item d-flex fw-bold sticky-top" key={0} style={{ borderBottom: "2px solid black", top: "50px" }}>
                 <div className="me-2" style={{ width: "3ch" }}>#</div>
                 <div className="me-2">
@@ -128,6 +128,6 @@ export default function Ranking({ gender }) {
                 <div className="text-end text-nowrap ms-auto">Score</div>
             </li>
             {ranked.map((score, index) => (<RankingItem key={score.id} score={score} queryKey={endpoint} />))}
-        </ul>
+        </FlipMove>
     );
 }

@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, forwardRef } = React;
 const { Button, FormControl } = ReactBootstrap;
 const { Accordion, AccordionItem, AccordionHeader, Collapse } = ReactBootstrap;
 const { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } = ReactBootstrap;
@@ -92,7 +92,7 @@ export default function Equipe({ id }) {
                     </div>
                 </div>
 
-                <Accordion flush>
+                <Accordion flush className="position-relative">
                     {!equipe && (
                         <>
                             <AccordionItem eventKey={1}>
@@ -153,9 +153,11 @@ export default function Equipe({ id }) {
                             </AccordionItem>
                         </>
                     )}
+                    <FlipMove enterAnimation="fade" leaveAnimation={false} maintainContainerHeight={true}>
                     {equipe?.membres.map((id, index) => (
                         <Score key={id} id={id} />
                     ))}
+                    </FlipMove>
                 </Accordion>
 
                 {equipe?.membres.length < 8 && (
@@ -208,18 +210,18 @@ export default function Equipe({ id }) {
 }
 
 
-function ListEquipeItem({ equipe, queryKey }) {
+const ListEquipeItem = forwardRef(({ equipe, queryKey }, ref) => {
     useSSEUpdater({ queryKey, endpoint: `equipes/${equipe.id}/` });
 
     return (
-        <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center">
+        <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center" ref={ref}>
             <i className="fa-solid fa-fw me-2"></i>
             {equipe.club?.nom || 'Nouvelle équipe'} {equipe.numero}
             <sup><span className="badge text-bg-light text-muted">{equipe.membres?.length || 0}</span></sup>
             <span className={"badge ms-auto " + (equipe.valide ? "text-bg-success" : "text-bg-primary")}>{equipe.points || 0} pts</span>
         </a>
     );
-}
+});
 export function ListEquipe({ flush = true, club }) {
     const endpoint = `${club ? `club/${club}/` : ''}equipes/`
     let { data: equipes, status } = useCRUDHandler({ endpoint, initialData: [] });
@@ -244,10 +246,12 @@ export function ListEquipe({ flush = true, club }) {
     }
 
     return (
-        <ul className={"list-group rounded" + (flush ? " list-group-flush" : "")}>
+        <FlipMove typeName="ul" maintainContainerHeight={true} enterAnimation="fade"
+            className={"list-group rounded" + (flush ? " list-group-flush" : "")}
+        >
             { equipes.map(function (equipe, index) {
                 return (<ListEquipeItem key={equipe.id} equipe={equipe} queryKey={endpoint} />);
             })}
-        </ul>
+        </FlipMove>
     );
 }
