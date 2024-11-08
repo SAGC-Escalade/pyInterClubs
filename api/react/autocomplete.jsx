@@ -3,8 +3,8 @@ const { InputGroup, DropdownMenu, DropdownItem, Button } = ReactBootstrap;
 import { useCRUDHandler } from './observer.jsx';
 
 export default function Autocomplete({
-    endpoint, children, value, onChange, key = 'id',
-    nullable = true, minLength = 3, csrf,
+    queryKey, endpoint, queryString, children, value, onChange, key = 'id',
+    nullable = true, minLength = 3,
     className, isValid, isInvalid, placeholder = "Rechercher...", size,
     delay = 500
 }) {
@@ -14,7 +14,7 @@ export default function Autocomplete({
     const [hasFocus, setHasFocus] = useState(false);
     const inputRef = useRef(null);
     const timeout = useRef(null);
-    const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: false });
+    const { data, errors, status, action } = useCRUDHandler({ queryKey, endpoint, enabled: false });
 
     const handleInputChange = (event) => {
         handleSelectItem(null, event.target.value, false);
@@ -46,8 +46,8 @@ export default function Autocomplete({
 
     useEffect(() => {
         if (value && selectedItem && selectedItem[key] !== value[key]) {
-            if (typeof value === 'string') action('read', null, `q=${value}`);
-            else action(`${value[key]}`);
+            if (typeof value === 'string') action('read', null, `q=${value}${queryString ? '&' + queryString : ''}`);
+            else action(`${value[key]}/${queryString ? '?' + queryString : ''}`);
         } else if (value && !selectedItem) {
             setSearchTerm(children(value));
             setSelectedItem(value);
@@ -57,8 +57,8 @@ export default function Autocomplete({
 
     useEffect(() => {
         if (searchQuery) {
-            if (typeof searchQuery === 'string') action('read', null, `q=${searchQuery}`);
-            else action(`${searchQuery}/`);
+            if (typeof searchQuery === 'string') action('read', null, `q=${searchQuery}${queryString ? '&' + queryString : ''}`);
+            else action(`${searchQuery}/${queryString ? '?' + queryString : ''}`);
         }
     }, [searchQuery]);
 
@@ -92,16 +92,19 @@ export default function Autocomplete({
             </InputGroup>
             {showDropdown && (
                 <DropdownMenu show>
-                    {status.isLoading && <DropdownItem>Chargement...</DropdownItem>}
                     {status.isError && <DropdownItem>Erreur: {errors?.message ?? "erreur indéfinie"}</DropdownItem>}
-                    {searchResults && searchResults.length > 0 ? (
-                        searchResults.map((item) => (
-                            <DropdownItem key={item.id} onMouseDown={() => handleSelectItem(item)}>
-                                {children(item)}
-                            </DropdownItem>
-                        ))
+                    {status.isLoading ? (
+                        <DropdownItem>Chargement...</DropdownItem>
                     ) : (
-                        <DropdownItem>Aucun résultat</DropdownItem>
+                        searchResults && searchResults.length > 0 ? (
+                            searchResults.map((item) => (
+                                <DropdownItem key={item.id} onMouseDown={() => handleSelectItem(item)}>
+                                    {children(item)}
+                                </DropdownItem>
+                            ))
+                        ) : (
+                            <DropdownItem>Aucun résultat</DropdownItem>
+                        )
                     )}
                 </DropdownMenu>
             )}
