@@ -1,3 +1,4 @@
+from functools import wraps
 from django.core.exceptions import ValidationError as DjangoValidationError, NON_FIELD_ERRORS as DJANGO_NON_FIELD_ERRORS
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import as_serializer_error
@@ -30,28 +31,36 @@ def django2drfValidation(exc):
     detail = as_serializer_error(exc)
     return {k if k != DJANGO_NON_FIELD_ERRORS else api_settings.NON_FIELD_ERRORS_KEY:v for k,v in detail.items()}
 
+def handle_django_errors(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            # Appelle la fonction d'origine (perform_create, perform_update, etc.)
+            return func(*args, **kwargs)
+        except DjangoValidationError as exc:
+            # Intercepte l'exception Django et la convertit en ValidationError DRF
+            raise ValidationError(detail=django2drfValidation(exc))
+        except:
+            # Reraise toutes les autres exceptions sans les modifier
+            raise
+    return wrapper
+
 class DjangoModelViewSet(WithRencontreRequiredMixin, viewsets.ModelViewSet):
+    @handle_django_errors
     def perform_create(self, serializer):
-        try:
-            return serializer.save()
-        except DjangoValidationError as exc:
-            raise ValidationError(detail=django2drfValidation(exc))
-        except: raise
+        super().perform_create(serializer)
 
+    @handle_django_errors
     def perform_update(self, serializer):
-        try:
-            return serializer.save()
-        except DjangoValidationError as exc:
-            raise ValidationError(detail=django2drfValidation(exc))
-        except: raise
+        super().perform_create(serializer)
 
+    @handle_django_errors
     def perform_destroy(self, instance):
-        try:
-            return instance.delete()
-        except DjangoValidationError as exc:
-            raise ValidationError(detail=django2drfValidation(exc))
-        except: raise
+        super().perform_create(serializer)
 
+
+#######################################################################
+# Les ViewSet de notre API
 
 class ClubViewSet(DjangoModelViewSet):
     serializer_class = ClubSerializer
@@ -73,8 +82,10 @@ class GrimpeurViewSet(DjangoModelViewSet):
 
     def get_queryset(self):
         interclub = self.request.interclub
+        user = self.request.user
         queryset = Grimpeur.objects.select_related('club').global_filter(club=interclub.club)
-        if not self.request.user.is_superuser:
+
+        if not user.is_superuser: # Coach
             rencontre = Rencontre.objects.get(pk=interclub.rencontre)
             # On filtre les grimpeurs par rapport à leur âge
             if rencontre.categorie == Categorie.enfants:
@@ -119,14 +130,28 @@ class ScoreViewSet(DjangoModelViewSet):
     def get_queryset(self):
         interclub = self.request.interclub
         if not interclub.rencontre: return Score.objects.none()
+        # TODO: Mettre ça dans une classe Permission
+        #if interclub.user_is_coach and self.kwargs.get('club') and request.user.profil.club_id != self.kwargs.get('club'):
+        #    raise NotAuthorizedError()
+
+        # Juge (il est intéressé par les grimpeurs inscrits et leur club
+        if interclub.user_is_juge:
+            queryset = Score.objects.select_related('grimpeur__club') \
+                .filter(performances__voie__isnull=True).distinct()
+
+            filter = self.request.query_params.get('q')
+            if filter:
+                queryset = queryset.filter(
+                    Q(grimpeur__nom__icontains=filter) |
+                    Q(grimpeur__prenom__icontains=filter)
+                )
+            return queryset
+
+        # Coach (ou admin) (il est intéressé par le score et son contenu - grimpeur, performances, points, valide, ...)
         club = self.kwargs.get('club')
         queryset = Score.objects.with_related() \
             .global_filter(rencontre=interclub.rencontre, club=club) \
             .with_valide_and_points()
-
-        #order = self.request.query_params.getlist('order_by')
-        #if order: queryset = queryset.order_by(*order)
-
         return queryset
 
     @action(detail=True, url_path=r'ordre/(?P<cmd>\w+)') #, permission_classes=[])
@@ -145,6 +170,16 @@ class ScoreViewSet(DjangoModelViewSet):
         score.groupe(self.request.data.get('id'))
         return Response(ScoreSerializer(score, read_only=True).data)
 
+    @action(detail=True, methods=['POST'])
+    @handle_django_errors
+    def register(self, request, pk=None):
+        if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
+        score = self.get_object()
+        voie = request.user.profil.voies.get(pk=request.data.get('voie'))
+        perf = score.performances.filter(voie__isnull=True).first()
+        perf.voie = voie
+        perf.save()
+        return Response204()
 
 class PerformanceViewSet(DjangoModelViewSet):
     serializer_class = PerformanceSerializer
@@ -162,7 +197,7 @@ class PerformanceViewSet(DjangoModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        user = self.request.user
-        if hasattr(user, 'profil') and isinstance(user.profil, Juge):
+        interclub = self.request.interclub
+        if interclub.user_is_juge:
             return FullPerformanceSerializer
         return super().get_serializer_class()

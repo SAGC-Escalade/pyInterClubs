@@ -108,6 +108,9 @@ class GrimpeurQuerySet(models.QuerySet):
         alreadyRegistered = Score.objects.global_filter(rencontre=rencontre).values('grimpeur_id')
         return self.exclude(id__in=alreadyRegistered)
 
+    def inscrits(self, rencontre):
+        return self.filter(participations__equipe__rencontre=rencontre)
+
 class RencontreQuerySet(models.QuerySet):
     def global_filter(self, *, rencontre=None, club=None):
         qs = self

@@ -1,10 +1,13 @@
 const { useState, useRef, forwardRef } = React;
-const { Badge, Button, InputGroup, ListGroup, ListGroupItem, Collapse } = ReactBootstrap;
-const { Accordion, AccordionItem, AccordionHeader, AccordionCollapse } = ReactBootstrap;
+const { Badge, Button, InputGroup, ButtonToolbar, ButtonGroup, ListGroupItem } = ReactBootstrap;
+const { Accordion, Spinner } = ReactBootstrap;
+const { Modal } = ReactBootstrap;
 
 import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import Autocomplete from "./autocomplete.jsx";
+import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import PerfInput from "./perf-input.jsx";
+
 
 const ListPerfItem = forwardRef(({ perf, show, disabled, queryKey }, ref) => {
     let icon, color;
@@ -28,57 +31,142 @@ const ListPerfItem = forwardRef(({ perf, show, disabled, queryKey }, ref) => {
         </ListGroupItem>
     );
 });
-export default function ListPerf({ voie, exclude }) {
-    const endpoint = `voie/${voie}/perfs/`;
+export default function ListPerf({ voie }) {
+    const [exclude, setExclude] = useState('');
+    const inputRef = useRef(null);
+    const [show, setShow] = useState(false);
+    const [score, setScore] = useState(null);
+
+    const endpoint = `voie/${voie.id}/perfs/`;
     const { data: perfs, status } = useCRUDHandler({ endpoint, initialData: [] });
+    const { action, status: registerStatus, errors } = useCRUDHandler({ endpoint: 'scores/', enabled: false });
     useSSEUpdater({ endpoint });
 
-    if (status.isLoading)
-        return (
+    let content, footer;
+    if (status.isLoading) {
+        content = (
             <ul className="list-group rounded list-group-flush">
-                <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i><span className="placeholder w-75"></span></li>
+                <li className="list-group-item"><span className="placeholder w-75"></span></li>
             </ul>
         );
-    if (perfs.length == 0)
-        return (
+    }
+    else if (perfs.length == 0) {
+        content = (
             <ul className="list-group rounded list-group-flush">
-                <li className="list-group-item"><i className="fa-solid fa-fw me-2"></i> Aucun grimpeur, veuillez d'abord créer une équipe.</li>
+                <li className="list-group-item">Aucun grimpeur, veuillez inscrire un grimpeur à l'aide du bouton "+".</li>
             </ul>
         );
+    }
+    else {
+        const sorted = perfs.sort((a, b) => `${a.grimpeur?.nom} ${a.grimpeur?.prenom}`.localeCompare(`${b.grimpeur?.nom} ${b.grimpeur?.prenom}`))
+        const valides = sorted.filter((perf) => perf.points !== null);
+        const invalides = sorted.filter((perf) => perf.points === null);
 
-    const sorted = perfs.sort((a, b) => `${a.grimpeur?.nom} ${a.grimpeur?.prenom}`.localeCompare(`${b.grimpeur?.nom} ${b.grimpeur?.prenom}`))
-    const valides = sorted.filter((perf) => perf.points !== null);
-    const invalides = sorted.filter((perf) => perf.points === null);
-
-    return (
-        <>
+        content = (
             <FlipMove typeName="ul" className="list-group list-group-flush" maintainContainerHeight={true}>
                 {invalides.map(function (perf, index) {
                     const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
                     return (<ListPerfItem key={perf.id} perf={perf} show={show} queryKey={endpoint} />);
                 })}
             </FlipMove>
-            <div className="card-footer p-0">
-                <Accordion flush={true} style={{
-                    "--bs-accordion-btn-bg": "rgba(0,0,0,0.03)",
-                    "--bs-accordion-active-bg": "rgba(0,0,0,0.03)",
-                    "--bs-accordion-active-color": "var(--bs-body-color)"
-                }} >
-                    <AccordionItem eventKey={voie} className="rounded-bottom">
-                        <AccordionHeader>
-                            Grimpeurs déjà passés : {valides.length}
-                        </AccordionHeader>
-                        <AccordionCollapse eventKey={voie}>
-                            <FlipMove typeName="ul" className="list-group list-group-flush rounded-bottom" maintainContainerHeight={true}>
-                                {valides.map(function (perf, index) {
-                                    const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
-                                    return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={true} queryKey={endpoint} />);
-                                })}
-                            </FlipMove>
-                        </AccordionCollapse>
-                    </AccordionItem>
-                </Accordion>
+        );
+        footer = (
+            <Accordion flush={true} style={{
+                "--bs-accordion-btn-bg": "rgba(0,0,0,0.03)",
+                "--bs-accordion-active-bg": "rgba(0,0,0,0.03)",
+                "--bs-accordion-active-color": "var(--bs-body-color)"
+            }} >
+                <Accordion.Item eventKey={voie} className="rounded-bottom">
+                    <Accordion.Header>
+                        Grimpeurs déjà passés : {valides.length}
+                    </Accordion.Header>
+                    <Accordion.Collapse eventKey={voie}>
+                        <FlipMove typeName="ul" className="list-group list-group-flush rounded-bottom" maintainContainerHeight={true}>
+                            {valides.map(function (perf, index) {
+                                const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
+                                return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={true} queryKey={endpoint} />);
+                            })}
+                        </FlipMove>
+                    </Accordion.Collapse>
+                </Accordion.Item>
+            </Accordion>
+        );
+    }
+
+
+    const handleClick = async () => {
+        try {
+            await action(`${score.id}/register`, { voie: voie.id });
+        } catch (error) { }
+        setShow(false);
+        setScore(null);
+    };
+
+    return (
+        <>
+            <div className="card-body border-bottom">
+                <ButtonToolbar className={errors ? "is-invalid" : ""}>
+                    <InputGroup className="flex-fill">
+                        <input ref={inputRef} type="text" className="form-control"
+                            value={exclude} onChange={(ev) => setExclude(ev.target.value)}
+                            placeholder="Filtrer les grimpeurs inscrits"
+                        />
+                        <Button disabled={!exclude} variant={(exclude ? "" : "outline-") + "secondary"} onClick={() => setExclude('')}>
+                            <i className="fa-solid fa-filter"></i>
+                            <span className="visually-hidden">Effacer le filtre</span>
+                        </Button>
+                    </InputGroup>
+
+                    {!rencontre.voiesGroupees && (
+                        <>
+                            <InputGroup className="ms-2 d-none d-sm-inline">
+                                <span className="input-group-text bg-white border-0">ou</span>
+                            </InputGroup>
+
+                            <ButtonGroup className="ms-2">
+                                <Button variant="outline-secondary" onClick={() => setShow(true)}>
+                                    <span className="hstack">
+                                        <i className="fa-solid fa-plus fa-fw"></i>
+                                        <span className="d-none d-md-inline ms-2">Inscrire</span>
+                                        <span className="d-none d-lg-inline">&nbsp;un grimpeur</span>
+                                    </span>
+                                </Button>
+                            </ButtonGroup>
+
+                            <Modal show={show} onHide={() => setShow(false)} centered size="lg" fullscreen="sm-down">
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Inscrire un grimpeur</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <HorizontalFormGroup label="Grimpeur" className="">
+                                        <div className="hstack">
+                                            <Autocomplete className="w-100" endpoint="scores/" value={score} onChange={(s) => setScore(s)} queryKey={`voie/${voie.id}/scores/`}>
+                                                {(s) => `${s.grimpeur?.nom} ${s.grimpeur?.prenom} (${s.grimpeur?.club_nom})`}
+                                            </Autocomplete>
+                                        </div>
+                                    </HorizontalFormGroup>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="outline-secondary" onClick={() => setShow(false)}>Annuler</Button>
+                                    <Button variant="primary" disabled={!score || registerStatus.isLoading} onClick={handleClick}>
+                                        {registerStatus.isLoading && (
+                                            <Spinner as="span" className="me-2" animation="border" variant="dark" size="sm" role="status">
+                                                <span className="visually-hidden">Chargement...</span>
+                                            </Spinner>
+                                        )}
+                                        Inscrire le grimpeur
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </>
+                    )}
+                </ButtonToolbar>
+                {errors && Object.keys(errors).map((key) => (
+                    errors[key].map((msg, i) => (<span key={`${key}-${i}`} className="invalid-feedback">{msg}</span>))
+                ))}
             </div>
+            {content}
+            {footer && (<div className="card-footer p-0">{footer}</div>)}
         </>
     );
 }
@@ -98,15 +186,12 @@ function ListVoiesHeader({ voie, index }) {
                 data-bs-target={`#v${voie.id}-pane`}
             >
                 {voie.nom} / {voie.niveau}
-                <sup className="ms-2"><span className={"badge " + (invalides.length ? "bg-primary" : "bg-success")}>{valides.length} / {perfs.length}</span></sup>
+                <sup className="mx-2"><span className={"badge " + (invalides.length ? "bg-primary" : "bg-success")}>{valides.length} / {perfs.length}</span></sup>
             </button>
         </li>
     );
 }
 export function ListVoies({ voies }) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const inputRef = useRef(null);
-
     return (
         <div className="card">
             <div className="card-header">
@@ -118,32 +203,15 @@ export function ListVoies({ voies }) {
                 </ul>
             </div>
 
-            <div className="card-body border-bottom">
-                <InputGroup>
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={searchTerm}
-                        placeholder="Filtrer les grimpeurs"
-                        onChange={(ev) => setSearchTerm(ev.target.value)}
-                        className="form-control"
-                    />
-                    <Button disabled={!searchTerm} variant={(searchTerm ? "" : "outline-") + "secondary"} onClick={() => setSearchTerm('')}>
-                        <i className="fa-solid fa-filter"></i>
-                        <span className="visually-hidden">Effacer le filtre</span>
-                    </Button>
-                </InputGroup>
-            </div>
-
-            <div className="tab-content">
-                {voies.map(function (voie, index) {
-                    return (
+            {voies.map(function (voie, index) {
+                return (
+                    <div className="tab-content" key={voie.id}>
                         <div className={"tab-pane fade" + (index ? "" : " active show")} id={`v${voie.id}-pane`} role="tabpanel" key={voie.id}>
-                            <ListPerf voie={voie.id} exclude={searchTerm} />
+                            <ListPerf voie={voie} />
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
