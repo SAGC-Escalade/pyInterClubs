@@ -69,9 +69,8 @@ export function useCRUDHandler({ queryKey, endpoint, initialData, queryString, p
         } catch (error) {
             error = { message: error.message };
         }
-        if (error.message) {
-            setErrors(error);
-        }
+        console.log(error);
+        setErrors(error);
     };
 
     // Requête GET pour récupérer les données
