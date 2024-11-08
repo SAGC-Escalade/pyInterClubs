@@ -36,15 +36,22 @@ class pyInterclubDetails:
 
     @property
     def club(self):
-        if hasattr(self.__profil, 'club_id'):
+        if self.user_is_coach:
             return self.__profil.club_id
         return None
 
     @property
     def voies(self):
-        if hasattr(self.__profil, 'voies'):
+        if self.user_is_juge:
             return self.__profil.voies.all().values_list('id', flat=True)
         return None
+
+    @property
+    def user_is_coach(self):
+        return isinstance(self.__profil, Coach)
+    @property
+    def user_is_juge(self):
+        return isinstance(self.__profil, Juge)
 
 
 class WithRencontreRequiredMixin:
@@ -53,6 +60,6 @@ class WithRencontreRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
         if not hasattr(request, 'interclub') or not request.interclub:
             raise ImproperlyConfigured("Le middleware 'interclub' n'est pas trouvé, peut-être n'a-t-il pas été configuré correctement.")
-        #if not request.interclub.rencontre:
-        #    raise ValidationError("L'administrateur n'a pas démarré de rencontre.")
+        if not request.interclub.rencontre:
+            raise ValidationError("L'administrateur n'a pas démarré de rencontre.")
         return super().dispatch(request, *args, **kwargs)
