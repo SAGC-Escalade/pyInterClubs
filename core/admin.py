@@ -58,18 +58,29 @@ class ScoreInline(admin.TabularInline):
     readonly_fields = ('grimpeur', 'clubPreteur')
     max_num = 8
     verbose_name = 'Participant'
+class PerfsInline(admin.TabularInline):
+    model = Performance
+    fk_name = 'score'
+    show_change_link = True
+    fields = ('voie', 'etat', 'temps', 'points')
+    readonly_fields = ('voie', 'etat', 'temps', 'points')
+    max_num = 6
+    verbose_name = 'Performance'
 
 
 # ModelAdmin
 @admin.register(Voie)
 class VoieAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'niveau', 'type', 'actif')
-    list_filter = ('actif',)
+    list_display = ('nom', 'niveau', 'type', 'categorie', 'genre', 'actif')
+    list_filter = ('actif', 'categorie', 'genre')
     search_fields = ('nom', 'niveau')
     search_help_text = "Recherchez par le nom ou la difficultée de l'épreuve"
     fieldsets = (
         (None, {
-            'fields': (('type', 'actif'), ('nom', 'niveau'), 'zones'),
+            'fields': ('actif', ('nom', 'niveau')),
+        }),
+        ('Caractéristiques de la voie', {
+            'fields': ('type', 'categorie', 'genre', 'zones'),
         }),
     )
 
@@ -103,10 +114,6 @@ class GrimpeurAdmin(admin.ModelAdmin):
         }),
     )
 
-#@admin.register(Saison)
-#class SaisonAdmin(admin.ModelAdmin):
-#    pass
-
 @admin.register(Rencontre)
 class RencontreAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
@@ -114,6 +121,15 @@ class RencontreAdmin(admin.ModelAdmin):
     list_filter = (byField(Club, 'ville', 'club__ville'), 'saison', 'categorie')
     search_fields = ('saison', 'date', 'club__ville')
     search_help_text = "Recherchez par le nom du club acceuillant, la date ou la saison"
+
+    fieldsets = (
+        (None, {
+            'fields': ('saison', 'date', 'club', 'categorie'),
+        }),
+        ('Caractéristiques de la rencontre', {
+            'fields': ('nbBloc', 'nbDiff', 'nbVitesse', 'voiesReutilisables', 'voiesGroupees'),
+        }),
+    )
 
     @admin.display(description="Lieu")
     def club_ville(self, obj):
@@ -153,6 +169,7 @@ class ScoreAdmin(admin.ModelAdmin):
         }),
     )
     readonly_fields = ('equipe',)
+    inlines = [PerfsInline]
 
     @admin.display(ordering='equipe__rencontre', description='Rencontre')
     def get_rencontre(self, obj):
@@ -177,7 +194,7 @@ class PerformanceForm(forms.ModelForm):
 @admin.register(Performance)
 class PerformanceAdmin(admin.ModelAdmin):
     list_display = ('score_grimpeur', 'voie', 'etat', 'temps', 'points')
-    list_filter = ('etat',)
+    list_filter = ('etat', 'voie')
     search_fields = ('score__grimpeur__nom', 'score__grimpeur__prenom')
     search_help_text = "Recherchez par le nom du grimpeur"
     fieldsets = (

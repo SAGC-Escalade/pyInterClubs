@@ -83,6 +83,8 @@ class VoieQuerySet(models.QuerySet):
         return self.filter(type=TypeVoie.vitesse)
     def categorie(self, categorie):
         return self.filter(categorie=categorie)
+    def genre(self, genre):
+        return self.filter(Q(genre=genre) | Q(genre=Genre.mixte))
 
 class GrimpeurQuerySet(models.QuerySet):
     def hommes(self):
@@ -276,8 +278,9 @@ class Voie(CleanModel):
     nom = models.CharField(max_length=15)
     niveau = models.CharField(max_length=5)
     categorie = models.IntegerField(choices=Categorie.choices)
+    genre = models.IntegerField(choices=Genre.choices, default=Genre.mixte)
     type = models.IntegerField(choices=TypeVoie.choices)
-    zones = models.JSONField()
+    zones = models.JSONField(help_text='Vous pouvez utiliser "{rank}" (un compteur à partir de 0) pour définir les points ou les zones en fonction du rang du grimpeur.<br />"{rank}" est utilisable uniquement pour les voies de vitesse.')
     actif = models.BooleanField(default=False)
 
     def __str__(self):

@@ -231,7 +231,7 @@ class ScoreSerializer(SSESerializer):
         instance = super().create(validated_data)
 
         rencontre = instance.equipe.rencontre
-        voies = rencontre.voies
+        voies = rencontre.voies.genre(instance.grimpeur.sexe) # On ne garde que les voies pour le genre du grimpeur
         blocs = [Performance(voie=v, score=instance) for v in voies.blocs()][:rencontre.nbBloc]
         diffs = [Performance(score=instance) for i in range(rencontre.nbDiff)]
         vitesse = [Performance(voie=v, score=instance) for v in voies.vitesses()][:rencontre.nbVitesse]
