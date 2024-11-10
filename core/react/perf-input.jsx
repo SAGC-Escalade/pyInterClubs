@@ -6,14 +6,14 @@ import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
 
 
-export function VoieInput({ value, choices = niveaux, onChange, size, isValid, isInvalid, disabled }) {
+export function VoieInput({ value, children, choices = niveaux, onChange, size, isValid, isInvalid, disabled }) {
     const selected = !!value ? (choices.some(voie => voie.id === value) ? value : -1) : 0;
     return (
         <FormSelect value={selected} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
             {selected == -1 && <option value={-1} disabled>La voie sélectionnée n'est pas autorisée</option>}
             <option value={0} disabled>Sélectionnez une voie</option>
-            {choices.map(function (voie) {
-                return (<option key={voie.id} value={voie.id}>{voie.nom} ({voie.niveau})</option>);
+            {choices.map(function (voie, index) {
+                return (<option key={voie.id} value={voie.id}>{children ? children(voie, index) : `${voie.nom} (${voie.niveau})`}</option>);
             })}
         </FormSelect>
     );
