@@ -15,10 +15,11 @@ def niveauTranslation(row):
     fields = {
         'zones': zones,
         'type': TypeVoie.bloc if nom == 'Bloc' else TypeVoie.diff,
-        'nom': ["<2019 ", ""][actif] + nom,
+        'nom': nom,
         'categorie': categorie,
         'niveau': niveau,
         'actif': actif,
+        'genre': Genre.mixte,
     }
     return [(id, fields)]
 def niveauVitesseTranslation(row):
@@ -29,9 +30,10 @@ def niveauVitesseTranslation(row):
     fields = {
         'zones': zones2018 if annee==2018 else zones,
         'type': TypeVoie.vitesse,
-        'nom': ("<2019 " if annee < 2019 else "") + 'V1',
+        'nom': 'Vitesse',
         'niveau': f"{annee}",
         'actif': annee >= 2019,
+        'genre': Genre.mixte,
     }
     return [(f"v{annee}{c}", {**fields, 'categorie': c}) for c in (1,2)]
 def grimpeurTranslation(row):
@@ -172,10 +174,16 @@ class Command(BaseCommand):
                         k += 1
                         continue
                     o = kls(**fields)
-                    try: o.save()
+                    try:
+                        # On valide le modèle et on l'enregistre sans passer par les signaux Django
+                        # => Donc pas de recalcul des points de vitesse, ni de notifications
+                        o.full_clean()
+                        kls._base_manager.bulk_create([o])
                     except ValidationError:
                         print(kls, fields)
                         raise
+                    if o.id is None:
+                        raise RuntimeError("Dommage, il faut modifier le code pour récupérer manuellement l'id de l'objet créé...")
                     if id in relations[kls]:
                         if type(relations[kls][id]) == list:
                             relations[kls][id].append(o.id)

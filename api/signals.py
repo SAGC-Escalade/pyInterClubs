@@ -10,7 +10,7 @@ from .serializers import *
 
 
 def send_event(channel, event, data):
-    print(event)
+    #print(event)
     sse_send(channel, event, data)
 
 
