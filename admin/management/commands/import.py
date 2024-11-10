@@ -18,7 +18,7 @@ def niveauTranslation(row):
         'nom': nom,
         'categorie': categorie,
         'niveau': niveau,
-        'actif': actif,
+        'actif': False, # Aucune voie de la base historique n'est utilisable
         'genre': Genre.mixte,
     }
     return [(id, fields)]
@@ -35,7 +35,7 @@ def niveauVitesseTranslation(row):
         'actif': annee >= 2019,
         'genre': Genre.mixte,
     }
-    return [(f"v{annee}{c}", {**fields, 'categorie': c}) for c in (1,2)]
+    return [(f"v{annee}", {**fields, 'categorie': Categorie.mixte})]
 def grimpeurTranslation(row):
     id, idclub, *row = row
     fields = {'club': Club.objects.get(pk=relations[Club][idclub])}
@@ -101,7 +101,7 @@ def performanceTranslation(row):
         ret.append((id, dict(score=score, voie=voie, etat=etat, points=points)))
     # Traitement de la vitesse
     annee = min(2019,score.equipe.rencontre.saison)
-    voie = Voie.objects.get(pk=relations[Voie][f"v{annee}{score.equipe.rencontre.categorie}"])
+    voie = Voie.objects.get(pk=relations[Voie][f"v{annee}"])
     if   ptsvitesse is None:             etat = 0 # A réaliser (normalement inexistant dans la base de données)
     elif ptsvitesse > (annee==2019)*5+5: etat = 5 # rank <= 5
     elif ptsvitesse > (annee==2019)+1:   etat = 4 # rank <= 25 ou 45 (suivant l'année)
@@ -123,20 +123,17 @@ def rencontreVoieVitesseTranslation(row):
             voies = [1,2,3,4,5,6,7,8,9,10]                            # M1->T7 enfants
             if rencontre.date > date(2019,1,1): voies += [21,22,24]   # Ajout de T8,T9 et T10
             voies += [26,27]                                          # Blocs enfants
-            voies += [f"v{annee}1"]                                   # Vitesse enfants
+            voies += [f"v{annee}"]                                    # Vitesse
         else:
             voies = [11,12,13,14,15,16,17,18,19,20]                   # T1->T10 ados
             if rencontre.date > date(2019,1,1): voies += [23,25]      # Ajout T11 et T12
             voies += [28,29]                                          # Blocs ados
             if rencontre.date > date(2019,9,1):
                 voies = [30,31,32,33,34,35,36,37,38,39,40,41,42,43]   # 2019: nouveau set ados
-            voies += [f"v{annee}2"]                                   # Vitesse ados
+            voies += [f"v{annee}"]                                    # Vitesse
         for idvoie in voies:
             voie = Voie.objects.get(pk=relations[Voie][idvoie])
             ret.append((id, dict(rencontre=rencontre, voie=voie)))
-        # Vitesse
-        #voie = Voie.objects.get(pk=relations[Voie][f"v{annee}"])
-        #ret.append((id, dict(rencontre=rencontre, voie=voie)))
     return ret
 
 TRANSLATIONS = [

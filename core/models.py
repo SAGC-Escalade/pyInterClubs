@@ -35,6 +35,7 @@ class Categorie(models.IntegerChoices):
     __empty__   = 'Sélectionnez la catégorie'
     enfants     = 1
     adolescents = 2
+    mixte       = 3
 
 class Genre(models.IntegerChoices):
     __empty__ = 'Sélectionnez le genre'
@@ -82,7 +83,7 @@ class VoieQuerySet(models.QuerySet):
     def vitesses(self):
         return self.filter(type=TypeVoie.vitesse)
     def categorie(self, categorie):
-        return self.filter(categorie=categorie)
+        return self.filter(Q(categorie=categorie) | Q(categorie=Categorie.mixte))
     def genre(self, genre):
         return self.filter(Q(genre=genre) | Q(genre=Genre.mixte))
 
