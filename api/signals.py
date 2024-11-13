@@ -10,7 +10,7 @@ from .serializers import *
 
 
 def send_event(channel, event, data):
-    #print(event)
+    print(event, str(data)[:128] + ('...' if len(str(data))>128 else ''))
     sse_send(channel, event, data)
 
 
@@ -198,10 +198,20 @@ class PerformanceNotifier(Notifier):
             self.notify(f"voie/{self.instance.voie_id}/perfs/")
             self.notify(f"voie/{changed['voie_id']}/perfs/", data={'deleted': {'id': self.instance.id}})
 
+        if 'etat' in changed:
+            # NOTE: trouver un compromis avec les abonnements
+            # Si les Perfs s'abonnent globalement à la feuille de juge:
+            #   elles sont MAJ automatiquement mais reste affichées en cas de changement de voie
+            #   (la notification de la perf arrivant trop tôt par rapport à la suppression réelle)
+            # Si les Perfs s'abonnent individuellement sans lien avec la feuille de juge
+            #   elles sont MAJ automatiquement mais ne changent pas de liste (valide/invalide) en cas de changement d'état
+            #   (la notification ne remontant plus à la feuille de juge) 
+            # On prévient le juge manuellement
+            self.notify(f"voie/{self.instance.voie_id}/perfs/")
+
         self.notify(f"perfs/{self.instance.id}/")
 
         if 'points' in changed:
-            #self.notify(f"voie/{self.instance.voie_id}/perfs/")
             self.score.update(changed)
 
 
@@ -211,8 +221,9 @@ def send_notification(sender, instance, created=False, **kwargs):
         notifier = PerformanceNotifier(instance=instance)
         transaction.on_commit(lambda: notifier.create())
     else:
+        changed = instance.tracker.changed()
         notifier = PerformanceNotifier(pk=instance.id, score_id=instance.score_id, equipe_id=instance.score.equipe_id)
-        transaction.on_commit(lambda: notifier.update(instance.tracker.changed()))
+        transaction.on_commit(lambda: notifier.update(changed))
 @receiver(post_delete, sender=Performance, dispatch_uid='SSE_signal')
 def send_notification(sender, instance, created=False, **kwargs):
     notifier = PerformanceNotifier(instance=instance, data={'deleted': {'id': instance.id}})

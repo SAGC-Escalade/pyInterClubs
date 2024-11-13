@@ -27,7 +27,7 @@ const ListPerfItem = forwardRef(({ perf, show, disabled, queryKey }, ref) => {
 
     return (
         <ListGroupItem className={show ? "" : "d-none"} key={perf.id} ref={ref}>
-            <PerfInput id={perf.id} label={label} className="" hideVoie={true} sm={7} disabled={disabled} perf={perf} queryKey={queryKey} />
+            <PerfInput id={perf.id} label={label} className="" hideVoie={true} sm={7} disabled={disabled} perf={perf} />
         </ListGroupItem>
     );
 });
@@ -39,7 +39,7 @@ export default function ListPerf({ voie }) {
 
     const endpoint = `voie/${voie.id}/perfs/`;
     const { data: perfs, status } = useCRUDHandler({ endpoint, initialData: [] });
-    const { action, status: registerStatus, errors } = useCRUDHandler({ endpoint: 'scores/', enabled: false });
+    const { action, status: registerStatus, errors } = useCRUDHandler({ queryKey: `${endpoint}scores`, endpoint: 'scores/', enabled: false });
     useSSEUpdater({ endpoint });
 
     let content, footer;
@@ -174,8 +174,8 @@ export default function ListPerf({ voie }) {
 
 function ListVoiesHeader({ voie, index }) {
     const endpoint = `voie/${voie.id}/perfs/`;
-    const { data: perfs } = useCRUDHandler({ endpoint, initialData: [] });
-    useSSEUpdater({ endpoint });
+    const { data: perfs } = useCRUDHandler({ queryKey:`header/${endpoint}`, endpoint, initialData: [] });
+    useSSEUpdater({ queryKey: `header/${endpoint}`, endpoint });
 
     const valides = perfs.filter((perf) => perf.points !== null);
     const invalides = perfs.filter((perf) => perf.points === null);

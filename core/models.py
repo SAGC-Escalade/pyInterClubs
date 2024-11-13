@@ -446,6 +446,7 @@ class Score(CleanModel):
     # TODO: Il peut être judicieux de revoir ces méthodes.
     # Une fonction déclenché par un signal post_save permettant de remettre les indices dans l'ordre (sans trou)
     # à l'ajout/suppression d'un grimpeur ou à la modification de l'emplacement d'un grimpeur.
+    @transaction.atomic
     def ordre_up(self):
         prev = self.equipe.membres.filter(ordre__lt=self.ordre).in_order().last()
         if prev is None: return
@@ -453,6 +454,7 @@ class Score(CleanModel):
         self.ordre -= 1
         prev.save()
         self.save()
+    @transaction.atomic
     def ordre_down(self):
         next = self.equipe.membres.filter(ordre__gt=self.ordre).in_order().first()
         if next is None: return
@@ -460,6 +462,7 @@ class Score(CleanModel):
         self.ordre += 1
         next.save()
         self.save()
+    @transaction.atomic
     def groupe(self, groupe):
         if self.pk is None or self.equipe_id is None or self.equipe.rencontre_id is None: return
         # Set des paramètres de la rencontre
@@ -476,8 +479,6 @@ class Score(CleanModel):
         perfs = list(self.performances.filter(Q(voie__type=TypeVoie.diff)|Q(voie=None)))
         for p,v in zip(perfs, voies):
             p.voie = v
-            # TODO: Faire un update_bulk ou save_bulk pour éviter les notifications en cascade
-            # Et appeler les notifications manuellement (3 perfs + 1 score + 1 equipe)
             p.save()
 
 

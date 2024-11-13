@@ -1,5 +1,6 @@
 from functools import wraps
 from django.core.exceptions import ValidationError as DjangoValidationError, NON_FIELD_ERRORS as DJANGO_NON_FIELD_ERRORS
+from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import as_serializer_error
 from rest_framework.settings import api_settings
@@ -52,11 +53,11 @@ class DjangoModelViewSet(WithRencontreRequiredMixin, viewsets.ModelViewSet):
 
     @handle_django_errors
     def perform_update(self, serializer):
-        super().perform_create(serializer)
+        super().perform_update(serializer)
 
     @handle_django_errors
     def perform_destroy(self, instance):
-        super().perform_create(serializer)
+        super().perform_destroy(instance)
 
 
 #######################################################################
@@ -164,11 +165,14 @@ class ScoreViewSet(DjangoModelViewSet):
         return Response204()
 
     @action(detail=True, url_path=r'groupe', methods=['POST']) #, permission_classes=[])
+    @transaction.atomic
+    @handle_django_errors
     def set_groupe(self, request, pk=None):
         if pk is None: return Response({'no_field_errors': ["no score provided"]}, status=status.HTTP_400_BAD_REQUEST)
         score = self.get_object()
         score.groupe(self.request.data.get('id'))
-        return Response(ScoreSerializer(score, read_only=True).data)
+        score.save() # Permet de forcer la notification pour le score
+        return Response204()
 
     @action(detail=True, methods=['POST'])
     @handle_django_errors

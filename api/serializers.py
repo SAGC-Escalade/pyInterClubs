@@ -1,7 +1,7 @@
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
-
 from rest_framework import serializers
+from django.db import transaction
 
 from django_eventstream import send_event
 from itertools import groupby
@@ -222,6 +222,7 @@ class ScoreSerializer(SSESerializer):
             ret['points'] = sum(p.points for p in instance.performances.all() if p.points)
         return ret
 
+    @transaction.atomic
     def create(self, validated_data):
         if not 'ordre' in validated_data:
             # On cherche le premier ordre libre
