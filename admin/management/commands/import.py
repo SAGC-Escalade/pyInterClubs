@@ -46,6 +46,7 @@ def grimpeurTranslation(row):
 def rencontreTranslation(row):
     id, idclub, date, saison = row
     #saison = Saison.objects.get(pk=relations[Saison][idsaison])
+    date = date.split(' ')[0]
     fields = {
         'saison': saison,
         'club': Club.objects.get(pk=relations[Club][idclub]),
@@ -74,7 +75,7 @@ def scoreTranslation(row):
     fields = {
         'equipe': equipe,
         'grimpeur': Grimpeur.objects.get(pk=relations[Grimpeur][idgrimpeur]),
-        'clubPreteur': Club.objects.get(pk=relations[Club][idclubpreteur]) if idclubpreteur != None else None,
+        'clubPreteur': Club.objects.get(pk=relations[Club][idclubpreteur]) if not idclubpreteur in (None, 0) else None,
         'ordre': ordre + offset,
     }
     return [(id, fields)]
@@ -86,7 +87,7 @@ def performanceTranslation(row):
     ret = []
     # Traitement des bloc et des voies
     for idvoie,etat in perf:
-        if idvoie == 44 or idvoie is None:
+        if idvoie == 44 or idvoie in (None, 0):
             ret.append((None, False))
             continue
         voie = Voie.objects.get(pk=relations[Voie][idvoie])
