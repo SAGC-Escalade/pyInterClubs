@@ -70,7 +70,7 @@ const Score = forwardRef(({ id, score, queryKey }, ref) => {
                                         <HorizontalFormGroup label="Groupe">
                                             <VoieInput name="groupe" value={score.groupe}
                                                 choices={rencontre.voies.filter((v) => v.type == 2).slice(0, -2)}
-                                                onChange={(ev) => action('groupe/', { 'id': parseInt(ev.target.value) })}
+                                                onChange={(ev) => action('groupe', { 'id': parseInt(ev.target.value) })}
                                             >
                                                 {(voie, index) => `Groupe ${index+1} (${voie.nom}/${voie.niveau}, ...)`}
                                             </VoieInput>
@@ -87,8 +87,8 @@ const Score = forwardRef(({ id, score, queryKey }, ref) => {
                                     <HorizontalFormGroup label="Actions">
                                         <ButtonToolbar>
                                             <ButtonGroup className={"me-3" + (errors?.ordre ? " is-invalid" : "")}>
-                                                <Button onClick={() => action("ordre/up/")} disabled={!!queryKey}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
-                                                <Button onClick={() => action("ordre/down/")} disabled={!!queryKey}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
+                                                <Button onClick={() => action("ordre/up")} disabled={!!queryKey}><i className="fa-solid fa-angle-up fa-fw me-2"></i>Monter</Button>
+                                                <Button onClick={() => action("ordre/down")} disabled={!!queryKey}><i className="fa-solid fa-angle-down fa-fw me-2"></i>Descendre</Button>
                                             </ButtonGroup>
                                             <ButtonGroup>
                                                 <Button variant="danger" onClick={() => action('delete')}>
