@@ -188,6 +188,7 @@ export const SSEProvider = ({ uri = '/events/', children }) => {
         eventSourceRef.current = new EventSource(uri, { withCredentials: true });
         eventSourceRef.current.onerror = () => {
             console.error('Erreur de connexion avec le canal SSE...');
+            Toast(1, "bg-danger", "Perte de la connexion au serveur");
         };
     }
 
@@ -210,7 +211,6 @@ export const SSEProvider = ({ uri = '/events/', children }) => {
             subscriptions.current[endpoint] = [];
         }
         if (!subscriptions.current[endpoint].includes(callback)) {
-            //console.log(`subscribe ${endpoint}`);
             eventSourceRef.current.addEventListener(endpoint, callback);
             subscriptions.current[endpoint].push(callback);
         }
@@ -219,7 +219,6 @@ export const SSEProvider = ({ uri = '/events/', children }) => {
     // Désabonnement d'un endpoint spécifique
     const unsubscribe = (endpoint, callback) => {
         if (subscriptions.current[endpoint].includes(callback)) {
-            //console.log(`unsubscribe ${endpoint}`);
             eventSourceRef.current.removeEventListener(endpoint, callback);
             subscriptions.current[endpoint] = subscriptions.current[endpoint].filter(fn => fn !== callback);
         }
@@ -264,7 +263,6 @@ export function useSSEUpdater({ queryKey, endpoint, debounceTime = 0, enabled = 
     // Ainsi, l'utilisateur à le choix de la nomenclature des endpoints. Il devra mentionner l'endpoint
     // de la collection afin que les requêtes et les data soient correctements mises à jour.
     const handleSSEMessage = useCallback((event) => {
-        //console.log("receive", queryKey, event);
         const newData = event.data ? JSON.parse(event.data) : null;
         if (newData) {
             if (debounceTime > 0) {
@@ -282,11 +280,9 @@ export function useSSEUpdater({ queryKey, endpoint, debounceTime = 0, enabled = 
 
     useEffect(() => {
         if (enabled) {
-            //console.log('subscribe', endpoint);
             subscribe(endpoint, handleSSEMessage);
 
             return () => {
-                //console.log('unsubscribe', endpoint);
                 unsubscribe(endpoint, handleSSEMessage);
             };
         }
