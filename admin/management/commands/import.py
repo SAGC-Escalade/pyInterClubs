@@ -44,18 +44,17 @@ def grimpeurTranslation(row):
     fields['prenom'] = fields['prenom'].capitalize()
     return [(id, fields)]
 def rencontreTranslation(row):
-    id, idclub, date, saison = row
-    #saison = Saison.objects.get(pk=relations[Saison][idsaison])
+    id, idclub, date, annee = row
     date = date.split(' ')[0]
     fields = {
-        'saison': saison,
+        'saison': annee + 1,
         'club': Club.objects.get(pk=relations[Club][idclub]),
         'date': date,
         'nbBloc': 2,
         'nbVitesse': 1,
         'voiesReutilisables': False,
     }
-    vieuxReglement = saison <= 2018
+    vieuxReglement = annee <= 2018
     return [
         (id, dict(**fields, categorie=Categorie.enfants, nbDiff=3, voiesGroupees=True)),
         (id, dict(**fields, categorie=Categorie.adolescents, nbDiff=3 if vieuxReglement else 4, voiesGroupees=vieuxReglement))
@@ -101,7 +100,7 @@ def performanceTranslation(row):
         etat = list(voie.zones.keys()).index(etat)
         ret.append((id, dict(score=score, voie=voie, etat=etat, points=points)))
     # Traitement de la vitesse
-    annee = min(2019,score.equipe.rencontre.saison)
+    annee = min(2020,score.equipe.rencontre.saison) - 1
     voie = Voie.objects.get(pk=relations[Voie][f"v{annee}"])
     if   ptsvitesse is None:             etat = 0 # A réaliser (normalement inexistant dans la base de données)
     elif ptsvitesse > (annee==2019)*5+5: etat = 5 # rank <= 5
@@ -117,7 +116,7 @@ def rencontreVoieVitesseTranslation(row):
     rencontres = Rencontre.objects.filter(pk__in=relations[Rencontre][id])
     ret = []
     for rencontre in rencontres:
-        annee = min(2019, rencontre.saison)
+        annee = min(2020, rencontre.saison) - 1
         # Les ID des voies correspondantes aux différentes rencontres sont inscrits en dur...
         # Je n'aime pas ça mais je n'ai pas le choix.
         if rencontre.categorie == Categorie.enfants:

@@ -95,11 +95,11 @@ class GrimpeurQuerySet(models.QuerySet):
 
     def enfants(self, saison):
         amin, amax = 8, 13  # Ages correspondants à la catégorie 'Enfant'
-        amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
+        amax, amin= map(lambda x: saison - x, (amin, amax))
         return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
     def adolescents(self, saison):
         amin, amax = 13, 19  # Ages correspondants à la catégorie 'Adolescent'
-        amax, amin= map(lambda x: saison + 1 - x, (amin, amax))
+        amax, amin= map(lambda x: saison - x, (amin, amax))
         return self.filter(Q(anneeNaissance__gte=amin) & Q(anneeNaissance__lte=amax))
 
     def global_filter(self, *, club=None):
