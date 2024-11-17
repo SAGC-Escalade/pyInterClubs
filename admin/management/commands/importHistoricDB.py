@@ -151,10 +151,10 @@ relations = {k:{} for k,_,_ in TRANSLATIONS}
 
 
 class Command(BaseCommand):
-    help = "Import a POCInterclub database"
+    help = "Importe la base de données de POCInterClubs"
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+        parser.add_argument('filename', type=str, help="Chemin vers le fichier CSV à importer")
 
     def handle(self, *args, **options):
         if not 'filename' in options:
