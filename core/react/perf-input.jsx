@@ -57,24 +57,26 @@ export function Vitesse({ value, onChange, disabled }) {
 
     const [time, setTime] = useState(format(value));
     const inputRef = useRef(null);
-    const timer = useRef(null);
 
-    useRef(() => {
+    useEffect(() => {
         setTime(format(value));
     }, [value]);
 
     const handleChange = (t) => {
         t = format(t);
         setTime(t);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => onChange(format(t)), 500);
+        if (t == 'Chute' | t == 'Abandon' | t == 'A réaliser')
+            onChange(t);
     }
 
     return (
         <>
-            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={time} onChange={(ev) => handleChange(ev.target.value)} disabled={disabled} />
+            <FormControl ref={inputRef} type="text" placeholder={defaultTime} value={time} disabled={disabled}
+                onChange={(ev) => handleChange(ev.target.value)}
+                onKeyDown={(ev) => ev.key === 'Enter' && onChange(time)}
+            />
             <Dropdown as={ButtonGroup} disabled={disabled}>
-                <DropdownToggle split variant="outline-secondary" align="end">
+                <DropdownToggle split variant="outline-secondary" align="end" disabled={disabled}>
                     <span className="visually-hidden">Cas particuliers</span>
                 </DropdownToggle>
                 <DropdownMenu align="end">

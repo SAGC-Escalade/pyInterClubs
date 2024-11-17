@@ -357,7 +357,6 @@ class Rencontre(CleanModel):
 
     @transaction.atomic
     def proceed_speed_points(self, perf=None):
-        # TODO: Trouver comment ne pas appeller ce calcul à chaque ajout d'une performance lors de l'import de l'ancienne base.
         # TODO: Simplifier cette méthode pour la rendre plus lisible
         # (certaines actions peuvent être dispatché dans d'autres modèles comme "Evaluation des conditions et points de la voie" => Perf.get_points())
         sexe = (Genre.homme, Genre.femme)
@@ -379,6 +378,7 @@ class Rencontre(CleanModel):
                 # Il faut corriger cela... (peut-être lors de l'import)
                 if temps == timedelta(minutes=-2): temps = 'Abandon'
                 if temps == timedelta(minutes=-1): temps = 'Chute'
+                if temps == None:                  temps = 'A réaliser' # On ne traite jamais les temps==None
                 group = list(group)
                 for perf in group:
                     # Evaluation des conditions de la voie
@@ -516,13 +516,21 @@ class Performance(CleanModel):
     def save(self, *args, **kwargs):
         # TODO: Il peut être bénéfique de recalculer les points dans un signal post_save
         if self.voie_id != None:
-            if self.etat is None:
-                self.points = None
-            elif self.etat is not None and self.etat in range(len(self.voie.zones)):
-                points = self.voie.points(self.etat)
-                if type(points) == str: pass
-                else:                   self.points = points
-                # TODO: Si les points sont une str, il faut les calculer...
+            if self.tracker.has_changed('etat'):
+                if self.etat is None:
+                    self.points = None
+                elif self.etat is not None and self.etat in range(len(self.voie.zones)):
+                    points = self.voie.points(self.etat)
+                    if type(points) == str: pass
+                    else:                   self.points = points
+                    # TODO: Si les points sont une str, il faut les calculer...
+            elif self.tracker.has_changed('temps'):
+                if self.temps is None:
+                    self.points = None
+                    self.etat = next(v for k,v in self.voie.zones.items() if v is None)
+                else:
+                    # Il faut laisser le calcul à la rencontre
+                    pass
         return super().save(*args, **kwargs)
 
     def clean(self):
