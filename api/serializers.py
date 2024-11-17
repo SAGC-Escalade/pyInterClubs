@@ -7,6 +7,7 @@ from django_eventstream import send_event
 from itertools import groupby
 from operator import itemgetter
 import re
+import traceback
 
 from core.models import *
 
@@ -182,6 +183,7 @@ class ScoreSerializer(SSESerializer):
             'grimpeur', 'clubPreteur',
             'points', 'valide',
             'performances', 'groupe',
+            'started',
         ]
 
     url_list = 'scores'
@@ -193,7 +195,8 @@ class ScoreSerializer(SSESerializer):
     clubPreteur = serializers.PrimaryKeyRelatedField(queryset=Club.objects.all(), required=False, allow_null=True)
     performances = serializers.SerializerMethodField()
     groupe = serializers.SerializerMethodField()
-
+    started = serializers.SerializerMethodField()
+    
     def get_performances(self, instance):
         perfs = instance.performances.all() #.values('id', 'voie__type') Inutile, tout est déjà chargé
         return {k: [v.id for v in perfs if TypeVoie(getattr(v.voie, 'type', None) or TypeVoie.diff).label == k] for k in ('Bloc', 'Difficulté', 'Vitesse')}
@@ -209,6 +212,12 @@ class ScoreSerializer(SSESerializer):
         diffs = min(diffs, key=self._cut_nom, default=Empty)
         if diffs: return diffs.id
         return None
+
+    def get_started(self, instance):
+        request = self.context.get('request')
+        if request and request.user.is_superuser:
+            return False
+        return any(p.points != None for p in instance.performances.all() if getattr(p.voie, 'type', None) == TypeVoie.diff)
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
