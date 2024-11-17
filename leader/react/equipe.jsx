@@ -42,14 +42,17 @@ export default function Equipe({ id }) {
     const { data: equipe, errors, status, action, resetErrors } = useCRUDHandler({ endpoint });
     useSSEUpdater({ endpoint });
 
-    if (equipe === null) return (
-        <div className="hstack gap-1">
-            <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Chargement...</span>
+    if (equipe === null) {
+        window.location.href = "/";
+        return (
+            <div className="hstack gap-1">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Chargement...</span>
+                </div>
+                <span>Chargement...</span>
             </div>
-            <span>Chargement...</span>
-        </div>
-    );
+        );
+    }
 
     const disabledAddButton = !(equipe?.membres.length < 8);
     const showAddCollapsible = (showAdd || (equipe?.membres.length == 0)) && !disabledAddButton;

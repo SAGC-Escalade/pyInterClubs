@@ -10,7 +10,7 @@ from .serializers import *
 
 
 def send_event(channel, event, data):
-    print(event, str(data)[:128] + ('...' if len(str(data))>128 else ''))
+    #print(event, str(data)[:128] + ('...' if len(str(data))>128 else ''))
     sse_send(channel, event, data)
 
 
@@ -80,7 +80,7 @@ class EquipeNotifier(Notifier):
     def delete(self):
         self.notify(f"club/{self.instance.club_id}/equipes/")
         self.notify(f"equipes/")
-        #self.notify(f"equipes/{self.instance.id}/")
+        self.notify(f"equipes/{self.instance.id}/")
 
     def update(self, changed):
         #self.notify(f"club/{self.instance.club_id}/equipes/")
@@ -131,7 +131,7 @@ class ScoreNotifier(Notifier):
     def delete(self):
         self.notify(f"club/{self.instance.equipe.club_id}/scores/")
         self.notify(f"scores/")
-        #self.notify(f"scores/{self.instance.id}/")
+        #self.notify(f"scores/{self.instance.id}/") # On affiche jamais un score seul => Inutile de les notifier
         self.equipe.update({'score.deleted': True})
 
     def update(self, changed):
@@ -213,6 +213,7 @@ class PerformanceNotifier(Notifier):
 
         if 'points' in changed:
             self.score.update(changed)
+            #self.notify(f"voie/{self.instance.voie_id}/perfs/")
 
 
 @receiver(post_save, sender=Performance, dispatch_uid='SSE_signal')
