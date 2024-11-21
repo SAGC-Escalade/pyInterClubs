@@ -43,6 +43,7 @@
     <Compile Include="admin\forms.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="admin\management\commands\addVoies.py" />
     <Compile Include="admin\management\commands\importClimbers.py" />
     <Compile Include="admin\management\commands\importHistoricDB.py" />
     <Compile Include="admin\middleware.py" />
@@ -348,6 +349,7 @@
 	  Django_migrate_fake;
 	  Django_import_DB;
 	  Django_import_climbers;
+	  Django_add_voies;
 	</PythonCommands>
   </PropertyGroup>
   <Target Name="Django_migrate_fake" Label="Django - migrate --fake-initial" Returns="@(Commands)">
@@ -362,6 +364,11 @@
   </Target>
   <Target Name="Django_import_climbers" Label="Django - importClimbers climbers.csv" Returns="@(Commands)">
     <CreatePythonCommandItem TargetType="script" Target="manage.py" Arguments="importClimbers climbers.csv -f" WorkingDirectory="$(MSBuildProjectDirectory)" ExecuteIn="output">
+      <Output TaskParameter="Command" ItemName="Commands" />
+    </CreatePythonCommandItem>
+  </Target>
+  <Target Name="Django_add_voies" Label="Django - add voies" Returns="@(Commands)">
+    <CreatePythonCommandItem TargetType="script" Target="manage.py" Arguments="addVoies" WorkingDirectory="$(MSBuildProjectDirectory)" ExecuteIn="output">
       <Output TaskParameter="Command" ItemName="Commands" />
     </CreatePythonCommandItem>
   </Target>
