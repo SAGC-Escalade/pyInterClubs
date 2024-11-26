@@ -182,9 +182,9 @@ class EquipeQuerySet(models.QuerySet):
 
 class ScoreQuerySet(models.QuerySet):
     def hommes(self):
-        return self.filter(Grimpeur__Sexe=Genre.Homme)
+        return self.filter(grimpeur__sexe=Genre.homme)
     def femmes(self):
-        return self.filter(Grimpeur__Sexe=Genre.Femme)
+        return self.filter(grimpeur__sexe=Genre.femme)
 
     def in_order(self):
         return self.order_by('ordre')

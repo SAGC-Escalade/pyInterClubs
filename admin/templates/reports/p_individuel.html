@@ -1,0 +1,39 @@
+<h1>Classement individuel</h1>
+<h2>Hommes</h2>
+<table>
+    <thead>
+        <tr>
+            <td>#</td>
+            <td>Nom du grimpeur</td>
+            <td>Points</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in hommes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ s.grimpeur }}</td>
+                <td>{{ s.points }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Femmes</h2>
+<table>
+    <thead>
+        <tr>
+            <td>#</td>
+            <td>Nom de la grimpeuse</td>
+            <td>Points</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in femmes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ s.grimpeur }}</td>
+                <td>{{ s.points }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -130,6 +130,9 @@
     <Content Include="admin\templates\admin\delete.html" />
     <Content Include="admin\templates\admin\resultats.html" />
     <Content Include="admin\templates\admin\select.html" />
+    <Content Include="admin\templates\reports\p_equipe.html" />
+    <Content Include="admin\templates\reports\p_individuel.html" />
+    <Content Include="admin\templates\reports\p_inscrits.html" />
     <Content Include="admin\templates\reports\ranking.html" />
     <Content Include="admin\templates\widgets\rencontre-option.html">
       <SubType>Code</SubType>

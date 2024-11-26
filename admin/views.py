@@ -4,7 +4,7 @@ from django.views.generic.detail import SingleObjectMixin, DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models.functions import MD5, Concat
-from django.db.models import Value as V
+from django.db.models import Value as V, Prefetch
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -33,7 +33,7 @@ class PDFTemplateMixin:
     """Ce mixin permet de rendre un fichier pdf en lieu et place du document HTML"""
     pdf_filename = 'document.pdf'   # Nom du document pdf téléchargé
     pdf_template_name = None        # Utilise le template HTML par défaut
-    always_render_pdf = True
+    always_render_pdf = False
 
     def get_pdf_template_name(self):
         if self.pdf_template_name:
@@ -55,7 +55,7 @@ class PDFTemplateMixin:
             self.request.META.get('HTTP_ACCEPT') == 'application/pdf' or \
             self.request.GET.get('format') == 'pdf':
             return self.render_to_pdf(context, **kwargs)
-        super().render_to_response(context, **kwargs)
+        return super().render_to_response(context, **kwargs)
 
 
 class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
@@ -185,19 +185,50 @@ class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
 
         return super().form_valid(form)
 
-class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, ListView):
-    model = Score
+class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, DetailView):
+    model = Rencontre
     template_name = 'reports/ranking.html'
     pdf_filename = 'ranking.pdf'
+    always_render_pdf = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontre = self.object
+        # TODO: Vérifier dans les logs que les requêtes sont optimisées
+
+        equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
+        inscrits = [membre for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+
+        hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
+        hommes = sorted(hommes, key=lambda s: s.points, reverse=True)
+        femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
+        femmes = sorted(femmes, key=lambda s: s.points, reverse=True)
+
+        inscrits = [s.grimpeur for s in inscrits]
+        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+
+        context.update({
+            'equipes': equipes,
+            'hommes': hommes,
+            'femmes': femmes,
+            'inscrits': inscrits,
+        })
+
+        return context
 
     def get_queryset(self):
         interclub = self.request.interclub
         if not interclub.rencontre: return Score.objects.none()
-        rencontre = Rencontre.objects.get(pk=interclub.rencontre)
-        queryset = Score.objects.with_related() \
-            .filter(equipe__rencontre__date=rencontre.date) \
-            .with_categorie() \
-            .with_valide_and_points() \
-            .order_by('-points')
+        queryset = Rencontre.objects.prefetch_related(
+                Prefetch('equipes', queryset=Equipe.objects.with_valide_and_points().prefetch_related(
+                        Prefetch('membres', queryset=Score.objects.with_valide_and_points().prefetch_related(
+                                Prefetch('performances', queryset=Performance.objects.with_related()),
+                            ).select_related('grimpeur__club')
+                        )
+                    ).select_related('club')
+                ),
+                'voies'
+            ).select_related('club').with_counts().with_valide()
 
         return queryset

@@ -1,0 +1,46 @@
+<h1>Classement par équipes</h1>
+<table>
+    {% for e in equipes %}
+        <thead>
+            <tr colspan="9">
+                <td>
+                    {{ forloop.counter }} : {{ e }}
+                </td>
+            </tr>
+        </thead>
+        <thead>
+            <tr>
+                <td></td>
+                <td>Bloc 1</td>
+                <td>Bloc 2</td>
+                <td>Voie 1</td>
+                <td>Voie 2</td>
+                <td>Voie 3</td>
+                <td>Voie 4</td>
+                <td>Voie 5</td>
+                <td>Voie 6</td>
+                <td>Vitesse</td>
+                <td>Points</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in e.membres.all %}
+                <tr>
+                    <td>{{ s.grimpeur }}</td>
+                    {% for p in s.performances.all %}
+                    <td>
+                        {% if p.voie.type == 2 %}{{ p.voie.nom|slice:":2" }} - {% endif %}
+                        {{ p.points }}pt{{ p.points|pluralize }}
+                        {% if p.temps %} - {{ p.temps }}{% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>{{ s.points }}pt{{ s.points|pluralize }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="8">Total</td>
+                <td>{{ e.points }}</td>
+            </tr>
+        </tbody>
+    {% endfor %}
+</table>
