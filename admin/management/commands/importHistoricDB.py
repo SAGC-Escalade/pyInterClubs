@@ -31,7 +31,7 @@ def niveauVitesseTranslation(row):
         'zones': zones2018 if annee==2018 else zones,
         'type': TypeVoie.vitesse,
         'nom': 'Vitesse',
-        'niveau': f"{annee}",
+        'niveau': f"{annee+1}",
         'actif': annee >= 2019,
         'genre': Genre.mixte,
     }

@@ -11,11 +11,11 @@ voies = [
             'categorie': Categorie.enfants, 'genre': genre,
             'zones': {"A réaliser": None, "Abandon": 0, "Chute": 1, "{rank}>44": 2, "{rank}>5": "11-{rank}//5", "{rank}<=5": "15-{rank}"},
         }
-        for genre in (Genre.homme, Genre.femme)
+        for genre in (Genre.femme, Genre.homme)
     ],
     *[
         {
-            'type': TypeVoie.vitesse, 'nom': 'Vitesse', 'niveau': "Homme" if genre == Genre.homme else "Femme",
+            'type': TypeVoie.vitesse, 'nom': 'Vitesse', 'niveau': "Homme" if genre==Genre.homme else "Femme" if genre==Genre.femme else "2025",
             'categorie': Categorie.adolescents, 'genre': genre,
             'zones': {"A réaliser": None, "Abandon": 0, "Chute": 1, "{rank}>50": 10, "{rank}<=50": "60-{rank}"},
         }
@@ -30,7 +30,7 @@ voies = [
     {   'type': TypeVoie.bloc, 'nom': 'Bloc', 'niveau': '1',
         'categorie': Categorie.adolescents, 'zones': {"A réaliser": None, "Chute": 0, "Zone 1": 10, "Top": 30} },
     {   'type': TypeVoie.bloc, 'nom': 'Bloc', 'niveau': '2',
-        'categorie': Categorie.adolescents, 'zones': {"A réaliser": None, "Chute": 0, "Zone 2": 20, "Zone 1": 40, "Top": 60} },
+        'categorie': Categorie.adolescents, 'zones': {"A réaliser": None, "Chute": 0, "Zone 2": 40, "Zone 1": 20, "Top": 60} },
 
     # Voies de difficulté pour les enfants
     *[
@@ -45,16 +45,47 @@ voies = [
             'type': TypeVoie.diff, 'nom': f'T{i+1}', 'niveau': niveau,
             'categorie': Categorie.enfants, 'zones': {"A réaliser": None, "Chute": 0, "Zone": 3 + i//2 + i//9, "Top": i+5}
         }
-        for i,niveau in enumerate(['4c', '5a', '5b', '5c', '6a', '6b', '6c', '7a', '7b', '7c'])
+        for i,niveau in [
+            (0, '4c'),
+            (1, '5a'),
+            (2, '5b'),
+            (3, '5c'),
+            (4, '6a'),
+            (5, '6b'),
+            (6, '6c'),
+            (7, '7a'),
+            (8, '7b'),
+            (9, '7c'),
+            # Voies doublées à Cestas
+            (2, '5b'),
+            (3, '5c'),
+        ]
     ],
             
     # Voies de difficulté pour les adolescents
     *[
         {
             'type': TypeVoie.diff, 'nom': f'T{i+1}', 'niveau': niveau,
-            'categorie': Categorie.adolescents, 'zones': {"A réaliser": None, "Chute": 0, "Zone 2": 2*i+1, "Zone 1": 2*i+2, "Top": 2*i+4}
+            'categorie': Categorie.adolescents, 'zones': {"A réaliser": None, "Chute": 0, "Zone 2": 2*i+2, "Zone 1": 2*i+1, "Top": 2*i+4}
         }
-        for i,niveau in enumerate(['4c', '5a', '5b', '5c', '6a', '6b', '6c', '7a', '7b', '7c'])
+        for i,niveau in [
+            (0, '4c'),
+            (1, '5a'),
+            (2, '5b'),
+            (3, '5c'),
+            (4, '6a'),
+            (5, '6b'),
+            (6, '6c'),
+            (7, '7a'),
+            (8, '7b'),
+            (9, '7c'),
+            # Voies doublées à Cestas
+            (0, '4c'),
+            (1, '5a'),
+            (2, '5b'),
+            (3, '5c'),
+            (4, '6a'),
+        ]
     ],
 ]
 
