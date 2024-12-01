@@ -84,7 +84,7 @@ export default function ListPerf({ voie }) {
                         <FlipMove typeName="ul" className="list-group list-group-flush rounded-bottom" maintainContainerHeight={true}>
                             {valides.map(function (perf, index) {
                                 const show = !(exclude && `${perf.grimpeur?.nom} ${perf.grimpeur?.prenom} ${perf.grimpeur?.club_nom}`.search(new RegExp(exclude, "i")) == -1);
-                                return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={true} queryKey={endpoint} />);
+                                return (<ListPerfItem key={perf.id} perf={perf} show={show} disabled={false} queryKey={endpoint} />);
                             })}
                         </FlipMove>
                     </Accordion.Collapse>
