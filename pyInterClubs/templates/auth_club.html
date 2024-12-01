@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Authentification{% endblock %}
+
+{% block nav-items %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="card-body p-0">
+                    {% bootstrap_form form layout='horizontal' %}
+                    {{ form }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

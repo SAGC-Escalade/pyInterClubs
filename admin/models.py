@@ -62,7 +62,7 @@ class Juge(Profil):
     voies = models.ManyToManyField('core.Voie', through='core.RencontreVoie', related_name='juges')
 
     def get_token(self, voies):
-        token = f"{self.rencontre}:" + ":".join(map(str, voies))
+        token = f"{self.rencontre}:" + ":".join(sorted(map(str, voies)))
         return hashlib.md5(token.encode()).hexdigest()
 
     @property
