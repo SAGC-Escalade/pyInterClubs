@@ -50,6 +50,12 @@
     <Compile Include="admin\migrations\0001_initial.py" />
     <Compile Include="admin\migrations\__init__.py" />
     <Compile Include="admin\models.py" />
+    <Compile Include="admin\templatetags\format.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="admin\templatetags\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="admin\tests.py" />
     <Compile Include="admin\urls.py">
       <SubType>Code</SubType>
@@ -133,6 +139,8 @@
     <Content Include="admin\templates\reports\p_equipe.html" />
     <Content Include="admin\templates\reports\p_individuel.html" />
     <Content Include="admin\templates\reports\p_inscrits.html" />
+    <Content Include="admin\templates\reports\p_medal.html" />
+    <Content Include="admin\templates\reports\p_stats.html" />
     <Content Include="admin\templates\reports\ranking.html" />
     <Content Include="admin\templates\widgets\rencontre-option.html">
       <SubType>Code</SubType>
@@ -233,6 +241,7 @@
     <Content Include="pyInterClubs\static\img\user.png" />
     <Content Include="api\react\observer.jsx" />
     <Content Include="leader\react\score.jsx" />
+    <Content Include="pyInterClubs\templates\auth_club.html" />
     <Content Include="pyInterClubs\templates\base.html" />
     <Content Include="pyInterClubs\templates\p_index.html" />
     <Content Include="pyInterClubs\templates\p_menu.html" />
@@ -246,6 +255,7 @@
     <Folder Include="admin\migrations\" />
     <Folder Include="admin\management\commands\" />
     <Folder Include="admin\management\" />
+    <Folder Include="admin\templatetags\" />
     <Folder Include="admin\react\" />
     <Folder Include="admin\static\" />
     <Folder Include="admin\static\css\" />

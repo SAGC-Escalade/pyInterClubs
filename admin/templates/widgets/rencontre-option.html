@@ -26,9 +26,33 @@
                 <i class="fa-solid fa-play"></i>
             </a>
         {% endif %}
-        <a href="{% url 'rencontre:report' r.id %}" class="btn btn-link btn-sm py-0">
-            <i class="fa-solid fa-file-export"></i>
-        </a>
+        <div class="dropdown">
+            <button class="btn btn-link btn-sm py-0 link-underline-opacity-0" {% if not r.valide %}disabled{% endif %} type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-file-export" data-fa-transform="up-4"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url 'rencontre:report' r.id 'stats' %}" class="dropdown-item" target="_blank">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Statistiques d'utilisation
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'rencontre:report' r.id 'teams' %}" class="dropdown-item" target="_blank">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'rencontre:report' r.id 'ranking' %}" class="dropdown-item" target="_blank">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'rencontre:report-multi' 'registration' %}?date={{ r.date|date:"Y-m-d" }}" class="dropdown-item" target="_blank">
+                        <i class="fa-regular fa-file-pdf me-2"></i> Liste des participants (pour la journée)
+                    </a>
+                </li>
+            </ul>
+        </div>
         <a href="{% url 'rencontre:delete' r.id %}" class="btn btn-link text-danger btn-sm py-0 ms-auto">
             <i class="fa-solid fa-trash"></i>
         </a>

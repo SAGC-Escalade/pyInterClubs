@@ -1,39 +1,34 @@
-<h1>Classement individuel</h1>
-<h2>Hommes</h2>
-<table>
-    <thead>
-        <tr>
-            <td>#</td>
-            <td>Nom du grimpeur</td>
-            <td>Points</td>
-        </tr>
-    </thead>
-    <tbody>
-        {% for s in hommes %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ s.grimpeur }}</td>
-                <td>{{ s.points }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<h2>Femmes</h2>
-<table>
-    <thead>
-        <tr>
-            <td>#</td>
-            <td>Nom de la grimpeuse</td>
-            <td>Points</td>
-        </tr>
-    </thead>
-    <tbody>
-        {% for s in femmes %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ s.grimpeur }}</td>
-                <td>{{ s.points }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<h2>Classement individuel</h2>
+
+<div class="row gx-5">
+    {% for genre,classement in classements %}
+        <div class="col-6">
+            <table class="table table-sm table-borderless caption-top">
+                <caption>Classement {{ genre.label|lower }}s</caption>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom du grimpeur</th>
+                        <th>Club</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top border-2 border-dark">
+                    {% for s in classement %}
+                        <tr>
+                            <td class="hstack">
+                                {{ s.rank }}
+                                {% if s.rank <= 3 %}
+                                    {% include "reports/p_medal.html" with score=s %}
+                                {% endif %}
+                            </td>
+                            <td class="text-nowrap text-truncate pe-0">{{ s.grimpeur }}</td>
+                            <td class="text-muted text-nowrap text-truncate pe-0"><small>{{ s.grimpeur.club.nom }}</small></td>
+                            <td>{{ s.points }}pt{{ s.points|default:1|pluralize }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>

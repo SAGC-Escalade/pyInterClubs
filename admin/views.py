@@ -9,9 +9,10 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
-from xhtml2pdf import pisa
+from django.utils.dateparse import parse_date
 
 from datetime import datetime
+import json
 
 from core.models import Club, Rencontre, Categorie, Voie
 from admin.middleware import WithRencontreRequiredMixin
@@ -28,34 +29,6 @@ class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff
 
-
-class PDFTemplateMixin:
-    """Ce mixin permet de rendre un fichier pdf en lieu et place du document HTML"""
-    pdf_filename = 'document.pdf'   # Nom du document pdf téléchargé
-    pdf_template_name = None        # Utilise le template HTML par défaut
-    always_render_pdf = False
-
-    def get_pdf_template_name(self):
-        if self.pdf_template_name:
-            return self.pdf_template_name
-        return self.template_name
-
-    def render_to_pdf(self, context, **kwargs):
-        template_name = self.get_pdf_template_name()
-        html = get_template(template_name).render(context)
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{self.pdf_filename}"'
-        pisa_status = pisa.CreatePDF(html, dest=response)
-        if pisa_status.err:
-            return HttpResponse('Une erreur est survenue lors de la génération du PDF', status=400)
-        return response
-
-    def render_to_response(self, context, **kwargs):
-        if self.always_render_pdf or \
-            self.request.META.get('HTTP_ACCEPT') == 'application/pdf' or \
-            self.request.GET.get('format') == 'pdf':
-            return self.render_to_pdf(context, **kwargs)
-        return super().render_to_response(context, **kwargs)
 
 
 class ClubQRCodesView(StaffRequiredMixin, WithRencontreRequiredMixin, ListView):
@@ -185,37 +158,23 @@ class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
 
         return super().form_valid(form)
 
-class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, DetailView):
+class RencontreReportViewMixin:
     model = Rencontre
     template_name = 'reports/ranking.html'
-    pdf_filename = 'ranking.pdf'
-    always_render_pdf = True
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        rencontre = self.object
-        # TODO: Vérifier dans les logs que les requêtes sont optimisées
+    @staticmethod
+    def ranking(scores):
+        rank = 1
+        for temps, group in groupby(scores, key=lambda s: s.points):
+            group = list(group)
+            for score in group:
+                score.rank = rank
+            rank += len(group)
+        return scores
 
-        equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
-        inscrits = [membre for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
-
-        hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
-        hommes = sorted(hommes, key=lambda s: s.points, reverse=True)
-        femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
-        femmes = sorted(femmes, key=lambda s: s.points, reverse=True)
-
-        inscrits = [s.grimpeur for s in inscrits]
-        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
-        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
-
-        context.update({
-            'equipes': equipes,
-            'hommes': hommes,
-            'femmes': femmes,
-            'inscrits': inscrits,
-        })
-
-        return context
+    @staticmethod
+    def ranking_vitesse(scores):
+        pass
 
     def get_queryset(self):
         interclub = self.request.interclub
@@ -230,5 +189,85 @@ class RencontreReportView(SuperUserRequiredMixin, PDFTemplateMixin, DetailView):
                 ),
                 'voies'
             ).select_related('club').with_counts().with_valide()
+
+        return queryset
+
+class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontre = self.object
+
+        equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
+        inscrits = [membre for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+
+        hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
+        hommes = self.ranking(sorted(hommes, key=lambda s: s.points, reverse=True))
+        femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
+        femmes = self.ranking(sorted(femmes, key=lambda s: s.points, reverse=True))
+
+        inscrits = [s.grimpeur for s in inscrits]
+        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+
+        stats = {}
+        performances = [perf for equipe in rencontre.equipes.all() for score in equipe.membres.all() for perf in score.performances.all()]
+        for p in performances:
+            if not p.voie in stats: stats[p.voie] = {g:[] for g in Genre}
+            stats[p.voie][p.score.grimpeur.sexe].append(p)
+        stats = [
+            (str(voie), len(stats.get(voie, {Genre.femme:[]})[Genre.femme]), len(stats.get(voie, {Genre.homme:[]})[Genre.homme]))
+            for voie in sorted(rencontre.voies.all(), key=lambda v: v.nom)
+        ]
+
+        context.update({
+            'equipes': equipes,
+            'classements': [(Genre.homme, hommes), (Genre.femme, femmes)],
+            'inscrits': inscrits,
+            'stats': stats,
+            'report': self.kwargs.get('report', 'stats'),
+        })
+
+        return context
+
+class MultiRencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontres = list(self.object_list.all())
+
+        inscrits = [membre for rencontre in rencontres for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+
+        inscrits = list({m.grimpeur_id:m.grimpeur for m in inscrits}.values())
+        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+
+        # TODO: Faire l'export pour la saison complète :
+        #  - Classement individuel (somme des points de la saison pour le grimpeur)
+        #  - Classement par équipe (somme des points de la saison pour l'équipe N)
+        #equipes = sorted([equipe for rencontre in rencontres for equipe in rencontre.equipes.all()], key=lambda o: o.points, reverse=True)
+        #
+        #hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
+        #hommes = self.ranking(sorted(hommes, key=lambda s: s.points, reverse=True))
+        #femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
+        #femmes = self.ranking(sorted(femmes, key=lambda s: s.points, reverse=True))
+        #
+        #inscrits = [s.grimpeur for s in inscrits]
+        #inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        #inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+
+        context.update({
+            'inscrits': inscrits,
+            'report': self.kwargs.get('report', 'stats'),
+        })
+
+        return context
+
+    def get_queryset(self):
+        date = self.request.GET.get('date')
+        if date:
+            date = parse_date(date)
+
+        queryset = super().get_queryset()
+        if date:
+            queryset = queryset.filter(date=date)
 
         return queryset

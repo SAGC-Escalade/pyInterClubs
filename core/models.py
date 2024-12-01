@@ -39,8 +39,8 @@ class Categorie(models.IntegerChoices):
 
 class Genre(models.IntegerChoices):
     __empty__ = 'Sélectionnez le genre'
-    femme     = 1, 'Fille'
-    homme     = 2, 'Garçon'
+    femme     = 1, 'Femme'
+    homme     = 2, 'Homme'
     mixte     = 3
 
 class TypeVoie(models.IntegerChoices):
@@ -290,6 +290,9 @@ class Voie(CleanModel):
     def points(self, index):
         return list(self.zones.values())[index]
 
+    def etat(self, index):
+        return list(self.zones.keys())[index]
+
 
 class Club(CleanModel):
     class Meta:
@@ -374,8 +377,6 @@ class Rencontre(CleanModel):
             ).prefetch_related('voie').prefetch_related('score').order_by('temps')
             rank = 0
             for temps, group in groupby(classement, key=lambda p: p.temps):
-                # TODO: Les temps C# négatifs de l'abandon et de la chute ne correspondent pas aux temps Python
-                # Il faut corriger cela... (peut-être lors de l'import)
                 if temps == timedelta(minutes=-2): temps = 'Abandon'
                 if temps == timedelta(minutes=-1): temps = 'Chute'
                 if temps == None:                  temps = 'A réaliser' # On ne traite jamais les temps==None
@@ -540,6 +541,10 @@ class Performance(CleanModel):
             if self.score.equipe_id and self.score.equipe.rencontre_id and not (self.score.equipe.rencontre.voiesReutilisables or self.score.equipe.rencontre.voiesGroupees):
                 if self.score.performances.filter(~Q(id=self.id) & Q(voie=self.voie)).count():
                     raise ValidationError({'voie': ["Les voies ne sont faisables qu'une seule fois"]})
+
+    def etat__label(self):
+        if self.voie_id != None and self.etat != None and self.etat in range(len(self.voie.zones)):
+            return self.voie.etat(self.etat)
 
 
 class RencontreVoie(CleanModel):

@@ -1,7 +1,7 @@
-<h1>Liste des inscrits par club</h1>
+<h2>Liste des inscrits par club</h2>
 {% for club,grimpeurs in inscrits %}
 <div>
-    <h2>{{ club }} - {{ grimpeurs|length }} inscrit{{ grimpeurs|length|pluralize }}</h2>
+    <h4>{{ club }} - {{ grimpeurs|length }} inscrit{{ grimpeurs|length|pluralize }}</h4>
     <p>{% for g in grimpeurs %}{{ g }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 </div>
 {% endfor %}

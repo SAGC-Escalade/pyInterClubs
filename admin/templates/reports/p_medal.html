@@ -1,0 +1,9 @@
+<i class="fa-layers fa-fw fa-lg me-3">
+    <i class="fa-solid fa-medal sexe {% if score.grimpeur.sexe == 1 %}femme{% elif score.grimpeur.sexe == 2 %}homme{% endif %}"></i>
+    <i class="fa-solid fa-circle {% if score.rank == 1 %}gold{% elif score.rank == 2 %}silver{% else %}bronze{% endif %}"
+       data-fa-transform="shrink-4 down-2">
+    ></i>
+    <i class="fa-solid fa-{{ score.rank }} text-white"
+       data-fa-transform="shrink-8 down-2">
+    ></i>
+</i>

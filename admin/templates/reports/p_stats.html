@@ -1,0 +1,84 @@
+{% load format %}
+
+<h2>Statistiques d'utilisation des voies</h2>
+
+<div class="no-page-break">
+    <canvas id="voiesChart" width="800" height="400"></canvas>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('voiesChart').getContext('2d');
+
+        // Données injectées depuis le contexte Django
+        const data = {
+            labels: {{ stats|map:0|safe }}, // Noms des voies
+            datasets: [
+                {
+                    label: 'Filles',
+                    data: {{ stats|map:1|safe }},
+                    backgroundColor: 'rgba(255, 182, 193, 0.5)',
+                    borderColor: 'rgba(255, 182, 193, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                },
+                {
+                    label: 'Garçons',
+                    data: {{ stats|map:2|safe }},
+                    backgroundColor: 'rgba(173, 216, 230, 0.5)',
+                    borderColor: 'rgba(173, 216, 230, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }
+            ]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                          footer: footer,
+                        }
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Voies'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de grimpeurs'
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx, config);
+    });
+
+const footer = (tooltipItems) => {
+  let sum = 0;
+
+  tooltipItems.forEach(function(tooltipItem) {
+    sum += tooltipItem.parsed.y;
+  });
+  return 'Total: ' + sum;
+};
+</script>

@@ -1,35 +1,119 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Classements de la journée{% endblock %}
+{% block title %}Rapport de la journée{% endblock %}
 
 {% block head %}
-<style>
-    .page-break {
-        page-break-before: always;
-    }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    td {
-        border-bottom: 1px solid #dee2e6;
-    }
-</style>
+    <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}" />
+    <link rel="stylesheet" href="{% static '3rd/bootstrap-5.2.0-beta1-dist/css/bootstrap.min.css' %}" />
+    <script src="{% static 'fontawesomefree/js/all.min.js' %}" type="text/javascript"></script>
+    <script src="{% static '3rd/bootstrap-5.2.0-beta1-dist/js/bootstrap.min.js' %}" type="text/javascript" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .sexe  { color: rgba(0,0,0,.3); }
+        .femme { color: lightpink; }
+        .homme { color: lightblue; }
+
+        .svg-inline--fa.gold,   i.gold   { color: #FFD700; } /* gold */
+        .svg-inline--fa.silver, i.silver { color: #C0C0C0; } /* silver */
+        .svg-inline--fa.bronze, i.bronze { color: #B8860B; } /* darkgoldenrod */
+
+        i.gold   { background-color: #FFD70020; }
+        i.silver { background-color: #C0C0C020; }
+        i.bronze { background-color: #B8860B20; }
+
+        .progress:has(.rule) {
+            border-radius: unset;
+            overflow: visible;
+        }
+        .progress .rule {
+            border-right: 1px solid black;
+            border-top: 1px solid black;
+            overflow: visible;
+        }
+
+        @media print {
+            @page {
+                margin: 20mm;
+            }
+            @page portrait {
+            }
+            @page landscape {
+                size: A4 landscape;
+            }
+            .portrait {
+                page: portrait;
+            }
+            .landscape {
+                page: landscape;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-page-break {
+                page-break-inside: avoid;
+            }
+            .no-print {
+                display: none;
+            }
+            .container {
+                max-width: 100%;
+            }
+            body {
+                font-size: 11px;
+            }
+            thead {
+                display: table-header-group;
+            }
+
+            canvas {
+                max-width: 100%;
+                /*height: auto;*/
+            }
+            .progress {
+                height: auto;
+                display: flex;
+            }
+            .progress-bar {
+                display: inline-block;
+                height: 1em;
+                box-shadow: none;
+            }
+            .rule {
+                border-right: 1px solid black;
+                height: 1em;
+            }
+            .progress-bar.femme {
+                background-color: pink !important;
+            }
+            .progress-bar.homme {
+                background-color: lightblue !important;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <div style="text-align: center">
-        <h1>Interclub d'escalade de {{ object }}</h1>
-        {{ inscrits|length }} club{{ inscrits|length|pluralize }},
-        {{ equipes|length }} équipe{{ equipes|length|pluralize }},
-        {{ femmes|length }} fille{{ femmes|length|pluralize }},
-        {{ hommes|length }} garçon{{ hommes|length|pluralize }}
+    <div class="container">
+        {% if report == 'stats' %}
+            <div class="text-center">
+                <h1>Interclub d'escalade de {{ object }}</h1>
+                {{ inscrits|length }} club{{ inscrits|length|pluralize }},
+                {{ equipes|length }} équipe{{ equipes|length|pluralize }},
+                {{ classements.1.1|length }} fille{{ classements.1.1|length|pluralize }},
+                {{ classements.0.1|length }} garçon{{ classements.0.1|length|pluralize }}
+            </div>
+            {% include "reports/p_stats.html" %}
+        {% elif report == 'teams' %}
+            {% include "reports/p_equipe.html" %}
+        {% elif report == 'ranking' %}
+            {% include "reports/p_individuel.html" %}
+        {% elif report == 'registration' %}
+            {% include "reports/p_inscrits.html" %}
+        {% endif %}
     </div>
-
-    <div class="page-break"></div>
-    {% include "reports/p_equipe.html" %}
-
-    <div class="page-break"></div>
-    {% include "reports/p_individuel.html" %}
-
-    <div class="page-break"></div>
-    {% include "reports/p_inscrits.html" %}
 {% endblock %}
