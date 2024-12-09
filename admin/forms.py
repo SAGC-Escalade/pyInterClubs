@@ -92,5 +92,10 @@ class RencontreCreateForm(forms.ModelForm):
         if voies and any(v.categorie != categorie for v in voies):
             raise ValidationError({'voies': 'Sélectionnez uniquement les voies de la catégorie concernée.'})
 
+        voiesGroupees = cleaned_data.get('voiesGroupees', False)
+        niveaux = set([v.niveau for v in voies])
+        if voiesGroupees and voies and len(niveaux) != len(voies):
+            raise ValidationError({'voies': 'Ne sélectionnez pas deux voies de même niveau si les voies sont groupées (risque de décalage des groupes).'})
+
 class ConfirmationForm(forms.Form):
     pass
