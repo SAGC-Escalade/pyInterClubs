@@ -10,26 +10,55 @@
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('voiesChart').getContext('2d');
 
+        // Mapping des couleurs en fonction des labels
+        const labelColors = {
+            'Homme': {
+                backgroundColor: 'rgba(173, 216, 230, 0.5)', // Bleu clair
+                borderColor: 'rgba(173, 216, 230, 1)',
+                barPercentage: 1,
+            },
+            'Femme': {
+                backgroundColor: 'rgba(255, 182, 193, 0.5)', // Rose clair
+                borderColor: 'rgba(255, 182, 193, 1)',
+                barPercentage: 1,
+            },
+            'Mixte': {
+                backgroundColor: 'rgba(192, 192, 192, 0.5)', // Rose clair
+                borderColor: 'rgba(192, 192, 192, 1)',
+                barPercentage: 1,
+            },
+        };
+
+        // Couleurs par défaut si le label n'est pas dans `labelColors`
+        const defaultColors = [
+            { backgroundColor: 'rgba(144, 238, 144, 0.5)', borderColor: 'rgba(144, 238, 144, 1)', barPercentage: 0.4 }, // Vert clair
+            { backgroundColor: 'rgba(255, 200, 87, 0.5)',  borderColor: 'rgba(255, 200, 87, 1)',  barPercentage: 0.4 }, // Orange clair
+            { backgroundColor: 'rgba(138, 43, 226, 0.5)',  borderColor: 'rgba(138, 43, 226, 1)',  barPercentage: 0.4 }, // Violet foncé
+            { backgroundColor: 'rgba(255, 223, 0, 0.5)',   borderColor: 'rgba(255, 223, 0, 1)',   barPercentage: 0.4 }, // Jaune doré
+            { backgroundColor: 'rgba(64, 224, 208, 0.5)',  borderColor: 'rgba(64, 224, 208, 1)',  barPercentage: 0.4 }, // Turquoise
+            { backgroundColor: 'rgba(107, 142, 35, 0.5)',  borderColor: 'rgba(107, 142, 35, 1)',  barPercentage: 0.4 }, // Vert olive
+            { backgroundColor: 'rgba(255, 140, 0, 0.5)',   borderColor: 'rgba(255, 140, 0, 1)',   barPercentage: 0.4 }, // Orange foncé
+            { backgroundColor: 'rgba(216, 191, 216, 0.5)', borderColor: 'rgba(216, 191, 216, 1)', barPercentage: 0.4 }, // Violet clair
+        ];
+        let defaultIndex = 0;
+
         // Données injectées depuis le contexte Django
         const data = {
-            labels: {{ stats|map:0|safe }}, // Noms des voies
+            labels: {{ stats.labels|safe }}, // Noms des voies
             datasets: [
-                {
-                    label: 'Filles',
-                    data: {{ stats|map:1|safe }},
-                    backgroundColor: 'rgba(255, 182, 193, 0.5)',
-                    borderColor: 'rgba(255, 182, 193, 1)',
-                    borderWidth: 2,
-                    borderRadius: 5
-                },
-                {
-                    label: 'Garçons',
-                    data: {{ stats|map:2|safe }},
-                    backgroundColor: 'rgba(173, 216, 230, 0.5)',
-                    borderColor: 'rgba(173, 216, 230, 1)',
-                    borderWidth: 2,
-                    borderRadius: 5
-                }
+                {% for label,dataset in stats.datasets.items %}
+                    {
+                        stack: '{{ label.0 }}',
+                        label: '{{ label.1|title }}',
+                        data: {{ dataset|safe }},
+                        ...(
+                            labelColors['{{ label.1|title }}'] || 
+                            defaultColors[defaultIndex++ % defaultColors.length] // Couleurs automatiques si non défini
+                        ),
+                        borderWidth: 2,
+                        borderRadius: 5
+                    },
+                {% endfor %}
             ]
         };
 
@@ -73,12 +102,12 @@
         new Chart(ctx, config);
     });
 
-const footer = (tooltipItems) => {
-  let sum = 0;
+    const footer = (tooltipItems) => {
+      let sum = 0;
 
-  tooltipItems.forEach(function(tooltipItem) {
-    sum += tooltipItem.parsed.y;
-  });
-  return 'Total: ' + sum;
-};
+      tooltipItems.forEach(function(tooltipItem) {
+        sum += tooltipItem.parsed.y;
+      });
+      return 'Total: ' + sum;
+    };
 </script>
