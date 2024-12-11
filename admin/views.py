@@ -197,6 +197,11 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
         context = super().get_context_data(**kwargs)
         rencontre = self.object
 
+        # On répertorie les voies dans l'ordre
+        voies = [voie for voie in sorted(rencontre.voies.all(), key=lambda v: (v.nom[0], int(v.nom.split(' ')[0][1:]) if v.type==TypeVoie.diff else v.nom))]
+        voies.append("Abandon")
+
+        # On élabore les classements et les listes
         equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
         inscrits = [membre for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
 
@@ -211,21 +216,22 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
 
         # On compte les passages dans chaques voies par genre de grimpeur et état de réussite
         counts = {}
+        temps = []
         performances = [perf for equipe in rencontre.equipes.all() for score in equipe.membres.all() for perf in score.performances.all()]
         for p in performances:
             voie = p.voie
             etat = p.voie.etat(p.etat)
-            if p.points is None or etat == "Abandon": voie = "Abandon"
+            if p.voie is None or p.points is None or etat == "Abandon":
+                voie = "Abandon"
+                etat = TypeVoie(p.voie.type if p.voie else TypeVoie.diff).label
+            if p.temps is not None:
+                temps.append({'x': str(voie), 'y': p.temps.total_seconds()})
             if not voie in counts: counts[voie] = {g:0 for g in Genre}
             counts[voie][p.score.grimpeur.sexe] += 1
             if etat not in counts[voie]:
                 counts[voie][etat] = 1
             else:
                 counts[voie][etat] += 1
-
-        # On répertorie les voies dans l'ordre
-        voies = [voie for voie in sorted(rencontre.voies.all(), key=lambda v: (v.nom[0], int(v.nom.split(' ')[0][1:]) if v.type==TypeVoie.diff else v.nom))]
-        voies.append("Abandon")
 
         # On répertorie les états dans l'ordre (du moins bien au top / c'est dépendant de l'ordre entré en base)
         etats = []
@@ -238,13 +244,22 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
 
         # On prépare les datasets
         stats = {}
+        maximum = 0
         for genre in Genre:
-            stats[('genre', Genre(genre).label)] = [counts.get(voie, {}).get(genre, 0)  for voie in voies]
+            lst = [counts.get(voie, {}).get(genre, 0)  for voie in voies]
+            maximum += max(lst)
+            stats[('genre', Genre(genre).label)] = lst
         for etat in etats:
+            if etat.lower() in ['a réaliser', 'abandon']: continue
             stats[('etat', etat)] = [counts.get(voie, {}).get(etat, 0) for voie in voies]
+        for type,label in TypeVoie.choices:
+            if type is None: continue
+            stats[('etat', label)] = [counts.get(voie, {}).get(label, 0) for voie in voies]
         stats = {
             'labels': [str(voie) for voie in voies],
             'datasets': stats,
+            'temps': temps,
+            'max': 10 * (1 + max([maximum, max([t['y'] for t in temps])]) // 10),
         }
 
         context.update({

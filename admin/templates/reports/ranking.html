@@ -26,16 +26,6 @@
         i.silver { background-color: #C0C0C020; }
         i.bronze { background-color: #B8860B20; }
 
-        .progress:has(.rule) {
-            border-radius: unset;
-            overflow: visible;
-        }
-        .progress .rule {
-            border-right: 1px solid black;
-            border-top: 1px solid black;
-            overflow: visible;
-        }
-
         @media print {
             @page {
                 margin: 20mm;
@@ -72,26 +62,12 @@
 
             canvas {
                 max-width: 100%;
-                /*height: auto;*/
+                height: auto !important;
             }
-            .progress {
-                height: auto;
-                display: flex;
-            }
-            .progress-bar {
-                display: inline-block;
-                height: 1em;
-                box-shadow: none;
-            }
-            .rule {
-                border-right: 1px solid black;
-                height: 1em;
-            }
-            .progress-bar.femme {
-                background-color: pink !important;
-            }
-            .progress-bar.homme {
-                background-color: lightblue !important;
+
+            .main-title {
+                margin-top: 10rem;
+                margin-bottom: 10rem;
             }
         }
     </style>
@@ -100,7 +76,7 @@
 {% block body %}
     <div class="container">
         {% if report == 'stats' %}
-            <div class="text-center">
+            <div class="text-center main-title">
                 <h1>Interclub d'escalade de {{ object }}</h1>
                 {{ inscrits|length }} club{{ inscrits|length|pluralize }},
                 {{ equipes|length }} équipe{{ equipes|length|pluralize }},
