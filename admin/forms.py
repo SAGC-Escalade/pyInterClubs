@@ -89,12 +89,12 @@ class RencontreCreateForm(forms.ModelForm):
         cleaned_data = super().clean()
         categorie = cleaned_data.get('categorie')
         voies = cleaned_data.get('voies')
-        if voies and any(v.categorie != categorie for v in voies):
+        if voies and any(not v.categorie in (categorie, Categorie.mixte) for v in voies):
             raise ValidationError({'voies': 'Sélectionnez uniquement les voies de la catégorie concernée.'})
 
         voiesGroupees = cleaned_data.get('voiesGroupees', False)
-        niveaux = set([v.niveau for v in voies])
-        if voiesGroupees and voies and len(niveaux) != len(voies):
+        niveaux = set([f"{v.tete}{v.numero}" for v in voies.diffs().order_by__nom()])
+        if voiesGroupees and voies and len(niveaux) != len(voies.diffs()):
             raise ValidationError({'voies': 'Ne sélectionnez pas deux voies de même niveau si les voies sont groupées (risque de décalage des groupes).'})
 
 class ConfirmationForm(forms.Form):
