@@ -35,22 +35,23 @@ class JugeCreateView(LoginRequiredMixin, WithRencontreRequiredMixin, CreateView)
         rencontre = self.request.interclub.rencontre
         juges = Juge.objects.prefetch_related('voies').filter(rencontre=rencontre)
         kwargs['object_list'] = juges
-        return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        juge = form.save()
 
         import socket
         ip = socket.gethostbyname(socket.gethostname())
         if not ip or ip == "127.0.0.1": ip = socket.gethostbyname(socket.getfqdn())
+        kwargs['server_ip'] = ip
         environ = self.request.environ if hasattr(self.request, 'environ') else self.request.META
+        kwargs['environ'] = environ
+
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        juge = form.save()
 
         context = {
             'object': {
                 'message': "Le juge a été assigné avec succès. Utilisez le QR-Code suivant pour y connecter l'appareil",
                 'token': juge.user.username,
             },
-            'server_ip': ip,
-            'environ': environ,
         }
         return self.render_to_response(self.get_context_data(form=form, **context))
