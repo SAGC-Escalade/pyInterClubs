@@ -87,6 +87,24 @@
     {{ rencontre|json_script:"rencontre" }}
     <script type="text/javascript">
         var rencontre = JSON.parse($("#rencontre").text());
+        rencontre.voies.sort((a, b) => {
+            const regex = /(M|T)(\d+)/;
+            const matchA = a.nom.match(regex);
+            const matchB = b.nom.match(regex);
+            // Si l'un des noms ne correspond pas au modèle, le placer en fin de liste
+            if (!matchA && !matchB) return 0;
+            if (!matchA) return 1;
+            if (!matchB) return -1;
+
+            const [, typeA, numA] = matchA;
+            const [, typeB, numB] = matchB;
+            // Priorité aux voies en moulinette (M) avant les voies en tête (T)
+            if (typeA !== typeB) {
+                return typeA === "M" ? -1 : 1;
+            }
+            // Comparaison numérique des numéros
+            return parseInt(numA) - parseInt(numB);
+        });
         var csrf = "{{ csrf_token }}";
     </script>
     <script>

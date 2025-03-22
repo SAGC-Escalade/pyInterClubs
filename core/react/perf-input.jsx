@@ -114,7 +114,7 @@ export function Vitesse({ value, onChange, disabled }) {
     );
 }
 
-const PerfInput = forwardRef(({ id, index, label = undefined, className = "mb-3", hideVoie = false, sm = 9, disabled, perf, queryKey }, ref) => {
+const PerfInput = forwardRef(({ id, index, label = undefined, className = "mb-3", hideVoie = false, sm = 9, disabled=false, perf, queryKey }, ref) => {
     const endpoint = `perfs/${id}/`;
     const { data, errors, status, action } = useCRUDHandler({ endpoint, enabled: !perf });
     perf = data || perf;
