@@ -24,7 +24,7 @@ export function EtatInput({ value, choices = undefined, onChange, size, isValid,
     choices = Object.entries(choices);
     const choice = choices[value] || ["Inexistant", 0];
     // On désactive le select si la valeur sélectionnée rapporte 0 points (sauf si c'est la chute)
-    disabled = disabled || (choice[0] != "Chute" && choice[0] != "Abandon" && choice[1] === 0);
+    //disabled = disabled || (choice[0] != "Chute" && choice[0] != "Abandon" && choice[1] === 0);
     return (
         <FormSelect value={value | ""} onChange={onChange} size={size} isValid={isValid} isInvalid={isInvalid} disabled={disabled}>
             {choices.map(([label, points], index) => {
