@@ -106,6 +106,19 @@
             return parseInt(numA) - parseInt(numB);
         });
         var csrf = "{{ csrf_token }}";
+
+        rencontre.voies.sort((a,b) => {
+            const regex = /(M|T)(\d+)/;
+            const matchA = a.nom.match(regex);
+            const matchB = b.nom.match(regex);
+            if (!matchA && !matchB) return 0;
+            if (!matchA) return 1;
+            if (!matchB) return -1;
+            const [, typeA, numA] = matchA;
+            const [, typeB, numB] = matchB;
+            if (typeA !== typeB) { return typeA === "M" ? -1 : 1; }
+            return parseInt(numA) - parseInt(numB);
+        });
     </script>
     <script>
         function Toast(id, classes, message, title) {
