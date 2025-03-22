@@ -159,7 +159,7 @@ const PerfInput = forwardRef(({ id, index, label = undefined, className = "mb-3"
     // Bloc
     if (perf.voie.type == 1) {
         const lbl = (<>
-            {label ?? "Bloc " + index}
+            {label ?? `${perf.voie.nom} ${perf.voie.niveau}`}
             {status.isLoading ? (
                 <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
                     <span className="visually-hidden">Chargement...</span>
