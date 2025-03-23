@@ -396,7 +396,8 @@ class Rencontre(CleanModel):
                     else:
                         perf.points = points
                     perfs.append(perf)
-                rank += len(group)
+                if type(temps) != str:
+                    rank += len(group)
         Performance.objects.bulk_update(perfs, ['points', 'etat'])
 
 
