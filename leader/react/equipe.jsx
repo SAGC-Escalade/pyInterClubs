@@ -7,6 +7,7 @@ import { useCRUDHandler, useSSEUpdater } from './observer.jsx';
 import Autocomplete from "./autocomplete.jsx";
 import HorizontalFormGroup from "./horizontal-form-group.jsx";
 import Score from "./score.jsx";
+import { Medal } from "./ranking.jsx";
 
 export function AddScore({ equipe }) {
     const [grimpeur, setGrimpeur] = useState(null);
@@ -213,15 +214,16 @@ export default function Equipe({ id }) {
 }
 
 
-const ListEquipeItem = forwardRef(({ equipe, queryKey }, ref) => {
+const ListEquipeItem = forwardRef(({ equipe, queryKey, rank = undefined }, ref) => {
     useSSEUpdater({ queryKey, endpoint: `equipes/${equipe.id}/` });
 
     return (
         <a key={equipe.id} href={Urls['equipe:edit'](equipe.id)} className="list-group-item list-group-item-action d-flex align-items-center" ref={ref}>
-            <i className="fa-solid fa-fw me-2"></i>
+            <span className="me-2" style={{ width: "3ch" }}>{rank ? `${rank}.` : ""}</span>
             {equipe.club?.nom || 'Nouvelle équipe'} {equipe.numero}
-            <sup><span className="badge text-bg-light text-muted">{equipe.membres?.length || 0}</span></sup>
-            <span className={"badge ms-auto " + (equipe.valide ? "text-bg-success" : "text-bg-primary")}>{equipe.points || 0} pts</span>
+            <sup className="me-auto"><span className="badge text-bg-light text-muted">{equipe.membres?.length || 0}</span></sup>
+            {rank && <Medal rank={rank} />}
+            <span className={"badge " + (equipe.valide ? "text-bg-success" : "text-bg-primary")}>{equipe.points || 0} pts</span>
         </a>
     );
 });
@@ -253,7 +255,7 @@ export function ListEquipe({ flush = true, club }) {
             className={"list-group rounded" + (flush ? " list-group-flush" : "")}
         >
             { equipes.map(function (equipe, index) {
-                return (<ListEquipeItem key={equipe.id} equipe={equipe} queryKey={endpoint} />);
+                return (<ListEquipeItem key={equipe.id} equipe={equipe} queryKey={endpoint} rank={!club && (index+1)} />);
             })}
         </FlipMove>
     );
