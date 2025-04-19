@@ -132,9 +132,13 @@ class GrimpeurField(serializers.PrimaryKeyRelatedField):
 
 class RencontreSerializer(SSESerializer):
     voies = VoieSerializer(read_only=True, many=True)
+    label = serializers.SerializerMethodField()
     class Meta:
         model = Rencontre
         fields = '__all__'
+
+    def get_label(self, obj):
+        return obj.label_tokens
 
 
 class EquipeSerializer(SSESerializer):

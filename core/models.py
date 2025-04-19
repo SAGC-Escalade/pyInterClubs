@@ -348,9 +348,13 @@ class Rencontre(CleanModel):
     voiesGroupees = models.BooleanField(default=False)
     voies = models.ManyToManyField(Voie, through='RencontreVoie')
 
-    def __str__(self):
+    @property
+    def label_tokens(self):
         date = date_format(self.date, format='SHORT_DATE_FORMAT', use_l10n=True)
-        return f'{self.club.ville} le {date} - {Categorie(self.categorie).name}'
+        return [self.club.ville, date, self.get_categorie_display()]
+    def __str__(self):
+        tokens = self.label_tokens
+        return f'{tokens[0]} le {tokens[1]} - {tokens[2]}'
     str = __str__
 
     @property

@@ -33,7 +33,14 @@
                     <i class="fa-solid fa-person-falling" data-fa-transform="shrink-2 down-2 left-2"></i>
                     <i class="fa-solid fa-slash" data-fa-transform="rotate-20 right-2"></i>
                 </span>
-                pyInterClubs
+                {% if rencontre %}
+                    {{ rencontre.label.0 }}
+                    <span class="d-none d-sm-inline">le {{ rencontre.label.1 }}
+                        <span class="d-none d-md-inline">- {{ rencontre.label.2 }}</span>
+                    </span>
+                {% else %}
+                    pyInterClubs
+                {% endif %}
             </span>
             <div class="collapse navbar-collapse" id="navbarScroll">
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
