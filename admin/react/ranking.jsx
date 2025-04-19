@@ -56,6 +56,18 @@ const RankingItem = forwardRef(({ score, queryKey }, ref) => {
 
     const background = [0, "gold", "silver", "bronze"][score?.rank];
 
+    const getCategorie = (anneeNaissance, saison) => {
+        const age = saison - anneeNaissance;
+        if (age >= 8 && age <= 9) return 'U10 (U11)';
+        if (age >= 10 && age <= 11) return 'U12 (U13)';
+        if (age >= 12 && age <= 13) return 'U14 (U15)';
+        if (age >= 14 && age <= 15) return 'U16 (U17)';
+        if (age >= 16 && age <= 17) return 'U18 (U19)';
+        if (age >= 18 && age <= 19) return 'U20 (U21)';
+        return 'Hors catégorie';
+    }
+    const categorie = getCategorie(score.grimpeur?.anneeNaissance, rencontre.saison);
+
     return (
         <li className={`list-group-item d-flex ${background}`} key={score.id} ref={ref}>
             <div className="me-2" style={{ width: "3ch" }}>{score.rank}.</div>
@@ -63,11 +75,14 @@ const RankingItem = forwardRef(({ score, queryKey }, ref) => {
                 <i className={icon}></i>
             </div>
             <div className="col-8 col-md-9 row">
-                <div className="col-12 col-sm-8 text-truncate">
+                <div className="col-12 col-sm-6 text-truncate">
                     {score.grimpeur?.nom} {score.grimpeur?.prenom}
                 </div>
-                <div className="col-12 col-sm-4 text-truncate">
+                <div className="col-8 col-sm-4 text-truncate">
                     {score?.grimpeur?.club_nom && <small className="text-muted">{score?.grimpeur?.club_nom}</small>}
+                </div>
+                <div className="col-4 col-sm-2 text-truncate">
+                    <small className="text-muted">{categorie}</small>
                 </div>
             </div>
             <div className="text-end text-nowrap ms-auto">
@@ -129,8 +144,9 @@ export default function Ranking({ gender }) {
                     <i className="fa-solid fa-person-half-dress fa-fw fa-lg lh-1"></i>
                 </div>
                 <div className="col-8 col-md-9 row">
-                    <div className="col-12 col-sm-8 text-truncate">Nom</div>
+                    <div className="col-12 col-sm-6 text-truncate">Nom</div>
                     <div className="d-none d-sm-block col-sm-4  text-truncate">Club</div>
+                    <div className="d-none d-sm-block col-sm-2  text-truncate">Catégorie</div>
                 </div>
                 <div className="text-end text-nowrap ms-auto">Score</div>
             </li>

@@ -109,7 +109,7 @@ class GrimpeurSerializer(serializers.ModelSerializer):
     club_nom = serializers.SlugRelatedField(source='club', slug_field='nom', read_only=True)
     class Meta:
         model = Grimpeur
-        fields = ['id', 'nom', 'prenom', 'sexe', 'club_nom']
+        fields = ['id', 'nom', 'prenom', 'anneeNaissance', 'sexe', 'club_nom']
 class GrimpeurField(serializers.PrimaryKeyRelatedField):
     def get_queryset(self):
         request = self.context.get('request', {})
