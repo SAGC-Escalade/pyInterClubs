@@ -29,4 +29,55 @@
         )
         {% endtranspiling %}
     </script>
+    <script>
+        let direction = 1;
+        let lastTime = null;
+        let paused = false;
+        let pauseStart = null;
+        let scrollPosition = 0;
+
+        const speed = 30; // pixels/sec
+        const pauseDuration = 2000; // ms
+
+        function autoScroll(timestamp) {
+            if (paused) {
+                if (!pauseStart) pauseStart = timestamp;
+                if (timestamp - pauseStart >= pauseDuration) {
+                    paused = false;
+                    pauseStart = null;
+                } else {
+                    lastTime = timestamp;
+                    requestAnimationFrame(autoScroll);
+                    return;
+                }
+            }
+
+            if (!lastTime) lastTime = timestamp;
+            const elapsed = timestamp - lastTime;
+            const delta = (speed * elapsed) / 1000;
+
+            // const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scroller = document.scrollingElement || document.documentElement;
+            const maxScroll = scroller.scrollHeight - window.innerHeight;
+
+            scrollPosition += direction * delta;
+
+            if (scrollPosition >= maxScroll) {
+                scrollPosition = maxScroll;
+                direction = -1;
+                paused = true;
+            } else if (scrollPosition <= 0) {
+                scrollPosition = 0;
+                direction = 1;
+                paused = true;
+            }
+
+            window.scrollTo({ top: scrollPosition, behavior: "auto" }); // "smooth" ici casse l'effet boucle
+
+            lastTime = timestamp;
+            requestAnimationFrame(autoScroll);
+        }
+
+        requestAnimationFrame(autoScroll);
+    </script>
 {% endblock %}
