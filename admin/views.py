@@ -178,7 +178,7 @@ class RencontreReportViewMixin:
 
     def get_queryset(self):
         interclub = self.request.interclub
-        if not interclub.rencontre: return Score.objects.none()
+        if not interclub.rencontre: return Rencontre.objects.none()
         queryset = Rencontre.objects.prefetch_related(
                 Prefetch('equipes', queryset=Equipe.objects.with_valide_and_points().prefetch_related(
                         Prefetch('membres', queryset=Score.objects.with_valide_and_points().prefetch_related(
@@ -272,33 +272,38 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
 
         return context
 
+
+class ModelViewScore:
+    def __init__(self, **kws):
+        for k,v in kws.items(): setattr(self, k, v)
+
 class MultiRencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, ListView):
+    def sort(self, scores):
+        groupes = {}
+        for s in scores:
+            if not s.grimpeur_id in groupes:
+                groupes[s.grimpeur_id] = []
+            groupes[s.grimpeur_id].append(s)
+        scores = [ModelViewScore(grimpeur=g[0].grimpeur, points=sum(s.points for s in g)) for g in groupes.values()]
+        scores = sorted(scores, key=attrgetter('points'), reverse=True)
+        scores = self.ranking(scores)
+        return scores
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rencontres = list(self.object_list.all())
 
         inscrits = [membre for rencontre in rencontres for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
 
-        inscrits = list({m.grimpeur_id:m.grimpeur for m in inscrits}.values())
-        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
-        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
-
-        # TODO: Faire l'export pour la saison complète :
+        # On élabore les classements et les listes
         #  - Classement individuel (somme des points de la saison pour le grimpeur)
         #  - Classement par équipe (somme des points de la saison pour l'équipe N)
-        #equipes = sorted([equipe for rencontre in rencontres for equipe in rencontre.equipes.all()], key=lambda o: o.points, reverse=True)
-        #
-        #hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
-        #hommes = self.ranking(sorted(hommes, key=lambda s: s.points, reverse=True))
-        #femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
-        #femmes = self.ranking(sorted(femmes, key=lambda s: s.points, reverse=True))
-        #
-        #inscrits = [s.grimpeur for s in inscrits]
-        #inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
-        #inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+        # equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
+        hommes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.homme])
+        femmes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.femme])
 
         context.update({
-            'inscrits': inscrits,
+            'classements': [(Genre.homme, hommes), (Genre.femme, femmes)],
             'report': self.kwargs.get('report', 'stats'),
         })
 
@@ -312,5 +317,9 @@ class MultiRencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin,
         queryset = super().get_queryset()
         if date:
             queryset = queryset.filter(date=date)
+        if self.kwargs.get('saison'):
+            queryset = queryset.filter(saison=self.kwargs.get('saison'))
+        if self.kwargs.get('categorie'):
+            queryset = queryset.filter(categorie=self.kwargs.get('categorie'))
 
         return queryset

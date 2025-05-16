@@ -1,5 +1,5 @@
 {% with id=widget.attrs.id %}
-<div{% if id %} id="{{ id }}"{% endif %} class="mb-3 border border-top-0 border-start-0 border-end-0 {% if widget.attrs.class %} {{ widget.attrs.class }}{% endif %}">
+<div {% if id %}id="{{ id }}" {% endif %}class="mb-3 border border-top-0 border-start-0 border-end-0{% if widget.attrs.class %} {{ widget.attrs.class }}{% endif %}">
     <div class="row mx-0 my-2">
         <div class="col text-muted">Liste des rencontres par saisons</div>
     </div>
@@ -14,10 +14,35 @@
     </div>
     {% for group, options, index in widget.optgroups %}
     {% if group %}
-    <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover collapsible-button{% if index != 0 %} collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
-        <div class="col">{{ group }}</div>
+    <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover">
+        <div class="col collapsible-button{% if index != 0 %} collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
+            {{ group }}
+        </div>
         <div class="col-2 d-flex">
-            <button class="btn btn-link btn-sm py-0" disabled><i class="fa-solid fa-eye"></i></button>
+            <a href="{% url 'rencontre:resultats' %}" class="btn btn-link btn-sm py-0">
+                <i class="fa-solid fa-eye"></i>
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-link btn-sm py-0 link-underline-opacity-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-file-export" data-fa-transform="up-4"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    {% for c,lbl in categories %}
+                        {% if c and c != 3 %}
+                            <li>
+                                <a href="{% url 'rencontre:report-saison' group c 'teams' %}" class="dropdown-item" target="_blank">
+                                    <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes {{ lbl }}
+                                </a>
+                            </li>
+                            <li onclick="console.log('li');">
+                                <a href="{% url 'rencontre:report-saison' group c 'ranking' %}" class="dropdown-item" target="_blank">
+                                    <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel {{ lbl }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
     {% endif %}
