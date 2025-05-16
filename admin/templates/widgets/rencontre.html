@@ -12,11 +12,11 @@
         <div class="col">Participants</div>
         <div class="col-2">Actions</div>
     </div>
-    {% for group, options, index in widget.optgroups %}
-    {% if group %}
+    {% for saison, rencontres, index in widget.optgroups %}
+    {% if saison %}
     <div class="row mx-0 p-1 fw-bold border border-start-0 border-end-0 border-bottom-0 border-2 border-dark bg-light-hover">
         <div class="col collapsible-button{% if index != 0 %} collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#{{id}}_{{index}}" aria-expanded="false" aria-controls="{{id}}_{{index}}">
-            {{ group }}
+            {{ saison }}
         </div>
         <div class="col-2 d-flex">
             <a href="{% url 'rencontre:resultats' %}" class="btn btn-link btn-sm py-0">
@@ -27,27 +27,23 @@
                     <i class="fa-solid fa-file-export" data-fa-transform="up-4"></i>
                 </button>
                 <ul class="dropdown-menu">
-                    {% for c,lbl in categories %}
-                        {% if c and c != 3 %}
-                            <li>
-                                <a href="{% url 'rencontre:report-saison' group c 'teams' %}" class="dropdown-item" target="_blank">
-                                    <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes {{ lbl }}
-                                </a>
-                            </li>
-                            <li onclick="console.log('li');">
-                                <a href="{% url 'rencontre:report-saison' group c 'ranking' %}" class="dropdown-item" target="_blank">
-                                    <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel {{ lbl }}
-                                </a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
+                    <li>
+                        <a href="{% url 'rencontre:report-saison' saison %}" class="dropdown-item" target="_blank">
+                            <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes {{ lbl }}
+                        </a>
+                    </li>
+                    <li onclick="console.log('li');">
+                        <a href="{% url 'rencontre:report-saison' saison %}" class="dropdown-item" target="_blank">
+                            <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel {{ lbl }}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
     {% endif %}
     <div id="{{id}}_{{index}}" class="collapse{% if index == 0 %} show{% endif %}">
-        {% for option in options %}{% include option.template_name with widget=option %}{% endfor %}
+        {% for option in rencontres %}{% include option.template_name with widget=option %}{% endfor %}
     </div>
     {% endfor %}
 </div>

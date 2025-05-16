@@ -32,22 +32,22 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{% url 'rencontre:report' r.id 'stats' %}" class="dropdown-item" target="_blank">
+                    <a href="{% url 'rencontre:report-stats' r.id %}" class="dropdown-item" target="_blank">
                         <i class="fa-regular fa-file-pdf me-2"></i> Statistiques d'utilisation
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'rencontre:report' r.id 'teams' %}" class="dropdown-item" target="_blank">
+                    <a href="{% url 'rencontre:report-teams' r.id %}" class="dropdown-item" target="_blank">
                         <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'rencontre:report' r.id 'ranking' %}" class="dropdown-item" target="_blank">
+                    <a href="{% url 'rencontre:report-ranking' r.id %}" class="dropdown-item" target="_blank">
                         <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'rencontre:report-multi' 'registration' %}?date={{ r.date|date:"Y-m-d" }}" class="dropdown-item" target="_blank">
+                    <a href="{% url 'rencontre:report-registration' r.date|date:"Y-m-d" %}" class="dropdown-item" target="_blank">
                         <i class="fa-regular fa-file-pdf me-2"></i> Liste des participants (pour la journée)
                     </a>
                 </li>

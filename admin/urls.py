@@ -13,7 +13,11 @@ urlpatterns = [
     path('<int:pk>/delete', RencontreDeleteView.as_view(), name='delete'),
     path('<int:pk>/start', RencontreStartView.as_view(), name='start'),
     path('<int:pk>/stop', RencontreStopView.as_view(), name='stop'),
-    path('report/<int:pk>/<str:report>', RencontreReportView.as_view(), name='report'),
-    path('report/<str:report>', MultiRencontreReportView.as_view(), name='report-multi'),
-    path('report/saison/<int:saison>/<int:categorie>/<str:report>', MultiRencontreReportView.as_view(), name='report-saison'),
+
+    path('report/<int:pk>/stats', StatsReportView.as_view(), name='report-stats'),
+    path('report/<int:pk>/teams', TeamsReportView.as_view(), name='report-teams'),
+    path('report/<int:pk>/ranking', RankingReportView.as_view(), name='report-ranking'),
+    path('report/<str:date>/registration', RegistrationReportView.as_view(), name='report-registration'),
+
+    path('report/<int:saison>-/ranking', SeasonRankingReportView.as_view(), name='report-saison'),
 ]

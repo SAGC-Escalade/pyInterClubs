@@ -16,11 +16,6 @@ class RencontreWidget(forms.RadioSelect):
             'all': ['css/collapsible.css'],
         }
 
-    def get_context(self, name, value, attrs):
-        context = super().get_context(name, value, attrs)
-        context['categories'] = Categorie.choices
-        return context
-
 class RencontreChoiceIterator(ModelChoiceIterator):
     def __iter__(self):
         if self.field.empty_label is not None:

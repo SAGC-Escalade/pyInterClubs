@@ -161,6 +161,7 @@ class RencontreStopView(SuperUserRequiredMixin, DetailView, FormView):
 class RencontreReportViewMixin:
     model = Rencontre
     template_name = 'reports/ranking.html'
+    report_type = None
 
     @staticmethod
     def ranking(scores):
@@ -192,18 +193,57 @@ class RencontreReportViewMixin:
 
         return queryset
 
-class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['report'] = self.report_type
+        return context
+
+class ModelViewScore:
+    def __init__(self, **kws):
+        for k,v in kws.items(): setattr(self, k, v)
+
+class MultiRencontreReportViewMixin(RencontreReportViewMixin):
+    def sort(self, scores):
+        groupes = {}
+        for s in scores:
+            if not s.grimpeur_id in groupes:
+                groupes[s.grimpeur_id] = []
+            groupes[s.grimpeur_id].append(s)
+        scores = [ModelViewScore(grimpeur=g[0].grimpeur, points=sum(s.points for s in g)) for g in groupes.values()]
+        scores = sorted(scores, key=attrgetter('points'), reverse=True)
+        scores = self.ranking(scores)
+        return scores
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.kwargs.get('date'):
+            queryset = queryset.filter(date=parse_date(self.kwargs.get('date')))
+        if self.kwargs.get('saison'):
+            queryset = queryset.filter(saison=self.kwargs.get('saison'))
+        #if self.kwargs.get('categorie'):
+        #    queryset = queryset.filter(categorie=self.kwargs.get('categorie'))
+
+        return queryset
+
+
+class StatsReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailView):
+    report_type = 'stats'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rencontre = self.object
 
         # On répertorie les voies dans l'ordre
-        voies = [voie for voie in sorted(rencontre.voies.all(), key=lambda v: (v.nom[0], int(v.nom.split(' ')[0][1:]) if v.type==TypeVoie.diff else v.nom))]
+        voies = sorted(
+            rencontre.voies.all(),
+            key=lambda v: (v.nom[0], int(v.nom.split(' ')[0][1:]) if v.type==TypeVoie.diff else v.nom)
+        )
         voies.append("Abandon")
 
         # On élabore les classements et les listes
         equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
-        inscrits = [membre for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+        inscrits = [m for e in rencontre.equipes.all() for m in e.membres.all()]
 
         hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
         hommes = self.ranking(sorted(hommes, key=lambda s: s.points, reverse=True))
@@ -228,10 +268,7 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
                 temps.append({'x': str(voie), 'y': p.temps.total_seconds()})
             if not voie in counts: counts[voie] = {g:0 for g in Genre}
             counts[voie][p.score.grimpeur.sexe] += 1
-            if etat not in counts[voie]:
-                counts[voie][etat] = 1
-            else:
-                counts[voie][etat] += 1
+            counts[voie][etat] = counts[voie].get(etat, 0) + 1
 
         # On répertorie les états dans l'ordre (du moins bien au top / c'est dépendant de l'ordre entré en base)
         etats = []
@@ -262,64 +299,62 @@ class RencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, Deta
             'max': 10 * (1 + max([maximum, max([t['y'] for t in temps])]) // 10),
         }
 
-        context.update({
-            'equipes': equipes,
-            'classements': [(Genre.homme, hommes), (Genre.femme, femmes)],
-            'inscrits': inscrits,
-            'stats': stats,
-            'report': self.kwargs.get('report', 'stats'),
-        })
-
+        context['stats'] = stats
         return context
+class TeamsReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailView):
+    report_type = 'teams'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontre = self.object
+        equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
 
-class ModelViewScore:
-    def __init__(self, **kws):
-        for k,v in kws.items(): setattr(self, k, v)
+        context['equipes'] = equipes
+        return context
+class RankingReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailView):
+    report_type = 'ranking'
 
-class MultiRencontreReportView(RencontreReportViewMixin, SuperUserRequiredMixin, ListView):
-    def sort(self, scores):
-        groupes = {}
-        for s in scores:
-            if not s.grimpeur_id in groupes:
-                groupes[s.grimpeur_id] = []
-            groupes[s.grimpeur_id].append(s)
-        scores = [ModelViewScore(grimpeur=g[0].grimpeur, points=sum(s.points for s in g)) for g in groupes.values()]
-        scores = sorted(scores, key=attrgetter('points'), reverse=True)
-        scores = self.ranking(scores)
-        return scores
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontre = self.object
+        inscrits = [m for e in rencontre.equipes.all() for m in e.membres.all()]
+
+        hommes = [s for s in inscrits if s.grimpeur.sexe==Genre.homme]
+        hommes = self.ranking(sorted(hommes, key=lambda s: s.points, reverse=True))
+        femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
+        femmes = self.ranking(sorted(femmes, key=lambda s: s.points, reverse=True))
+
+        context['classements'] = [('hommes', hommes), ('femmes', femmes)]
+        return context
+class RegistrationReportView(MultiRencontreReportViewMixin, SuperUserRequiredMixin, ListView):
+    report_type = 'registration'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rencontres = list(self.object_list.all())
 
         inscrits = [membre for rencontre in rencontres for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+        inscrits = list({m.grimpeur_id:m.grimpeur for m in inscrits}.values())
+        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
 
-        # On élabore les classements et les listes
-        #  - Classement individuel (somme des points de la saison pour le grimpeur)
-        #  - Classement par équipe (somme des points de la saison pour l'équipe N)
-        # equipes = sorted(rencontre.equipes.all(), key=lambda o: o.points, reverse=True)
-        hommes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.homme])
-        femmes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.femme])
-
-        context.update({
-            'classements': [(Genre.homme, hommes), (Genre.femme, femmes)],
-            'report': self.kwargs.get('report', 'stats'),
-        })
-
+        context['inscrits'] = inscrits
         return context
 
-    def get_queryset(self):
-        date = self.request.GET.get('date')
-        if date:
-            date = parse_date(date)
+class SeasonRankingReportView(MultiRencontreReportViewMixin, SuperUserRequiredMixin, ListView):
+    report_type = 'ranking'
 
-        queryset = super().get_queryset()
-        if date:
-            queryset = queryset.filter(date=date)
-        if self.kwargs.get('saison'):
-            queryset = queryset.filter(saison=self.kwargs.get('saison'))
-        if self.kwargs.get('categorie'):
-            queryset = queryset.filter(categorie=self.kwargs.get('categorie'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontres = self.object_list
 
-        return queryset
+        classements = []
+        for categorie, label in Categorie.choices:
+            if categorie in (None, Categorie.mixte): continue
+            inscrits = [membre for rencontre in rencontres.filter(categorie=categorie) for equipe in rencontre.equipes.all() for membre in equipe.membres.all()]
+            hommes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.homme])
+            femmes = self.sort([s for s in inscrits if s.grimpeur.sexe==Genre.femme])
+            classements.extend([(f"{label} hommes", hommes), (f"{label} femmes", femmes)])
+
+        context['classements'] = classements
+        return context
