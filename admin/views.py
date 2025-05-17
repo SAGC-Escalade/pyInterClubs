@@ -198,9 +198,13 @@ class RencontreReportViewMixin:
         context['report'] = self.report_type
         return context
 
-class ModelViewScore:
+class Dict2Obj:
     def __init__(self, **kws):
         for k,v in kws.items(): setattr(self, k, v)
+    def __str__(self):
+        if hasattr(self, 'str'):
+            return self.str
+        raise AttributeError
 
 class MultiRencontreReportViewMixin(RencontreReportViewMixin):
     def sort(self, scores):
@@ -209,7 +213,7 @@ class MultiRencontreReportViewMixin(RencontreReportViewMixin):
             if not s.grimpeur_id in groupes:
                 groupes[s.grimpeur_id] = []
             groupes[s.grimpeur_id].append(s)
-        scores = [ModelViewScore(grimpeur=g[0].grimpeur, points=sum(s.points for s in g)) for g in groupes.values()]
+        scores = [Dict2Obj(grimpeur=g[0].grimpeur, points=sum(s.points for s in g)) for g in groupes.values()]
         scores = sorted(scores, key=attrgetter('points'), reverse=True)
         scores = self.ranking(scores)
         return scores
@@ -221,8 +225,6 @@ class MultiRencontreReportViewMixin(RencontreReportViewMixin):
             queryset = queryset.filter(date=parse_date(self.kwargs.get('date')))
         if self.kwargs.get('saison'):
             queryset = queryset.filter(saison=self.kwargs.get('saison'))
-        #if self.kwargs.get('categorie'):
-        #    queryset = queryset.filter(categorie=self.kwargs.get('categorie'))
 
         return queryset
 
@@ -357,4 +359,33 @@ class SeasonRankingReportView(MultiRencontreReportViewMixin, SuperUserRequiredMi
             classements.extend([(f"{label} hommes", hommes), (f"{label} femmes", femmes)])
 
         context['classements'] = classements
+        return context
+class SeasonTeamsReportView(MultiRencontreReportViewMixin, SuperUserRequiredMixin, ListView):
+    report_type = 'ranking'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rencontres = self.object_list
+
+        classements = []
+        for categorie, label in Categorie.choices:
+            if categorie in (None, Categorie.mixte): continue
+            equipes = [equipe for rencontre in rencontres.filter(categorie=categorie) for equipe in rencontre.equipes.all()]
+
+            # On regroupe les résultats des équipes par club+numéro (raccourci: on utilise __str__)
+            groupes = {}
+            for e in equipes:
+                if not str(e) in groupes:
+                    groupes[str(e)] = []
+                groupes[str(e)].append(e)
+            scores = [Dict2Obj(grimpeur=Dict2Obj(str=f"Equipe {g[0].numero}", club=g[0].club), points=sum(s.points for s in g)) for g in groupes.values()]
+            scores = sorted(scores, key=attrgetter('points'), reverse=True)
+            scores = self.ranking(scores)
+            classements.append((f"{label}", scores))
+
+        context.update({
+            'classements': classements,
+            'title': 'Classement par équipes',
+            'name': 'Equipe',
+        })
         return context

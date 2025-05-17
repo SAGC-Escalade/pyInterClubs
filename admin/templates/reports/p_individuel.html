@@ -1,4 +1,4 @@
-<h2>Classement individuel</h2>
+<h2>{{ title|default:"Classement individuel" }}</h2>
 
 <div class="row gx-5">
     {% for genre,classement in classements %}
@@ -8,7 +8,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nom du grimpeur</th>
+                        <th>{{ name|default:"Nom du grimpeur" }}</th>
                         <th>Club</th>
                         <th>Points</th>
                     </tr>

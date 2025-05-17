@@ -19,5 +19,6 @@ urlpatterns = [
     path('report/<int:pk>/ranking', RankingReportView.as_view(), name='report-ranking'),
     path('report/<str:date>/registration', RegistrationReportView.as_view(), name='report-registration'),
 
-    path('report/<int:saison>-/ranking', SeasonRankingReportView.as_view(), name='report-saison'),
+    path('report/<int:saison>-/ranking', SeasonRankingReportView.as_view(), name='report-s-ranking'),
+    path('report/<int:saison>-/teams', SeasonTeamsReportView.as_view(), name='report-s-teams'),
 ]

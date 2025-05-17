@@ -28,13 +28,13 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{% url 'rencontre:report-saison' saison %}" class="dropdown-item" target="_blank">
-                            <i class="fa-regular fa-file-pdf me-2"></i> Feuille d'équipes {{ lbl }}
+                        <a href="{% url 'rencontre:report-s-teams' saison %}" class="dropdown-item" target="_blank">
+                            <i class="fa-regular fa-file-pdf me-2"></i> Classement par équipe
                         </a>
                     </li>
                     <li onclick="console.log('li');">
-                        <a href="{% url 'rencontre:report-saison' saison %}" class="dropdown-item" target="_blank">
-                            <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel {{ lbl }}
+                        <a href="{% url 'rencontre:report-s-ranking' saison %}" class="dropdown-item" target="_blank">
+                            <i class="fa-regular fa-file-pdf me-2"></i> Classement individuel
                         </a>
                     </li>
                 </ul>
