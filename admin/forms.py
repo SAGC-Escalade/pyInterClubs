@@ -59,16 +59,16 @@ class RencontreCreateForm(forms.ModelForm):
             'categorie': 'Catégorie',
             'nbBloc': 'Nombre de blocs',
             'nbDiff': 'Nombre de voies en diff',
-            'nbVitesse': 'Nombre de voie de vitesse',
+            'nbVitesse': 'Nombre de voies de vitesse',
             'voiesReutilisables': 'Voies réutilisables',
             'voiesGroupees': 'Voies groupées',
         }
         help_texts = {
-            #'nbBloc': 'Indiquez le nombre de voies de bloc à réaliser.',
-            #'nbDiff': 'Indiquez le nombre de voies de difficulté à réaliser.',
-            'nbVitesse': 'Indiquez le nombre de voies à réaliser.',
+            # 'nbBloc':    'Indiquez le nombre de voies de bloc à réaliser.',
+            # 'nbDiff':    'Indiquez le nombre de voies de difficulté à réaliser.',
+            'nbVitesse': 'Indiquez le nombre de voies <span class="text-danger fw-bold text-decoration-underline">à réaliser</span>.',
             'voiesReutilisables': 'Indiquez si les voies de difficulté sont réalisables plusieurs fois.',
-            'voiesGroupees': 'Indiquez si le compétiteur sélectionne un groupe globale ou ses voies de difficulté individuellement.',
+            'voiesGroupees': 'Indiquez si le compétiteur sélectionne un groupe global ou ses voies de difficulté individuellement.',
             'voies': 'Sélectionnez les voies réalisables pour la rencontre',
         }
 

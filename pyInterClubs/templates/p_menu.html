@@ -11,7 +11,7 @@
                 </form>
             </div>
             <div class="rounded-circle" style="width: 5rem; height: 5rem; background-image: url('{% static 'img/user.png' %}'); background-size: cover;"></div>
-            <span class="fw-bold"><span class="text-capitalize">{{ user.first_name|default:"Utilisateur Anonyme" }}</span></span>
+            <span class="fw-bold"><span class="text-capitalize">{{ user.first_name|default:user.username|default:"Utilisateur Anonyme" }}</span></span>
             {% if user.last_name %}<span class="text-capitalize">{{ user.last_name }}</span>{% endif %}
         </div>
         {% else %}

@@ -23,7 +23,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header p-3">
-                <i class="fa-solid fa-users me-2"></i>Mes grimpeurs
+                <i class="fa-solid fa-users me-2"></i>Mes grimpeurs - {{ user.first_name|default:user.username }}
             </div>
             <div id="react-list-grimpeurs-index"></div>
         </div>

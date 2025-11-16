@@ -383,9 +383,10 @@ class SeasonTeamsReportView(MultiRencontreReportViewMixin, SuperUserRequiredMixi
             scores = self.ranking(scores)
             classements.append((f"{label}", scores))
 
+        saison = f" - Saison {self.kwargs.get('saison')}" if self.kwargs.get('saison') else ""
         context.update({
             'classements': classements,
-            'title': 'Classement par équipes',
+            'title': f'Classement par équipes{saison}',
             'name': 'Equipe',
         })
         return context
