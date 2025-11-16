@@ -72,7 +72,7 @@ class VoieQuerySet(models.QuerySet):
             output_field=models.BooleanField()
         )
         numero_voie = Cast(Substr('nom', 2), models.IntegerField())
-        return self.annotate(tete=is_tete, numero=numero_voie).order_by('tete', 'numero')
+        return self.annotate(tete=is_tete, numero=numero_voie).order_by('categorie', 'type', 'tete', 'numero')
 
     def actifs(self):
         return self.filter(actif=True)

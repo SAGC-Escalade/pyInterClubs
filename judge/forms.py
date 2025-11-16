@@ -34,7 +34,7 @@ class JugeCreationForm(forms.ModelForm):
         if self.rencontre:
             self.fields['rencontre_voies'].queryset = RencontreVoie.objects \
                 .global_filter(rencontre=self.rencontre).with_related() \
-                .order_by__nom().order_by("voie__categorie", "voie__type")
+                .order_by__nom()
 
     def clean_rencontre_voies(self):
         voies = self.cleaned_data.get('rencontre_voies')
