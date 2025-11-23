@@ -252,6 +252,11 @@ class StatsReportView(RencontreReportViewMixin, SuperUserRequiredMixin, DetailVi
         femmes = [s for s in inscrits if s.grimpeur.sexe==Genre.femme]
         femmes = self.ranking(sorted(femmes, key=lambda s: s.points, reverse=True))
 
+        # On groupe les inscrits par club
+        inscrits = list({m.grimpeur_id:m.grimpeur for m in inscrits}.values())
+        inscrits = sorted(inscrits, key=lambda s: (s.club.nom, s.nom, s.prenom))
+        inscrits = [(c,list(g)) for c,g in groupby(inscrits, key=attrgetter('club.nom'))]
+
         context['classements'] = [('hommes', hommes), ('femmes', femmes)]
         context['equipes'] = equipes
         context['inscrits'] = inscrits
