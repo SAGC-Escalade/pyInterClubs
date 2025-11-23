@@ -23,11 +23,9 @@
             </div>
             <div class="row fw-bold gx-1">
                 <div class="col-2">Grimpeur</div>
-                {% with ''|center:object.nbBloc as range %}
-                {% for _ in range %}
-                    <div class="col">Bloc {{ forloop.counter }}</div>
+                {% for v in object.voies.blocs %}
+                    <div class="col">{{ v.nom }} {{ v.niveau }}</div>
                 {% endfor %}
-                {% endwith %}
                 {% with ''|center:object.nbDiff as range %}
                 {% for _ in range %}
                     <div class="col">Voie {{ forloop.counter }}</div>
