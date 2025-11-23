@@ -58,12 +58,12 @@ const RankingItem = forwardRef(({ score, queryKey }, ref) => {
 
     const getCategorie = (anneeNaissance, saison) => {
         const age = saison - anneeNaissance;
-        if (age >= 8 && age <= 9) return 'U10 (U11)';
-        if (age >= 10 && age <= 11) return 'U12 (U13)';
-        if (age >= 12 && age <= 13) return 'U14 (U15)';
-        if (age >= 14 && age <= 15) return 'U16 (U17)';
-        if (age >= 16 && age <= 17) return 'U18 (U19)';
-        if (age >= 18 && age <= 19) return 'U20 (U21)';
+        if (age >= 8 && age <= 9) return 'U11';
+        if (age >= 10 && age <= 11) return 'U13';
+        if (age >= 12 && age <= 13) return 'U15';
+        if (age >= 14 && age <= 15) return 'U17';
+        if (age >= 16 && age <= 17) return 'U19';
+        if (age >= 18 && age <= 19) return 'U21';
         return 'Hors catégorie';
     }
     const categorie = getCategorie(score.grimpeur?.anneeNaissance, rencontre.saison);
