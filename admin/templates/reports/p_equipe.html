@@ -8,27 +8,33 @@
                 <div class="col-2">
                     {{ forloop.counter }}{{ forloop.counter|pluralize:"er,ème" }} : {{ e }}
                 </div>
-                <div class="col"></div>
-                <div class="col"></div>
+                {% with ''|center:object.nbBloc as range %}
+                {% for _ in range %}
+                    <div class="col"></div>
+                {% endfor %}
+                {% endwith %}
                 {% with ''|center:object.nbDiff as range %}
                 {% for _ in range %}
                     <div class="col"></div>
                 {% endfor %}
                 {% endwith %}
                 <div class="col"></div>
-                <div class="col-1 text-end">{{ e.points }}pt{{ e.points|default:1|pluralize }}</div>
+                <div class="col text-end">{{ e.points }}pt{{ e.points|default:1|pluralize }}</div>
             </div>
             <div class="row fw-bold gx-1">
                 <div class="col-2">Grimpeur</div>
-                <div class="col">Bloc 1</div>
-                <div class="col">Bloc 2</div>
+                {% with ''|center:object.nbBloc as range %}
+                {% for _ in range %}
+                    <div class="col">Bloc {{ forloop.counter }}</div>
+                {% endfor %}
+                {% endwith %}
                 {% with ''|center:object.nbDiff as range %}
                 {% for _ in range %}
                     <div class="col">Voie {{ forloop.counter }}</div>
                 {% endfor %}
                 {% endwith %}
                 <div class="col">Vitesse</div>
-                <div class="col-1 text-end">Points</div>
+                <div class="col text-end">Points</div>
             </div>
         </div>
         <div>
@@ -43,7 +49,7 @@
                         <span class="me-1">{% if p.points < 10 %}&nbsp;&nbsp;{% endif %}{{ p.points }}pt{{ p.points|default:1|pluralize }}</span>
                         <small class="text-muted">
                             {% if p.voie.type != 3 %}
-                                {% if p.voie.type == 2 %}<small>{{ p.voie.nom|split:" "|first }} </small>{% endif %}
+                                {% if p.voie.type == 2 %}<small>{{ p.voie.nom|split:" "|first|split:"-"|first|split:"_"|first }} </small>{% endif %}
                                 <small>{{ p.etat__label }}</small>
                             {% else %}
                                 {% if p.temps %}<small>{{ p.temps|format }}</small>{% endif %}
@@ -51,7 +57,7 @@
                         </small>
                     </div>
                     {% endfor %}
-                    <div class="col-1 text-end">{{ s.points }}pt{{ s.points|default:1|pluralize }}</div>
+                    <div class="col text-end">{{ s.points }}pt{{ s.points|default:1|pluralize }}</div>
                 </div>
             {% endfor %}
         </div>
