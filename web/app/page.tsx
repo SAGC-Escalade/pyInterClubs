@@ -15,9 +15,9 @@ export default function Home() {
           </p>
           <hr />
           <p className="mb-0">
-            Prochaines étapes : appliquer les migrations Supabase
-            (<code>web/supabase/migrations/</code>), puis construire les
-            interfaces admin / coach / juge.
+            <a className="btn btn-primary" href="/resultats">
+              Voir le classement live
+            </a>
           </p>
         </div>
       </div>

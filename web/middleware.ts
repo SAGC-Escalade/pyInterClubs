@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
+
 /**
  * Rafraîchit la session Supabase à chaque requête et la propage via cookies.
  * C'est l'équivalent cible de `pyInterClubsMiddleware` (Django) : à terme,
@@ -18,7 +20,7 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
