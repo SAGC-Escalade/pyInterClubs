@@ -1,0 +1,26 @@
+/* Bootstrap 5 — fidèle à l'UI Django actuelle (cf. doc 08).
+   Importé globalement ; les composants utiliseront react-bootstrap. */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+  --ic-femme: #d63384;
+  --ic-homme: #0d6efd;
+}
+
+.sexe.femme {
+  color: var(--ic-femme);
+}
+.sexe.homme {
+  color: var(--ic-homme);
+}
+
+/* Médailles (cf. ranking.jsx) */
+.gold {
+  color: #ffd700;
+}
+.silver {
+  color: #c0c0c0;
+}
+.bronze {
+  color: #cd7f32;
+}

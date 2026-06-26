@@ -1,0 +1,22 @@
+# Déploiement Netlify — monorepo de transition
+# Le projet Next.js vit dans web/ ; Django reste à la racine comme référence
+# pendant la migration (cf. docs/spec/). Supabase est hébergé séparément
+# (les migrations SQL de web/supabase/ s'appliquent via le Supabase CLI/CI,
+# pas par Netlify).
+
+[build]
+  base    = "web"            # package.json du front Next.js
+  command = "npm run build"
+  # Ne relance le build que si quelque chose a changé sous web/
+  # (un commit sur le code Django n'entraîne pas de build front).
+  ignore  = "git diff --quiet HEAD^ HEAD -- ."
+
+# Plugin officiel : transforme le SSR / route handlers / middleware Next.js
+# en Netlify Functions automatiquement (App Router pris en charge nativement).
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Variables d'environnement à définir dans l'UI Netlify (Site settings > Env) :
+#   NEXT_PUBLIC_SUPABASE_URL        (publique)
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY   (publique, protégée par RLS)
+#   SUPABASE_SERVICE_ROLE_KEY       (SECRÈTE — jamais exposée au client)
