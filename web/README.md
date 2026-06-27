@@ -65,5 +65,7 @@ Supabase est hébergé séparément ; les migrations s'appliquent via le CLI/CI,
 
 ## État
 
-✅ Structure initialisée · ✅ Schéma de base · ⏳ Fonctions de scoring vitesse (stub)
-· ⏳ Auth token/QR · ⏳ Realtime · ⏳ Interfaces admin/coach/juge · ⏳ Rapports
+✅ Structure initialisée · ✅ Schéma de base · ✅ Classement public live (T1)
+· ✅ Auth admin + référentiels CRUD (T2) · ✅ Administration des rencontres (T3)
+· ⏳ Démarrage/arrêt + provisioning coachs/juges · ⏳ Auth token/QR
+· ⏳ Interfaces coach/juge · ⏳ Rapports

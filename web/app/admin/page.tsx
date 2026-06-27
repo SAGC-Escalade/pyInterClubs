@@ -1,11 +1,16 @@
 import Link from "next/link";
 
 /**
- * Tableau de bord admin — point d'entrée des référentiels (Tranche 2).
- * Le cycle de vie des rencontres viendra en Tranche 3.
+ * Tableau de bord admin — référentiels (Tranche 2) + rencontres (Tranche 3).
+ * Démarrage/arrêt (provisioning coachs/juges, QR) à venir avec l'auth token.
  */
 export default function AdminHome() {
   const cards = [
+    {
+      href: "/admin/rencontres",
+      title: "Rencontres",
+      desc: "Créer une rencontre et choisir la rencontre courante.",
+    },
     { href: "/admin/clubs", title: "Clubs", desc: "Gérer les clubs participants." },
     {
       href: "/admin/grimpeurs",
