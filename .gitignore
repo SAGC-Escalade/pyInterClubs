@@ -367,3 +367,6 @@ venv*/
 /pyInterClubs.dt
 /django.sqlite
 .idea/
+
+# Claude Code - réglages locaux (hooks personnels, non partagés)
+.claude/settings.local.json
