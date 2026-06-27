@@ -15,6 +15,9 @@ export default function Navbar() {
           <Link className="nav-link" href="/resultats">
             Résultats
           </Link>
+          <Link className="nav-link" href="/admin">
+            Admin
+          </Link>
         </div>
       </div>
     </nav>
