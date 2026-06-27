@@ -17,6 +17,7 @@ conventions du projet, puis rejoue le schéma et régénère les types.
 
 2. **Entête** (obligatoire, en français, sur ce gabarit exact — cf.
    `0004_admin_rls.sql:1-9`) :
+
    ```sql
    -- =====================================================================
    -- Tranche N — <titre court>
@@ -42,6 +43,7 @@ conventions du projet, puis rejoue le schéma et régénère les types.
 
 4. **Si la migration ajoute une table** : activer la RLS et poser les policies
    sur le patron du projet (cf. `0003`/`0004`) :
+
    ```sql
    alter table public.<t> enable row level security;
    create policy "read_authenticated" on public.<t> for select to authenticated using (true);
@@ -52,16 +54,19 @@ conventions du projet, puis rejoue le schéma et régénère les types.
      using (public.fn_is_admin()) with check (public.fn_is_admin());
    grant select, insert, update, delete on public.<t> to authenticated;
    ```
+
    ⚠️ Le RLS reste la garde réelle ; ne pas exposer `config` à `anon`.
 
 5. **Si la migration ajoute du temps réel** : ajouter les tables à la publication
    `alter publication supabase_realtime add table public.<t>;` (cf. `0003`).
 
 6. **Appliquer & typer** (depuis `web/`) :
+
    ```bash
    npm run db:reset    # rejoue toutes les migrations + seed.sql
    npm run db:types    # régénère lib/supabase/database.types.ts
    ```
+
    Puis `npm run lint` et signaler toute rupture TypeScript dans les composants
    qui consomment le schéma modifié.
 

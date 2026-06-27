@@ -33,6 +33,7 @@ interroge le catalogue via `supabase`/`psql` local) et contrôle :
 ## Sortie
 
 Un rapport en français structuré :
+
 - ✅ / ⚠️ / ❌ par table et par fonction.
 - Pour chaque problème : fichier:ligne, risque, et correctif suggéré (sans
   l'appliquer).

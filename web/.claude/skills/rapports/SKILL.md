@@ -13,6 +13,7 @@ Supabase + Next.js. Réf. : `docs/spec/09-rapports.md`.
 
 Créer les vues d'agrégat manquantes sur le modèle de `v_classement` /
 `v_equipe_points` (`0003_views_classement.sql`) :
+
 - **Classement individuel** : par `rencontre` + `sexe`, `rank()` sur les points
   (déjà fourni par `v_classement` — réutiliser).
 - **Classement équipes** : `v_equipe_points` ordonné par points (réutiliser).

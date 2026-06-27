@@ -36,6 +36,7 @@ points notifie son score, qui notifie son équipe.
 `SSEProvider` (`api/react/observer.jsx`) ouvre `new EventSource('/events/')`, expose
 `subscribe(topic, cb)` / `unsubscribe`. `useSSEUpdater({queryKey, endpoint, debounceTime})`
 écoute un topic et **met à jour le cache React Query** :
+
 - tableau : si `data.deleted.id` → retirer ; si trouvé → remplacer ; sinon → ajouter ;
 - objet : fusion par id, ou mise à null si supprimé.
 Perte de connexion → toast.
@@ -49,6 +50,7 @@ Deux approches possibles ; **recommandée : Broadcast piloté par triggers** pou
 fidèlement la granularité actuelle (topics logiques, payloads sérialisés, cascade).
 
 ### 3.1 Option A — Broadcast (recommandée)
+
 - Des **triggers Postgres** (les mêmes que pour le scoring, doc 02 §8) appellent
   `realtime.broadcast_changes` / `pg_notify` avec un **topic** dérivé de l'`event_id`
   actuel et un **payload** équivalent au serializer.
@@ -68,13 +70,16 @@ fidèlement la granularité actuelle (topics logiques, payloads sérialisés, ca
 | `voie/{voie}/perfs/` | `voie:{voie}:perfs` |
 
 ### 3.2 Option B — Postgres Changes
+
 - Activer Realtime sur `equipe`, `score`, `performance` et s'abonner par filtres
   (`rencontre_id`, `club_id`, `voie_id`). Plus simple à câbler mais **payloads = lignes
   brutes** (pas les agrégats `points`/`valide`) → il faut **recomposer côté client** ou via
   des **vues** Realtime. Convient si on accepte de recalculer les agrégats au client.
 
 ### 3.3 Cascade & agrégats
+
 La cascade perf→score→équipe (points/valide) doit être préservée :
+
 - en **Option A**, le trigger émet aussi les topics parents avec les agrégats recalculés
   (depuis les vues `v_score_points`/`v_equipe_points`, doc 02) ;
 - en **Option B**, le client réagrège ou s'abonne aux vues.

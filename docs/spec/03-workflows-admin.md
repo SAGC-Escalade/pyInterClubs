@@ -5,7 +5,7 @@ Source : `admin/views.py`, `admin/urls.py`, `judge/views.py`. L'admin est un **s
 
 ## 1. Cycle de vie d'une rencontre
 
-```
+```text
 Créer ──► Sélectionner (rencontre courante) ──► Démarrer (provisionne les coachs)
    │                                                   │
    │                                                   ▼
@@ -46,6 +46,7 @@ Affectation des juges : `judge/create` (`JugeCreateView`) ; liste : `judge/` (`J
 `RencontreSelectionView` (`admin/views.py:52-68`) : enregistre la rencontre choisie sur le
 `Profil` de l'admin (créé si absent) et redirige avec `?rencontre=<id>`. Le middleware
 (`admin/middleware.py:27-31`) résout la **rencontre courante** dans cet ordre de priorité :
+
 1. `Config.DEFAULT_RENCONTRE` (valeur globale) ;
 2. `profil.rencontre_id` (préférence de l'utilisateur) ;
 3. paramètre d'URL `?rencontre=` (override ponctuel).
@@ -57,6 +58,7 @@ Affectation des juges : `judge/create` (`JugeCreateView`) ; liste : `judge/` (`J
 ## 4. Création d'une rencontre (assistant)
 
 `RencontreCreateView` (`admin/views.py:70-88`), template `admin/create.html`, 3 onglets :
+
 1. **Paramètres** : saison (défaut = année + 1 si mois > 8, `:81`), date (défaut
    aujourd'hui), club hôte, catégorie.
 2. **Voies** : multi-sélection ; à la sélection d'une catégorie, pré-remplie avec
@@ -70,6 +72,7 @@ La sélection des voies crée les lignes `RencontreVoie` (M2M).
 
 `RencontreStartView` (`admin/views.py:97-121`, **transaction atomique**) : pour **chaque
 club**, crée un `Coach(club, rencontre)` et un `User` Django dont :
+
 - `username = coach.token` = `md5("{rencontre}:{club.nom}")` ;
 - `first_name = club.nom`, `last_name = club.ville` ;
 - mot de passe **inutilisable** (`set_unusable_password`).
@@ -92,6 +95,7 @@ Liste/édition : `JugeManageView` (`judge/manage.html`) montre, par voie, le jug
 ## 7. QR codes de connexion
 
 `ClubQRCodesView` (`admin/views.py:34-49`), template `admin/qrcode_club.html` :
+
 - **QR Wi-Fi** (SSID, type de clé, mot de passe lus depuis `Config`) ;
 - **par club** : QR vers l'URL de login token (`/accounts/club?token=...`), nom/ville,
   nombre de grimpeurs, bouton « Se connecter en tant que ».
@@ -115,6 +119,7 @@ explicite (`:142-157`).
 ## 9. Configuration (`Config`)
 
 Magasin clé-valeur (`admin/models.py:13-40`). Clés utilisées :
+
 - `DEFAULT_RENCONTRE` : rencontre courante globale ;
 - paramètres Wi-Fi (SSID, mot de passe, type) pour le QR Wi-Fi.
 

@@ -41,10 +41,12 @@ Les libellés assertés sont en **français** (l'app est francophone) : `getByTe
 ## Patrons par type de cible
 
 ### 1. Fonction pure (`lib/categorie.ts`, `lib/errors.ts`, `lib/rencontre-admin.ts`)
+
 Test direct, table de cas avec `it.each`. Couvrir les **bornes** (tranches d'âge,
 bascule de saison en septembre) et les cas limites (null, code inconnu).
 
 ### 2. Helper serveur/client Supabase (`lib/rencontre.ts`, `lib/auth/admin.ts`)
+
 Mocker le module client puis injecter `makeSupabaseMock` :
 
 ```ts
@@ -59,7 +61,9 @@ Couvrir : chemin nominal, fallback (`default_rencontre_id`), absence de donnée 
 formes de jointure PostgREST (club en objet **et** en tableau).
 
 ### 3. Composant React (`components/**`)
+
 Mocker les dépendances réseau, contrôler l'état :
+
 - `vi.mock("@tanstack/react-query", () => ({ useQuery: () => useQuery() }))` puis piloter
   `useQuery.mockReturnValue({ data, isLoading, refetch })`.
 - `vi.mock("@/lib/realtime/useRealtime", () => ({ useRealtime: vi.fn() }))`.
@@ -68,6 +72,7 @@ Mocker les dépendances réseau, contrôler l'état :
   variantes visuelles (`badge bg-success`/`bg-primary`, symboles ♀/♂).
 
 ### 4. Composant interactif contrôlé (`ZonesEditor`, `Autocomplete`)
+
 Le parent ne re-rend pas l'état → pour une valeur complète d'un input contrôlé, utiliser
 `fireEvent.change(input, { target: { value: "60-{rank}" } })` (PAS `userEvent.type`
 caractère-par-caractère, qui ne s'accumule pas). Pour clic/focus/filtrage, `userEvent`

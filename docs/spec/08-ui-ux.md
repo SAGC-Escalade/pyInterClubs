@@ -8,6 +8,7 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 ## 1. Layout global
 
 `index.html` / `p_index.html` / `p_menu.html` :
+
 - **Navbar fixe** (hamburger, branding) + **menu latéral offcanvas** dont les entrées
   dépendent du rôle (superuser / staff / coach / juge).
 - Zone de contenu `#mainFragment`, conteneur de **toasts** `#messagesFragment`, conteneur
@@ -22,6 +23,7 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 
 `api/react/app.jsx` : `QueryClientProvider` ▸ `CRUDProvider` (CSRF + `send()`) ▸
 `SSEProvider`. Hooks clés (`api/react/observer.jsx`) :
+
 - `useCRUD()` : `send({method, endpoint, data})` avec CSRF auto ;
 - `useCRUDHandler({queryKey, endpoint, initialData, pollInterval, ...})` : React Query +
   mutations + erreurs + **mise à jour optimiste** ; `action('create'|'read'|'update'|
@@ -40,6 +42,7 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 ## 3. Composants par rôle
 
 ### Coach
+
 - **`ListEquipe`** (`leader/react/equipe.jsx`) : liste des équipes, badge points, médaille
   top 3, tri par points (flip-move), abo `equipes/`, `club/{club}/equipes/`.
 - **`Equipe`** : carte équipe, numéro éditable, accordéon de 8 `Score`, `AddScore`
@@ -50,18 +53,21 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 - **`ListScore`** : « Mes grimpeurs ».
 
 ### Juge
+
 - **`ListVoies`** (`judge/react/judge.jsx`) : onglets par voie, badge « X/Y scorés ».
 - **`ListPerf`** : filtre par nom, sections **Invalides**/**Valides**, bouton
   « Enregistrer un grimpeur » (modale autocomplétion → `register`).
 - **`ListPerfItem`** : un `PerfInput` (désactivé si déjà scoré).
 
 ### Admin
+
 - **`Ranking`** (`admin/react/ranking.jsx`) : classement live, séparé F/H puis fusionné,
   rangs avec ex æquo, **catégories d'âge U11–U21** (voir §4), **médailles** top 3
   (`Medal`), en-tête collant, flip-move, abo `scores/`.
 - **`resultats.html`** : `Ranking` + **auto-scroll** (30 px/s, pauses 2 s en haut/bas).
 
 ### Partagés
+
 - **`Autocomplete`** (`api/react/autocomplete.jsx`) : recherche debouncée (500 ms, ≥3
   car.), dropdown loading/error, bouton clear (si nullable), `queryString`.
 - **`PerfInput`** (`core/react/perf-input.jsx`) : saisie selon type (bloc/diff/vitesse,

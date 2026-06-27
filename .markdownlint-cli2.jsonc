@@ -1,0 +1,21 @@
+{
+  // Lint de TOUS les Markdown du dépôt, exécuté depuis la racine.
+  // Manuel : `cd web && npm run lint:md`. Aussi lancé par le hook pre-commit.
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/out/**",
+    "**/venv*/**",
+    "**/.venv/**",
+    "**/site-packages/**",
+    "**/__pycache__/**"
+  ],
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD024": { "siblings_only": true }
+  }
+}

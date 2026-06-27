@@ -10,6 +10,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint:md": "cd .. && markdownlint-cli2",
+    "lint:md:fix": "cd .. && markdownlint-cli2 --fix",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
@@ -37,6 +39,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.13",
     "jsdom": "^25.0.1",
+    "markdownlint-cli2": "^0.15.0",
     "supabase": "^1.200.3",
     "typescript": "^5.6.2",
     "vitest": "^2.1.9"

@@ -17,6 +17,7 @@ Page d'accueil `/` (template `p_index.html`) : si `user.profil.voies` est peupl�
 le composant React `ListVoies` (`judge/react/judge.jsx`) avec les voies du juge.
 
 Structure :
+
 - **Onglets** : un onglet par voie affectée. L'onglet affiche le nom/niveau de la voie et
   un badge « **X scorés / Y total** » (compteur de perfs).
 - **Contenu (par voie)** = composant `ListPerf` :
@@ -40,12 +41,14 @@ voit donc nom/club du grimpeur sur sa feuille.
 ## 4. Saisie d'une performance (`PerfInput`)
 
 `core/react/perf-input.jsx` — l'UI dépend du **type de voie** :
+
 - **Bloc** : menu déroulant d'état (zones de la voie) → points affichés.
 - **Difficulté** : (si non groupé) sélecteur de voie + menu d'état → points.
 - **Vitesse** : saisie de **temps** `HH:MM:SS.CC` + menu pour cas spéciaux
   (« A réaliser », « Chute », « Abandon »).
 
 Soumission : `PATCH perfs/<id>` avec `{voie, etat, temps}`. Effets :
+
 - bloc/diff : points calculés immédiatement (doc 02 §2) ;
 - vitesse : à la modification du `temps`, **recalcul du classement** par rang/sexe
   (doc 02 §3) déclenché par signal (`core/signals.py:14-25`).
@@ -63,6 +66,7 @@ des « à enregistrer » à la feuille de la voie.
 ## 6. Temps réel
 
 `ListVoies`/`ListPerf` s'abonnent à `voie/{voie_id}/perfs/` (doc 07) :
+
 - saisie d'un état → le grimpeur passe d'« Invalides » à « Valides » (flip-move) et le
   badge de l'onglet s'incrémente ;
 - changement de voie d'une perf → suppression de l'ancienne feuille + ajout sur la

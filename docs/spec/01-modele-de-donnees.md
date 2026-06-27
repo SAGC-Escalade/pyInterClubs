@@ -20,6 +20,7 @@ de logique attachées aux modèles (`save()`, querysets annotés, signaux) sont 
 ## 2. Entités
 
 ### 2.1 Club — `core/models.py:297`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -29,6 +30,7 @@ de logique attachées aux modèles (`save()`, querysets annotés, signaux) sont 
 Tri par défaut : `nom`. Relations inverses : `grimpeurs`, `rencontres`, `equipes`.
 
 ### 2.2 Grimpeur — `core/models.py:309`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -42,6 +44,7 @@ Tri par défaut : `nom`. Relations inverses : `grimpeurs`, `rencontres`, `equipe
 Index : `anneeNaissance`, `sexe`. Tri : `nom, prenom`.
 
 ### 2.3 Voie — `core/models.py:270`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -62,6 +65,7 @@ mieux, **normaliser** en stockant un tableau ordonné : `zones: [{"label":..,"po
 Voir doc 02 §6.
 
 ### 2.4 Rencontre — `core/models.py:330`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -80,6 +84,7 @@ Index : `categorie`, `date`, `saison`. `nbBloc/nbDiff/nbVitesse` définissent le
 de performances attendues par grimpeur** et par type.
 
 ### 2.5 Equipe — `core/models.py:408`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -90,6 +95,7 @@ de performances attendues par grimpeur** et par type.
 Index : `club`, `rencontre`. Tri : `club_id, numero`. `__str__` = `"{club.nom} {numero}"`.
 
 ### 2.6 Score — `core/models.py:426`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -106,6 +112,7 @@ aujourd'hui ; l'unicité de l'ordre est gérée applicativement. **Cible recomma
 ajouter `UNIQUE(equipe, grimpeur)` et envisager `UNIQUE(equipe, ordre)` (voir doc 02 §4).
 
 ### 2.7 Performance — `core/models.py:503`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -118,6 +125,7 @@ ajouter `UNIQUE(equipe, grimpeur)` et envisager `UNIQUE(equipe, ordre)` (voir do
 Index : `voie_id`, `score_id`, `temps`. Suivi de champ : `temps, points, etat, voie_id`.
 
 ### 2.8 RencontreVoie — `core/models.py:555`
+
 | Champ | Type | Notes |
 |-------|------|-------|
 | id | bigint PK | |
@@ -128,12 +136,14 @@ Index : `voie_id`, `score_id`, `temps`. Suivi de champ : `temps, points, etat, v
 Contrainte : **UNIQUE(rencontre, voie)** (`unique_rencontre_voie`).
 
 ### 2.9 Config — `admin/models.py:13`
+
 Magasin clé-valeur typé : `key` (PK), `type` (bool/int/float/string), `value` (texte).
 `get/set` convertissent selon `type`. Clé connue : `DEFAULT_RENCONTRE` (rencontre courante
 globale, `admin/middleware.py:27`). Aussi utilisé pour les paramètres Wi-Fi affichés sur
 les QR codes (doc 03).
 
 ### 2.10 Profil / Coach / Juge — `admin/models.py:44-70`
+
 - `Profil` (polymorphe) : `user` (OneToOne `auth.User`), `rencontre` (FK SET NULL).
 - `Coach(Profil)` : `club` (FK CASCADE). `token = md5("{rencontre}:{club.nom}")`.
 - `Juge(Profil)` : `voies` (M2M Voie through RencontreVoie).
@@ -144,7 +154,7 @@ les QR codes (doc 03).
 
 ## 3. Diagramme relationnel
 
-```
+```text
 Club 1─* Grimpeur          Club 1─* Rencontre (hôte)     Club 1─* Equipe
 Rencontre 1─* Equipe       Rencontre *─* Voie (RencontreVoie, UNIQUE)
 Equipe 1─* Score           Grimpeur 1─* Score            Club 0..1─* Score (clubPreteur)

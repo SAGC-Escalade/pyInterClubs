@@ -35,7 +35,7 @@ est toujours l'état « non réalisé » (points `null`).
 
 Déclenché à la modification de `etat` (`Performance.save()`, `core/models.py:522-531`) :
 
-```
+```text
 si voie est définie:
   si etat a changé:
     si etat est null        -> points = null
@@ -57,6 +57,7 @@ de type vitesse, via signal (`core/signals.py:14-25`), qui appelle
 `Rencontre.proceed_speed_points(perf)` (`core/models.py:366-405`).
 
 ### 3.1 Valeurs spéciales de `temps`
+
 | Saisie | Valeur stockée | Sens |
 |--------|----------------|------|
 | « A réaliser » | `null` | pas encore passé (jamais classé) |
@@ -68,7 +69,7 @@ de type vitesse, via signal (`core/signals.py:14-25`), qui appelle
 
 ### 3.2 Algorithme (par sexe homme/femme)
 
-```
+```text
 pour chaque sexe dans (homme, femme):                  # filtre par sexe du grimpeur
   classement = perfs vitesse de la rencontre, ce sexe, temps NON null, triées par temps croissant
   rank = 0
@@ -94,6 +95,7 @@ pour chaque sexe dans (homme, femme):                  # filtre par sexe du grim
 ```
 
 Points clés à respecter :
+
 - **`rank` commence à 0** et s'incrémente par **taille de groupe** (gestion des ex æquo :
   même temps ⇒ même rang).
 - **Abandon et Chute n'incrémentent pas `rank`** (`core/models.py:403-404`), et matchent
@@ -107,7 +109,9 @@ Points clés à respecter :
   (`core/models.py:370-372`), sinon sur les deux.
 
 ### 3.3 Exemple de barème vitesse enfants (`addVoies.py:12`)
+
 `{"A réaliser":null,"Abandon":0,"Chute":1,"{rank}>44":2,"{rank}>5":"11-{rank}//5","{rank}<=5":"15-{rank}"}`
+
 - `"11-{rank}//5"` signifie `11 - (rank // 5)` (division entière, priorité Python).
 - rang 0 ⇒ `15-0 = 15` pts ; rang 5 ⇒ `15-5 = 10` ; rang 6 ⇒ `11 - 6//5 = 11-1 = 10` ;
   rang 45 ⇒ `>44` ⇒ 2 pts.
@@ -140,6 +144,7 @@ et envisager une normalisation des ordres à l'ajout/suppression (le code note c
 ## 5. Validation et calcul des points (agrégats)
 
 ### 5.1 Points
+
 - **Points d'un score** = somme des `points` de ses performances
   (`with_valide_and_points`, `core/models.py:205` ; fallback `to_representation`,
   `api/serializers.py:235`).
@@ -147,6 +152,7 @@ et envisager une normalisation des ordres à l'ajout/suppression (le code note c
   (`core/models.py:162`).
 
 ### 5.2 Validité
+
 - **Score valide** (`core/models.py:203-223`) : pour chaque type, le **nombre de perfs
   ayant des points non-null** == nombre attendu :
   `nb_blocs_valide == nbBloc ET nb_diffs_valide == nbDiff ET nb_vitesses_valide == nbVitesse`.
@@ -157,6 +163,7 @@ et envisager une normalisation des ordres à l'ajout/suppression (le code note c
   `nb_perfs_valides == nb_grimpeurs * (nbBloc+nbDiff+nbVitesse)`.
 
 ### 5.3 Champ `started` (UI coach)
+
 `ScoreSerializer.get_started` (`api/serializers.py:220-224`) : `false` pour l'admin ;
 sinon `true` si **au moins une perf de diff a des points** (le grimpeur a commencé →
 on verrouille certaines actions côté coach).
@@ -165,6 +172,7 @@ on verrouille certaines actions côté coach).
 
 Quand un admin modifie les `zones` d'une voie, l'ordre/contenu des clés peut changer.
 `core/signals.py:31-89` (`maj_performances_etat`) :
+
 1. avant save, mémorise les anciennes zones (`pre_save`, `:72`) ;
 2. après save, construit une **table de correspondance** ancien_index → nouvel_index par
    **libellé identique** ;
@@ -206,7 +214,7 @@ Quand un admin modifie les `zones` d'une voie, l'ordre/contenu des clés peut ch
 | `with_valide_and_points` (score/équipe) | Vues `v_score_points`, `v_equipe_points` (Sum + Count filtrés par type) |
 | classement individuel/équipe | Vue `v_classement` (rang par `points`, par sexe) |
 | `Score.groupe()` | `fn_score_groupe(score, voie)` |
-| `ordre_up/down` | `fn_score_ordre(score, 'up'|'down')` (swap atomique) |
+| `ordre_up/down` | `fn_score_ordre(score, 'up'\|'down')` (swap atomique) |
 | évaluation `{rank}` | `fn_eval_rank(expr text, rank int)` **sans eval dynamique** (parseur restreint) |
 
 Le recalcul vitesse étant **transactionnel et groupé**, le réaliser en fonction PL/pgSQL

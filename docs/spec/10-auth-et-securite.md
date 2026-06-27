@@ -7,16 +7,19 @@ et adapter le modèle token/QR** (login terrain sans mot de passe).
 ## 1. Modèle actuel
 
 ### Trois identités
+
 - **Admin** : `auth.User` superuser/staff, **login mot de passe** via l'admin Django.
 - **Coach** : `User` + `Coach` créés à l'ouverture de la rencontre (doc 03 §5),
   `username = token`, mot de passe **inutilisable**.
 - **Juge** : `User` + `Juge` créés à l'affectation (doc 03 §6), `username = token`.
 
 ### Tokens (MD5)
+
 - Coach : `md5("{rencontre}:{club.nom}")` (`admin/models.py:54-57`).
 - Juge : `md5("{rencontre}:" + ":".join(sorted(map(str, voie_ids))))` (`:64-70`).
 
 ### Login token
+
 - Form `TokenAuthenticationForm` (`pyInterClubs/forms.py`) : champ `token` caché →
   `authenticate(request, token=...)`.
 - Backend `ClubBackend` (`pyInterClubs/backends.py`) : `User.objects.get(username=token)`
@@ -27,17 +30,21 @@ et adapter le modèle token/QR** (login terrain sans mot de passe).
 - Session Django créée à l'authentification.
 
 ### Résolution du rôle (middleware)
+
 `pyInterClubsMiddleware` (`admin/middleware.py`) injecte `request.interclub` :
+
 - `rencontre` : `Config.DEFAULT_RENCONTRE` ▸ `profil.rencontre_id` ▸ `?rencontre=` ;
 - `club` : `profil.club_id` si Coach ;
 - `voies` : `profil.voies` (ids) si Juge ;
 - `user_is_coach` / `user_is_juge` : test polymorphe sur `Profil`.
 
 ### Déprovisioning
+
 À l'arrêt de la rencontre, suppression des `User`/`Coach`/`Juge` (force la déconnexion,
 doc 03 §8).
 
 ⚠️ **Faiblesses du modèle actuel** (à améliorer en cible) :
+
 - Token MD5 **déterministe** et **devinable** (basé sur nom de club / ids de voies) → toute
   personne connaissant ces valeurs peut se connecter. Pas de secret.
 - Pas d'expiration des tokens (hors suppression manuelle à l'arrêt).
@@ -47,6 +54,7 @@ doc 03 §8).
 Conserver l'**ergonomie** (QR/lien, sans mot de passe) tout en corrigeant les faiblesses.
 
 ### Identités
+
 - **Admin** : utilisateur Supabase Auth (email/mot de passe), claim `role=admin`.
 - **Coach / Juge** : identités **provisionnées** à l'ouverture/affectation. Deux options :
 
@@ -59,16 +67,19 @@ Conserver l'**ergonomie** (QR/lien, sans mot de passe) tout en corrigeant les fa
 > fonctionnel de `/accounts/club?token=...`.
 
 ### Claims JWT (équivalents de `interclub`)
-```
+
+```text
 role:      'admin' | 'coach' | 'judge'
 rencontre: <id de la rencontre courante>
 club:      <id du club>          (coach)
 voies:     [<ids des voies>]     (judge)
 ```
+
 Le **middleware Next.js** lit ces claims (remplace `pyInterClubsMiddleware`) et la
 **rencontre courante** suit la même priorité (défaut global `config` ▸ préférence ▸ query).
 
 ### Provisioning / déprovisioning
+
 - **Ouverture de rencontre** : créer une identité coach par club (token + claims).
 - **Affectation juge** : créer une identité juge (token + voies).
 - **Arrêt** : **révoquer** (supprimer les tokens / invalider les JWT) ; les données de

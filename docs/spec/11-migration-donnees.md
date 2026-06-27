@@ -11,6 +11,7 @@ vers Postgres avec **conservation des valeurs d'enum** (entiers) et des **ids** 
 préserver les FK). Voir DDL doc 01 §4.
 
 Étapes recommandées :
+
 1. Créer le schéma Postgres (DDL doc 01) + fonctions/triggers (doc 02) **désactivés**
    pendant l'import (ou import avec `points`/`etat` déjà calculés pour éviter les recalculs).
 2. Copier les tables dans l'ordre des dépendances : `club` → `grimpeur`, `voie` →
@@ -24,6 +25,7 @@ préserver les FK). Voir DDL doc 01 §4.
 ⚠️ Point critique : l'`etat` est un **index dans l'ordre des clés de `zones`**. SQLite/Django
 préserve l'ordre d'insertion du JSON ; **Postgres `jsonb` ne le garantit pas**. Lors de
 l'import :
+
 - soit stocker `zones` en **`json`** (texte, ordre préservé) ;
 - soit **normaliser** en tableau ordonné `[{"label","points"}]` (recommandé, doc 02 §6) et
   **remapper** les `etat` existants vers le nouvel index (identité si l'ordre est conservé).
@@ -32,6 +34,7 @@ l'import :
 
 La base historique stocke le temps vitesse en **dix-millièmes** ; conversions
 (`importHistoricDB.py:108-112`) :
+
 - `temps = timedelta(milliseconds = vitesse / 10000)` ;
 - `-600 000 000` → **Chute** (−1 min) ; `-1 200 000 000` → **Abandon** (−2 min).
 
@@ -41,6 +44,7 @@ pour que le recalcul par rang reste correct.
 ## 4. Spécificités de l'import historique (`importHistoricDB.py`)
 
 À reproduire/documenter si on reprend l'historique complet :
+
 - **Clubs** : `Localisation` → `ville` (`:8-10`).
 - **Voies** : ancienne table `Niveaux` → bloc/diff avec
   `zones = {A réaliser:null, Chute:0, Valorisée:ptsValorise, Réussie:ptsComplete}` (`:11-24`).
@@ -66,6 +70,7 @@ pour que le recalcul par rang reste correct.
 
 Outil d'alimentation du référentiel grimpeurs depuis un CSV FFME (Structure, Licence,
 Nom complet, Date de naissance). Logique à porter en script/route d'import :
+
 - parse nom/prénom (MAJUSCULES = nom), déduction du **sexe** par liste de prénoms
   (`get_sexe`, ~650 prénoms en dur, `:56-104`) ;
 - gestion des conflits : exact = skip, licence changée = update (`--force`), club changé =

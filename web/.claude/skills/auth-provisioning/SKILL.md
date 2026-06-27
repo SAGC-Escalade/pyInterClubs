@@ -29,6 +29,7 @@ legacy `admin/models.py` (Coach/Juge), `admin/middleware.py`.
 ## RLS par rôle (migration via skill nouvelle-migration)
 
 Sur le patron `admin_write` de `0004` :
+
 - **coach** : INSERT/UPDATE/DELETE sur `equipe`/`score`/`performance` limités à
   `rencontre = fn_current_rencontre()` ET `club = fn_current_club()`.
 - **juge** : UPDATE sur `performance` limité aux voies de `fn_current_voies()`.
@@ -37,6 +38,7 @@ Sur le patron `admin_write` de `0004` :
 ## Provisioning démarrage / arrêt (doc 03 §9, doc 10)
 
 Route handlers serveur utilisant `createAdminClient()` :
+
 - **Démarrer** : pour chaque club de la rencontre, créer un `coach` + utilisateur
   Auth + token ; créer les `juge` selon `rencontre_voie.juge_id`. Transaction
   atomique. Génère ensuite les QR (URL `/auth/club?token=…`) + QR Wi-Fi (clé

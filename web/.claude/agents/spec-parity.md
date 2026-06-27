@@ -25,6 +25,7 @@ honnête en signalant ce qui n'est pas encore porté ou ce qui diverge.
 ## Méthode
 
 Pour le périmètre demandé (une tranche, ou tout) :
+
 1. Lister les capacités du legacy + ce qu'exige la spec.
 2. Vérifier la présence et la **fidélité comportementale** de l'équivalent cible
    (table/vue/fonction/RLS/page/composant).

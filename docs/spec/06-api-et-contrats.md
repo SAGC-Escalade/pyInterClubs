@@ -22,6 +22,7 @@ pas démarré de rencontre. »).
 | Perfs | `perfs/`, `perfs/<id>/`, `voie/<voie>/perfs/` | `PerformanceViewSet` |
 
 Actions personnalisées sur `scores/` :
+
 - `POST scores/<id>/ordre/up` · `POST scores/<id>/ordre/down` → 204 (`api/views.py:158-165`)
 - `POST scores/<id>/groupe/` `{id: <voie_id>}` → 204 (`:167-175`)
 - `POST scores/<id>/register/` `{voie: <voie_id>}` → 204 (`:177-186`)
@@ -41,32 +42,38 @@ Actions personnalisées sur `scores/` :
 ## 3. Formes JSON
 
 ### Club (`ClubSerializer`)
+
 ```json
 { "id": 5, "nom": "Club A", "ville": "Paris" }
 ```
 
 ### Voie (`VoieSerializer`, exclut `actif`)
+
 ```json
 { "id": 10, "nom": "T3", "niveau": "5b", "categorie": 2, "genre": 3, "type": 2,
   "zones": {"A réaliser": null, "Chute": 0, "Zone 2": 6, "Zone 1": 5, "Top": 8} }
 ```
 
 ### Grimpeur (`GrimpeurSerializer`)
+
 ```json
 { "id": 100, "nom": "Dupont", "prenom": "Jean", "anneeNaissance": 2010,
   "sexe": 2, "club_nom": "Club B" }
 ```
 
 ### Équipe (`EquipeSerializer`)
+
 ```json
 { "id": 42, "membres": [999, 1000], "club": {"id":5,"nom":"Club A","ville":"Paris"},
   "numero": 1, "valide": false, "points": 0 }
 ```
+
 `membres` = liste d'**ids** de scores. `points`/`valide` en lecture seule (annotés).
 Création : entrée `{ "numero": 1 }` (le `club`/`rencontre` sont injectés depuis le profil,
 `api/serializers.py:154-161`).
 
 ### Score (`ScoreSerializer`)
+
 ```json
 { "id": 999, "ordre": 1,
   "equipe": 42,
@@ -76,6 +83,7 @@ Création : entrée `{ "numero": 1 }` (le `club`/`rencontre` sont injectés depu
   "performances": {"Bloc": [1,2], "Difficulté": [3,4,5], "Vitesse": [6]},
   "groupe": null, "started": false }
 ```
+
 - `performances` : ids de perfs **groupés par type** (`api/serializers.py:204-206`).
 - `groupe` : id de la 1ʳᵉ voie de diff (mode groupé) ou `null` (`:208-218`).
 - `started` : booléen (`false` pour admin ; sinon vrai si ≥1 perf diff a des points, `:220-224`).
@@ -84,10 +92,12 @@ Création : entrée `{ "numero": 1 }` (le `club`/`rencontre` sont injectés depu
   sortie (`to_representation`, `:226-236`).
 
 ### Performance (`PerformanceSerializer` / `FullPerformanceSerializer` pour juge)
+
 ```json
 { "id": 6, "voie": {"id":20,"nom":"Vitesse","niveau":"Homme", "...": "..."},
   "temps": "00:00:08.45", "points": 60, "etat": 4 }
 ```
+
 `temps` : chaîne formatée `HH:MM:SS.CC`, ou « A réaliser » / « Chute » / « Abandon »
 (`api/serializers.py:258-283`). `FullPerformanceSerializer` ajoute `grimpeur` imbriqué.
 

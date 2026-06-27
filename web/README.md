@@ -36,7 +36,7 @@ npm run dev                     # http://localhost:3000
 
 ## Structure
 
-```
+```text
 web/
 ├── app/                    # App Router (layouts par rôle à venir : admin/coach/juge)
 │   ├── layout.tsx          # layout racine + Providers

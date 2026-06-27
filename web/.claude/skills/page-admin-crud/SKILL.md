@@ -32,6 +32,7 @@ patron de `components/admin/ClubsManager.tsx`.
    - Tous les libellés en **français** (« Ajouter » / « Mettre à jour » / « Annuler »).
 
 2. `web/app/admin/<x>/page.tsx` — wrapper minimal (cf. `app/admin/clubs/page.tsx`) :
+
    ```tsx
    import <Entité>Manager from "@/components/admin/<Entité>Manager";
    export default function <Entité>Page() {

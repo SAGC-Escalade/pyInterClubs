@@ -14,7 +14,9 @@ même `points`.
 ## 2. Rapports d'une rencontre
 
 ### Stats — `report/<pk>/stats` (`StatsReportView`, `:232-310`)
+
 Graphique **Chart.js empilé** par voie :
+
 - **axe X** : voies (triées) + colonne « Abandon » ;
 - **axe Y gauche** : nombre de passages (barres empilées) ;
 - **axe Y droit** : temps (s) en nuage de points (`temps`, `:274-275`) ;
@@ -27,16 +29,19 @@ Le contexte fournit aussi `classements` (H/F), `equipes` triées, `inscrits` gro
 club — réutilisés par les autres rapports.
 
 ### Classement par équipes — `report/<pk>/teams` (`TeamsReportView`, `:311-320`)
+
 Équipes triées par points décroissants. Template `p_equipe.html` : par équipe (sans saut de
 page interne), en-tête colonnes (Grimpeur, colonnes Bloc×`nbBloc`, Diff×`nbDiff`, Vitesse,
 Points), une ligne par grimpeur (nom + badge club prêteur, points + libellé d'état par
 voie, total).
 
 ### Classement individuel — `report/<pk>/ranking` (`RankingReportView`, `:321-335`)
+
 Deux colonnes **Femmes / Hommes**, table (rang, nom, club, points), médailles top 3.
 Template `p_individuel.html`.
 
 ### Inscriptions — `report/<date>/registration` (`RegistrationReportView`, `:336-349`)
+
 Liste des grimpeurs **par club** (dédupliqués, triés club/nom/prénom). Filtré par **date**.
 Template `p_inscrits.html`.
 
