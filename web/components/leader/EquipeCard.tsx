@@ -7,6 +7,7 @@ import { frError } from "@/lib/errors";
 import { unObjet } from "@/lib/supabase/embed";
 import { categorieAge } from "@/lib/categorie";
 import { TAILLE_MAX_EQUIPE } from "@/lib/leader/ordre";
+import { estDemarre } from "@/lib/leader/score";
 import Autocomplete from "@/components/Autocomplete";
 
 export type Candidat = {
@@ -202,6 +203,12 @@ export default function EquipeCard({
           const g = unObjet(m.grimpeur);
           const stats = pointsParScore[m.id];
           const groupes = grouper(m.performances);
+          const demarre = estDemarre(
+            m.performances.map((p) => ({
+              type: unObjet(p.voie)?.type ?? null,
+              points: p.points,
+            })),
+          );
           const voiesPreteur = clubs;
           const diffsPourSexe = diffVoies.filter(
             (v) => g && (v.genre === g.sexe || v.genre === 3),
@@ -290,6 +297,12 @@ export default function EquipeCard({
                       <select
                         className="form-select"
                         defaultValue=""
+                        disabled={demarre}
+                        title={
+                          demarre
+                            ? "Verrouillé : le grimpeur a déjà des points en difficulté"
+                            : undefined
+                        }
                         onChange={(e) => {
                           const voieId = Number(e.target.value);
                           if (voieId) grouper2.mutate({ id: m.id, voieId });

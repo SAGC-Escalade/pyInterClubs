@@ -108,6 +108,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 | T4-10 | Club prêteur | Inscrire un grimpeur d'un autre club (ou le définir via Réglages) | Badge « prêté » ; `club_preteur` renseigné | |
 | T4-11 | Ordre des membres | Boutons ↑/↓ | Échange avec le voisin ; désactivés aux bornes ; pas de doublon d'ordre | |
 | T4-12 | Diffs groupées | Sur une rencontre `voies_groupees = true`, choisir une voie de diff de départ | `nb_diff` voies de diff consécutives affectées aux perfs de diff | |
+| T4-12b | Verrou « started » | Faire scorer une diff du grimpeur par un juge, puis rouvrir les Réglages du membre | Le sélecteur « Groupe » est désactivé dès qu'une diff a des points (re-affectation figée) | |
 | T4-13 | Équipe complète | Inscrire jusqu'à 8 membres | Le champ d'ajout disparaît ; un 9ᵉ est refusé (message « 8 membres maximum ») | |
 | T4-14 | Live côté coach | Pendant qu'un juge score, garder `/leader` ouvert | Points / validité du membre et de l'équipe se mettent à jour en direct | |
 
@@ -132,8 +133,6 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 
 ## 8. Notes et limites connues
 
-- **Verrouillage `started`** (geler certaines actions coach quand le grimpeur a
-  déjà des points en diff) : non implémenté.
 - **QR** : la page « Accès & QR » affiche les **liens** de connexion (pas encore
   d'image QR scannable).
 - **Recalcul vitesse** : assuré par le trigger `trg_speed_recalc` ; valider les
