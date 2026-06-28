@@ -71,7 +71,42 @@ export default function RencontresManager() {
     },
   });
 
-  const error = setCourante.error || remove.error;
+  // Rencontres démarrées = celles ayant au moins un coach provisionné (doc 03 §5).
+  const { data: demarrees } = useQuery({
+    queryKey: ["admin", "rencontres-demarrees"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("coach").select("rencontre_id");
+      if (error) throw error;
+      return new Set((data as { rencontre_id: number }[]).map((c) => c.rencontre_id));
+    },
+  });
+
+  // Provisioning (service_role) : passe par les route handlers serveur.
+  async function postProvisioning(path: string, echec: string) {
+    const res = await fetch(path, { method: "POST" });
+    if (!res.ok) {
+      const corps = (await res.json().catch(() => ({}))) as { erreur?: string };
+      throw new Error(corps.erreur ?? echec);
+    }
+  }
+
+  const demarrer = useMutation({
+    mutationFn: (id: number) =>
+      postProvisioning(`/admin/rencontres/${id}/demarrer`, "Échec du démarrage."),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["admin", "rencontres-demarrees"] }),
+  });
+
+  const arreter = useMutation({
+    mutationFn: (id: number) =>
+      postProvisioning(`/admin/rencontres/${id}/arreter`, "Échec de l'arrêt."),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["admin", "rencontres-demarrees"] }),
+  });
+
+  const enCours = demarrer.isPending || arreter.isPending;
+  const error =
+    setCourante.error || remove.error || demarrer.error || arreter.error;
 
   return (
     <>
@@ -106,6 +141,7 @@ export default function RencontresManager() {
           <tbody>
             {rencontres.map((r) => {
               const courante = r.id === couranteId;
+              const demarree = demarrees?.has(r.id) ?? false;
               return (
                 <tr key={r.id} className={courante ? "table-primary" : ""}>
                   <td>{r.saison}</td>
@@ -131,6 +167,39 @@ export default function RencontresManager() {
                         Définir comme courante
                       </button>
                     )}
+                    {demarree ? (
+                      <>
+                        <span className="badge bg-success me-2">Démarrée</span>
+                        <Link
+                          href={`/admin/rencontres/${r.id}/acces`}
+                          className="btn btn-sm btn-outline-secondary me-2"
+                        >
+                          Accès &amp; QR
+                        </Link>
+                        <button
+                          className="btn btn-sm btn-outline-warning me-2"
+                          onClick={() => {
+                            if (
+                              confirm(
+                                "Arrêter la rencontre ? Les comptes coachs/juges seront révoqués (les résultats sont conservés).",
+                              )
+                            )
+                              arreter.mutate(r.id);
+                          }}
+                          disabled={enCours}
+                        >
+                          Arrêter
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="btn btn-sm btn-outline-success me-2"
+                        onClick={() => demarrer.mutate(r.id)}
+                        disabled={enCours}
+                      >
+                        Démarrer
+                      </button>
+                    )}
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => {
@@ -141,6 +210,10 @@ export default function RencontresManager() {
                         )
                           remove.mutate(r.id);
                       }}
+                      disabled={demarree}
+                      title={
+                        demarree ? "Arrêtez la rencontre avant de la supprimer" : undefined
+                      }
                     >
                       Supprimer
                     </button>
