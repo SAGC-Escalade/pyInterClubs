@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
