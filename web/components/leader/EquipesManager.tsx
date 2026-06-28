@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { frError } from "@/lib/errors";
 import { unObjet } from "@/lib/supabase/embed";
+import { bornesAnneeNaissance } from "@/lib/leader/candidats";
 import { useRealtime } from "@/lib/realtime/useRealtime";
 import EquipeCard, { type Candidat, type VoieDiff } from "./EquipeCard";
 
@@ -52,11 +53,11 @@ export default function EquipesManager({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rencontre")
-        .select("saison, voies_groupees")
+        .select("saison, categorie, voies_groupees")
         .eq("id", rencontre)
         .single();
       if (error) throw error;
-      return data as { saison: number; voies_groupees: boolean };
+      return data as { saison: number; categorie: number; voies_groupees: boolean };
     },
   });
 
@@ -89,16 +90,21 @@ export default function EquipesManager({
     },
   });
 
-  // Grimpeurs du club non encore inscrits dans la rencontre (doc 04 §3).
+  // Grimpeurs du club non inscrits ET dans la tranche d'âge de la rencontre
+  // (doc 04 §3 : enfants 8–13 ans, ado/mixte 13–19 ans).
   const { data: candidats = [] } = useQuery({
-    queryKey: ["leader", "candidats", rencontre, club],
+    queryKey: ["leader", "candidats", rencontre, club, meta?.categorie, meta?.saison],
+    enabled: !!meta,
     queryFn: async () => {
+      const { min, max } = bornesAnneeNaissance(meta!.categorie, meta!.saison);
       const [{ data: grimpeurs, error: e1 }, { data: inscrits, error: e2 }] =
         await Promise.all([
           supabase
             .from("grimpeur")
             .select("id, nom, prenom, annee_naissance, sexe")
             .eq("club_id", club)
+            .gte("annee_naissance", min)
+            .lte("annee_naissance", max)
             .order("nom"),
           supabase
             .from("score")

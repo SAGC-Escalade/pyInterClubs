@@ -104,6 +104,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 | T4-07 | Périmètre coach | Observer la liste | Seules les équipes du club du coach, rencontre courante ; `/admin` et `/judge` refusés | |
 | T4-08 | Créer / supprimer équipe | « Ajouter une équipe » ; supprimer une équipe vide | Numéro auto-incrémenté ; suppression OK | |
 | T4-09 | Inscrire un grimpeur | Dans une équipe, rechercher un grimpeur libre du club → sélectionner | Score créé ; perfs générées : 2 blocs + 1 vitesse pré-affectés (selon sexe) + 3 diffs sans voie ; ordre = plus petit libre | |
+| T4-09b | Filtre catégorie d'âge | Observer la liste des grimpeurs proposés à l'inscription | Seuls les grimpeurs dans la tranche d'âge de la rencontre sont proposés (enfants : 8–13 ans ; ado/mixte : 13–19 ans), en plus du club et de l'exclusion des déjà-inscrits | |
 | T4-10 | Club prêteur | Inscrire un grimpeur d'un autre club (ou le définir via Réglages) | Badge « prêté » ; `club_preteur` renseigné | |
 | T4-11 | Ordre des membres | Boutons ↑/↓ | Échange avec le voisin ; désactivés aux bornes ; pas de doublon d'ordre | |
 | T4-12 | Diffs groupées | Sur une rencontre `voies_groupees = true`, choisir une voie de diff de départ | `nb_diff` voies de diff consécutives affectées aux perfs de diff | |
@@ -131,9 +132,6 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 
 ## 8. Notes et limites connues
 
-- **Filtre catégorie d'âge** des grimpeurs proposés au coach : non implémenté
-  (filtre club + non-inscrits seulement) — l'âge est affiché mais ne restreint
-  pas la liste.
 - **Verrouillage `started`** (geler certaines actions coach quand le grimpeur a
   déjà des points en diff) : non implémenté.
 - **QR** : la page « Accès & QR » affiche les **liens** de connexion (pas encore
