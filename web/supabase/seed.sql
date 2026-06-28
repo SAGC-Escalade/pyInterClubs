@@ -137,3 +137,119 @@ begin
     end if;
   end loop;
 end$$;
+
+-- =====================================================================
+-- Jeu de données de DÉMO (Tranche 4) — écrans coach & juge
+-- =====================================================================
+-- Objectif : exercer l'auth terrain + provisioning + saisie (doc 04/05, doc 10).
+-- Cette rencontre devient la « rencontre courante » (DEFAULT_RENCONTRE) pour que
+-- coach/juge la résolvent après provisioning.
+--
+-- État volontairement PARTIEL :
+--   • équipe c1 : 2 grimpeurs inscrits avec blocs+vitesse scorés mais 3 diffs
+--     SANS voie (voie_id null) -> « à enregistrer/scorer » côté juge ;
+--     2 grimpeurs du club NON inscrits -> à ajouter côté coach.
+--   • équipe c2 : 2 grimpeurs entièrement scorés (diffs M1..M3 au Top) -> donnent
+--     du contenu validé à /resultats ; 2 grimpeurs NON inscrits.
+--   • Aucun juge affecté (juge_id null) -> l'admin affecte via « Accès & QR ».
+--
+-- ⚠️ Les comptes coach/juge (Supabase Auth + tokens) NE sont PAS créés ici :
+--    ils se provisionnent via l'admin (« Démarrer » la rencontre, puis
+--    « Affecter » un juge), qui appelle l'API Auth (hors SQL).
+--
+-- Rejouable : ne s'exécute que si la rencontre T4 (date 2025-04-12) n'existe pas.
+-- =====================================================================
+do $$
+declare
+  c1 bigint; c2 bigint;
+  r  bigint;
+  e1 bigint; e2 bigint;
+  v_bloc1 bigint; v_bloc2 bigint;
+  v_m1 bigint; v_m2 bigint; v_m3 bigint; v_m4 bigint;
+  v_t1 bigint; v_t2 bigint; v_t3 bigint;
+  v_vf bigint; v_vh bigint;
+  s  bigint;
+  ord int;
+  g  record;
+begin
+  if exists (select 1 from public.rencontre where saison = 2025 and date = date '2025-04-12') then
+    return; -- déjà semé
+  end if;
+
+  c1 := (select id from public.club where nom = 'CAF Bordeaux'     limit 1);
+  c2 := (select id from public.club where nom = 'Pyrénéa Escalade' limit 1);
+  if c1 is null or c2 is null then
+    return; -- le bloc démo Tranche 1 (clubs) doit avoir été semé d'abord
+  end if;
+
+  v_bloc1 := (select id from public.voie where type = 1 and categorie = 1 and niveau = '1' limit 1);
+  v_bloc2 := (select id from public.voie where type = 1 and categorie = 1 and niveau = '2' limit 1);
+  v_m1 := (select id from public.voie where nom = 'M1' limit 1);
+  v_m2 := (select id from public.voie where nom = 'M2' limit 1);
+  v_m3 := (select id from public.voie where nom = 'M3' limit 1);
+  v_m4 := (select id from public.voie where nom = 'M4' limit 1);
+  v_t1 := (select id from public.voie where nom = 'T1' limit 1);
+  v_t2 := (select id from public.voie where nom = 'T2' limit 1);
+  v_t3 := (select id from public.voie where nom = 'T3' limit 1);
+  v_vf := (select id from public.voie where type = 3 and categorie = 1 and genre = 1 limit 1);
+  v_vh := (select id from public.voie where type = 3 and categorie = 1 and genre = 2 limit 1);
+
+  -- Rencontre T4 (enfants, 2 blocs + 3 diffs + 1 vitesse), non groupée.
+  insert into public.rencontre
+    (saison, club_id, date, categorie, nb_bloc, nb_diff, nb_vitesse, voies_reutilisables, voies_groupees)
+  values
+    (2025, c1, date '2025-04-12', 1, 2, 3, 1, true, false)
+  returning id into r;
+
+  -- Rencontre courante par défaut.
+  insert into public.config (key, type, value) values ('DEFAULT_RENCONTRE', 'int', r::text)
+    on conflict (key) do update set value = excluded.value, type = excluded.type;
+
+  -- Voies de la rencontre (plusieurs diffs pour l'affectation/le register du juge).
+  insert into public.rencontre_voie (rencontre_id, voie_id)
+  select r, id from public.voie
+  where id in (v_bloc1, v_bloc2, v_m1, v_m2, v_m3, v_m4, v_t1, v_t2, v_t3, v_vf, v_vh);
+
+  insert into public.equipe (rencontre_id, club_id, numero) values (r, c1, 1) returning id into e1;
+  insert into public.equipe (rencontre_id, club_id, numero) values (r, c2, 1) returning id into e2;
+
+  -- Club c1 : 2 inscrits PARTIELS (diffs à scorer), 2 laissés libres pour le coach.
+  ord := 0;
+  for g in select id, sexe from public.grimpeur where club_id = c1 order by id loop
+    ord := ord + 1;
+    exit when ord > 2;
+    insert into public.score (equipe_id, grimpeur_id, ordre) values (e1, g.id, ord) returning id into s;
+    insert into public.performance (voie_id, score_id, etat) values (v_bloc1, s, 3);
+    insert into public.performance (voie_id, score_id, etat) values (v_bloc2, s, 2);
+    -- 3 diffs SANS voie (à enregistrer/scorer côté juge)
+    insert into public.performance (voie_id, score_id)
+    select null::bigint, s from generate_series(1, 3);
+    if g.sexe = 1 then
+      insert into public.performance (voie_id, score_id, temps, points, etat)
+      values (v_vf, s, make_interval(secs => 9), 12, 5);
+    else
+      insert into public.performance (voie_id, score_id, temps, points, etat)
+      values (v_vh, s, make_interval(secs => 9), 12, 5);
+    end if;
+  end loop;
+
+  -- Club c2 : 2 inscrits COMPLETS (diffs M1..M3 au Top), 2 laissés libres.
+  ord := 0;
+  for g in select id, sexe from public.grimpeur where club_id = c2 order by id loop
+    ord := ord + 1;
+    exit when ord > 2;
+    insert into public.score (equipe_id, grimpeur_id, ordre) values (e2, g.id, ord) returning id into s;
+    insert into public.performance (voie_id, score_id, etat) values (v_bloc1, s, 3);
+    insert into public.performance (voie_id, score_id, etat) values (v_bloc2, s, 3);
+    insert into public.performance (voie_id, score_id, etat) values (v_m1, s, 2);
+    insert into public.performance (voie_id, score_id, etat) values (v_m2, s, 2);
+    insert into public.performance (voie_id, score_id, etat) values (v_m3, s, 2);
+    if g.sexe = 1 then
+      insert into public.performance (voie_id, score_id, temps, points, etat)
+      values (v_vf, s, make_interval(secs => 8), 13, 5);
+    else
+      insert into public.performance (voie_id, score_id, temps, points, etat)
+      values (v_vh, s, make_interval(secs => 8), 13, 5);
+    end if;
+  end loop;
+end$$;
