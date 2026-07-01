@@ -7,6 +7,9 @@
 [build]
   base    = "web"            # package.json du front Next.js
   command = "npm run build"
+  # Sortie de build Next.js (relative à `base`, donc web/.next).
+  # Obligatoire : le plugin refuse que `publish` soit égal à `base`.
+  publish = ".next"
   # Ne relance le build que si quelque chose a changé sous web/
   # (un commit sur le code Django n'entraîne pas de build front).
   ignore  = "git diff --quiet HEAD^ HEAD -- ."
