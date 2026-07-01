@@ -24,6 +24,18 @@ function unObjet<T>(v: Jointure<T>): T | null {
   return Array.isArray(v) ? (v[0] ?? null) : v;
 }
 
+/** QR scannable + lien de secours pour un accès terrain (doc 03 §6/§7). */
+function CelluleAcces({ url }: { url: string }) {
+  return (
+    <span className="d-flex align-items-center gap-2">
+      <QRCodeSVG value={url} size={88} />
+      <a href={url} className="text-truncate small" style={{ maxWidth: "40vw" }}>
+        {url}
+      </a>
+    </span>
+  );
+}
+
 export default function AccesManager({ rencontreId }: { rencontreId: number }) {
   const supabase = createClient();
   const qc = useQueryClient();
@@ -129,11 +141,7 @@ export default function AccesManager({ rencontreId }: { rencontreId: number }) {
                   {club?.nom}
                   {club?.ville && <small className="text-muted"> ({club.ville})</small>}
                 </span>
-                {url && (
-                  <a href={url} className="text-truncate" style={{ maxWidth: "60%" }}>
-                    {url}
-                  </a>
-                )}
+                {url && <CelluleAcces url={url} />}
               </li>
             );
           })}
@@ -207,11 +215,7 @@ export default function AccesManager({ rencontreId }: { rencontreId: number }) {
                 className="list-group-item d-flex justify-content-between align-items-center gap-3"
               >
                 <span>{j.nom}</span>
-                {url && (
-                  <a href={url} className="text-truncate" style={{ maxWidth: "60%" }}>
-                    {url}
-                  </a>
-                )}
+                {url && <CelluleAcces url={url} />}
               </li>
             );
           })}

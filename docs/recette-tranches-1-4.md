@@ -94,6 +94,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 | T4-02 | Échange token invalide | Ouvrir `/auth/club` (sans token) puis `/auth/club?token=zzz` | Sans token → 400 ; token inconnu → 401 | |
 | T4-03 | Démarrer la rencontre | `/admin/rencontres` → « Démarrer » sur la rencontre T4 | 1 coach créé par club ; badge « Démarrée » ; lien « Accès & QR » disponible ; « Supprimer » désactivé | |
 | T4-04 | Affecter un juge | Page « Accès & QR » → saisir un nom + cocher des voies de diff → Affecter | Identité juge créée ; lien de connexion affiché ; voies marquées affectées | |
+| T4-04b | Rendu QR scannable | Page « Accès & QR » : observer chaque ligne coach/juge | Un QR code s'affiche à côté de chaque lien ; le scanner (téléphone) ouvre `/auth/club?token=…` et connecte le rôle | |
 | T4-05 | Idempotence du démarrage | Cliquer « Démarrer » une 2ᵉ fois | Aucun coach en double (un seul par club) | |
 
 ### 7.2 Écran coach (`/leader`)
@@ -133,8 +134,6 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 
 ## 8. Notes et limites connues
 
-- **QR** : la page « Accès & QR » affiche les **liens** de connexion (pas encore
-  d'image QR scannable).
 - **Recalcul vitesse** : assuré par le trigger `trg_speed_recalc` ; valider les
   cas de référence du `docs/spec/02 §7` (ex-æquo, Chute/Abandon n'incrémentent
   pas le rang).
