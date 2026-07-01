@@ -49,7 +49,7 @@ Données semées (cf. `web/supabase/seed.sql`) :
 Réf. : `docs/spec/02 §5`, `08`, `07`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T1-01 | Affichage du classement | Ouvrir `/resultats` sans être connecté | Tableau par sexe, trié par points décroissants, colonnes points et validité | |
 | T1-02 | Rang ex-æquo | Observer deux grimpeurs à points égaux | Même rang partagé, puis saut de rang ensuite | |
 | T1-03 | Catégorie d'âge | Vérifier la colonne catégorie | U11..U21 selon `saison - année de naissance` | |
@@ -62,7 +62,7 @@ Réf. : `docs/spec/02 §5`, `08`, `07`.
 Réf. : `docs/spec/10 §2/§3`, `02 §6`, `06 §5`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T2-01 | Connexion admin | Se connecter via `/login` avec le compte promu admin | Accès à `/admin` ; en-tête affiche l'e-mail | |
 | T2-02 | Garde admin | Déconnecté, ouvrir `/admin` | Redirection vers `/login` (ou `/`) | |
 | T2-03 | CRUD clubs | `/admin/clubs` : créer, éditer, supprimer un club | Liste à jour ; suppression d'un club référencé refusée avec message FR | |
@@ -76,7 +76,7 @@ Réf. : `docs/spec/10 §2/§3`, `02 §6`, `06 §5`.
 Réf. : `docs/spec/03 §3/§4`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T3-01 | Liste des rencontres | Ouvrir `/admin/rencontres` | Lignes avec club hôte, compteurs voies/équipes ; badge « Courante » | |
 | T3-02 | Création (assistant) | `/admin/rencontres/create` : renseigner paramètres, voies, options | Saison par défaut = année (+1 après août), date du jour, `voies_groupees` coché si catégorie enfants ; rencontre créée avec ses `rencontre_voie` | |
 | T3-03 | Rencontre courante | « Définir comme courante » sur une rencontre | `DEFAULT_RENCONTRE` mis à jour ; `/resultats` reflète la rencontre choisie | |
@@ -89,7 +89,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 ### 7.1 Garde de rôle et provisioning (admin)
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T4-01 | Garde middleware | Tenter `/admin`, `/leader`, `/judge` selon le rôle | Anonyme : espaces protégés → `/` ; admin : tout ; coach : `/leader` ; juge : `/judge` | |
 | T4-02 | Échange token invalide | Ouvrir `/auth/club` (sans token) puis `/auth/club?token=zzz` | Sans token → 400 ; token inconnu → 401 | |
 | T4-03 | Démarrer la rencontre | `/admin/rencontres` → « Démarrer » sur la rencontre T4 | 1 coach créé par club ; badge « Démarrée » ; lien « Accès & QR » disponible ; « Supprimer » désactivé | |
@@ -100,7 +100,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 ### 7.2 Écran coach (`/leader`)
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T4-06 | Connexion coach | Ouvrir le lien coach (`/auth/club?token=…`) | Session ouverte, redirection vers `/leader` ; cookies posés | |
 | T4-07 | Périmètre coach | Observer la liste | Seules les équipes du club du coach, rencontre courante ; `/admin` et `/judge` refusés | |
 | T4-08 | Créer / supprimer équipe | « Ajouter une équipe » ; supprimer une équipe vide | Numéro auto-incrémenté ; suppression OK | |
@@ -116,7 +116,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 ### 7.3 Écran juge (`/judge`)
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T4-15 | Connexion juge | Ouvrir le lien juge | Redirection vers `/judge` ; un onglet par voie affectée | |
 | T4-16 | Feuille par voie | Observer un onglet | Badge « scorés / total » ; sections « À scorer » et « Scorés » ; recherche par nom | |
 | T4-17 | Enregistrer un grimpeur | Voie de diff → autocomplétion « Enregistrer un grimpeur » → choisir | La 1ʳᵉ voie de diff non affectée du grimpeur est affectée à la voie du juge ; il apparaît dans « À scorer » | |
@@ -127,7 +127,7 @@ Réf. : `docs/spec/10`, `03 §5/§6/§8`, `04`, `05`, `02 §4`.
 ### 7.4 Arrêt et confidentialité
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T4-21 | Arrêter la rencontre | `/admin/rencontres` → « Arrêter » | Comptes coach/juge supprimés ; rejouer un ancien lien `/auth/club?token=…` → refus | |
 | T4-22 | Persistance des données | Après l'arrêt, ouvrir `/resultats` | Équipes / scores / performances et classement conservés | |
 | T4-23 | Confidentialité config | En anonyme, tenter de lire `config` via l'API REST | Accès refusé (le Wi-Fi n'est jamais exposé) | |

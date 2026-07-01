@@ -8,7 +8,7 @@ de logique attachées aux modèles (`save()`, querysets annotés, signaux) sont 
 ## 1. Énumérations
 
 | Enum | Valeurs | Source |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | `Categorie` | 1 = enfants, 2 = adolescents, 3 = mixte | `core/models.py:34` |
 | `Genre` | 1 = femme, 2 = homme, 3 = mixte | `core/models.py:40` |
 | `TypeVoie` | 1 = bloc, 2 = diff, 3 = vitesse | `core/models.py:46` |
@@ -22,7 +22,7 @@ de logique attachées aux modèles (`save()`, querysets annotés, signaux) sont 
 ### 2.1 Club — `core/models.py:297`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | nom | varchar(50) | |
 | ville | varchar(50) | |
@@ -32,7 +32,7 @@ Tri par défaut : `nom`. Relations inverses : `grimpeurs`, `rencontres`, `equipe
 ### 2.2 Grimpeur — `core/models.py:309`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | nom | varchar(50) | |
 | prenom | varchar(50) | |
@@ -46,7 +46,7 @@ Index : `anneeNaissance`, `sexe`. Tri : `nom, prenom`.
 ### 2.3 Voie — `core/models.py:270`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | nom | varchar(15) | ex. `M1`, `T3`, `Bloc`, `Vitesse` |
 | niveau | varchar(5) | ex. `4c`, `Homme`, `Femme` |
@@ -67,7 +67,7 @@ Voir doc 02 §6.
 ### 2.4 Rencontre — `core/models.py:330`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | saison | int | Année de saison |
 | club | FK Club **PROTECT** | club hôte, `related_name='rencontres'` |
@@ -86,7 +86,7 @@ de performances attendues par grimpeur** et par type.
 ### 2.5 Equipe — `core/models.py:408`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | rencontre | FK Rencontre **PROTECT** | `related_name='equipes'` |
 | club | FK Club **PROTECT** | `related_name='equipes'` |
@@ -97,7 +97,7 @@ Index : `club`, `rencontre`. Tri : `club_id, numero`. `__str__` = `"{club.nom} {
 ### 2.6 Score — `core/models.py:426`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | equipe | FK Equipe **PROTECT** | `related_name='membres'` |
 | grimpeur | FK Grimpeur **PROTECT** | `related_name='participations'` |
@@ -114,7 +114,7 @@ ajouter `UNIQUE(equipe, grimpeur)` et envisager `UNIQUE(equipe, ordre)` (voir do
 ### 2.7 Performance — `core/models.py:503`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | voie | FK Voie **PROTECT**, null | null tant que la voie de diff n'est pas affectée |
 | score | FK Score **CASCADE** | `related_name='performances'` |
@@ -127,7 +127,7 @@ Index : `voie_id`, `score_id`, `temps`. Suivi de champ : `temps, points, etat, v
 ### 2.8 RencontreVoie — `core/models.py:555`
 
 | Champ | Type | Notes |
-|-------|------|-------|
+| ------- | ------ | ------- |
 | id | bigint PK | |
 | rencontre | FK Rencontre **CASCADE** | |
 | voie | FK Voie **CASCADE** | |
@@ -268,7 +268,7 @@ create index on performance(temps);
 ## 5. Politiques RLS (résumé ; détail au doc 10)
 
 | Table | Lecture | Écriture |
-|-------|---------|----------|
+| ------- | --------- | ---------- |
 | club, voie, grimpeur | Authentifié (référentiel) | Admin |
 | rencontre, rencontre_voie | Authentifié | Admin |
 | equipe, score | Public/auth (classements) ; coach voit tout | **Coach** : seulement ses équipes/scores de la rencontre courante ; **Admin** : tout |

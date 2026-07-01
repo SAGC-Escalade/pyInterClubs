@@ -14,7 +14,7 @@ s'abonne par `event_id`. `data` = objet sérialisé, ou `{"deleted": {"id": N}}`
 ### Topics émis
 
 | Modèle | Action | Topics (`event_id`) | Source |
-|--------|--------|---------------------|--------|
+| -------- | -------- | --------------------- | -------- |
 | Equipe | create | `club/{club}/equipes/`, `equipes/` | `api/signals.py:76-78` |
 | Equipe | delete | `club/{club}/equipes/`, `equipes/`, `equipes/{id}/` | `:80-83` |
 | Equipe | update | `equipes/{id}/` si un de `ordre,numero,score.deleted,score.created,points` a changé | `:85-89` |
@@ -59,7 +59,7 @@ fidèlement la granularité actuelle (topics logiques, payloads sérialisés, ca
   `scores:{id}`…). On garde la sémantique « ajout/maj/suppression » et `{deleted:{id}}`.
 
 | Topic actuel | Topic Realtime cible |
-|--------------|----------------------|
+| -------------- | ---------------------- |
 | `equipes/` | `equipes` |
 | `club/{club}/equipes/` | `club:{club}:equipes` |
 | `equipes/{id}/` | `equipes:{id}` |

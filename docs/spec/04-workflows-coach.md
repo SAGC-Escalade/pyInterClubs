@@ -14,7 +14,7 @@ Le coach scanne un **QR code** (fourni par l'admin) qui pointe vers
 ## 2. Écrans et routes
 
 | Route (`leader/`) | Vue / template | Contenu |
-|------|------|---------|
+| ------ | ------ | --------- |
 | `` | `mes-grimpeurs.html` (React `ListScore`) | Tous les grimpeurs inscrits par le club |
 | `create` | `EquipeCreateView` (`leader/views.py:15-46`) | Créer une équipe (sélecteur de club) |
 | `<pk>` | `EquipeUpdateView` (`leader/views.py:10-12`, React `Equipe`) | Éditer une équipe |
@@ -87,7 +87,7 @@ mettent à jour en direct chez le coach (animations flip-move, doc 08).
 ## 7. Mapping cible
 
 | Actuel | Cible |
-|--------|-------|
+| -------- | ------- |
 | Filtres `get_queryset` coach | **RLS** : coach ne lit/écrit que ses équipes/scores de la rencontre courante |
 | `scores/<id>/ordre\|groupe`,`register` | route handlers Next.js appelant `fn_score_ordre` / `fn_score_groupe` |
 | Abonnements SSE | abonnements Supabase Realtime filtrés par club/rencontre (doc 07) |

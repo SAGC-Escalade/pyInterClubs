@@ -17,7 +17,7 @@ Netlify). Il sert de référence pour réécrire l'application à l'identique fo
 ## Ordre de lecture
 
 | # | Document | Contenu |
-|---|----------|---------|
+| --- | ---------- | --------- |
 | 00 | [Vue d'ensemble](00-vue-ensemble.md) | Contexte, rôles, glossaire, périmètre, checklist de couverture |
 | 01 | [Modèle de données](01-modele-de-donnees.md) | Entités, enums, contraintes, DDL Postgres, RLS |
 | 02 | [Règles de scoring](02-regles-scoring.md) | Barèmes bloc/diff/vitesse, calcul par rang, validation, catégories d'âge |

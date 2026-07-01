@@ -90,7 +90,7 @@ Le **middleware Next.js** lit ces claims (remplace `pyInterClubsMiddleware`) et 
 Les `get_queryset` de `api/views.py` deviennent des **policies RLS** fondées sur les claims :
 
 | Table | SELECT | INSERT/UPDATE/DELETE |
-|-------|--------|----------------------|
+| ------- | -------- | ---------------------- |
 | club, voie, grimpeur, rencontre, rencontre_voie | authentifié | `role=admin` |
 | equipe | authentifié (classements) | `role=admin`, ou `role=coach` ET `club = jwt.club` ET `rencontre = jwt.rencontre` |
 | score | authentifié | idem equipe (via `equipe.club`/`equipe.rencontre`) |

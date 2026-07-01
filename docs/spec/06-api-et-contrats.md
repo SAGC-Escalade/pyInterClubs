@@ -12,7 +12,7 @@ pas démarré de rencontre. »).
 ## 1. Endpoints (routeur)
 
 | Ressource | Routes | ViewSet |
-|-----------|--------|---------|
+| ----------- | -------- | --------- |
 | Clubs | `clubs/`, `clubs/<id>/` | `ClubViewSet` |
 | Voies | `voies/`, `voies/<id>/` | `VoieViewSet` |
 | Grimpeurs | `grimpeurs/`, `grimpeurs/<id>/` | `GrimpeurViewSet` |
@@ -30,7 +30,7 @@ Actions personnalisées sur `scores/` :
 ## 2. Filtrage par rôle (à reproduire en RLS)
 
 | ViewSet | Règle |
-|---------|-------|
+| --------- | ------- |
 | Club | tous ; filtre texte `?q=` sur nom/ville (`api/views.py:69-73`) |
 | Voie | toutes (`:76-78`) |
 | Grimpeur | club du coach + catégorie d'âge (sauf admin) + non-inscrits + `?q=` (`:84-106`) |
@@ -126,7 +126,7 @@ Création : entrée `{ "numero": 1 }` (le `club`/`rencontre` sont injectés depu
 ## 6. Codes de retour
 
 | Action | Code |
-|--------|------|
+| -------- | ------ |
 | list/retrieve | 200 |
 | create | 201 |
 | update/patch | 200 |

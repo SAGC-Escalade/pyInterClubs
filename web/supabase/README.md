@@ -5,7 +5,7 @@ Schéma, fonctions de scoring et RLS. Réf. spec : [`../../docs/spec/`](../../do
 ## Migrations
 
 | Fichier | Contenu | Spec |
-|---------|---------|------|
+| --------- | --------- | ------ |
 | `migrations/0001_initial_schema.sql` | Tables (club, grimpeur, voie, rencontre, equipe, score, performance, rencontre_voie, coach, juge, config), index, RLS provisoire | doc 01 |
 | `migrations/0002_scoring.sql` | Évaluateur `{rank}` sûr, scoring bloc/diff (trigger), recalcul vitesse par rang/sexe, vues d'agrégat `v_score_points`/`v_equipe_points` | doc 02 |
 | `seed.sql` | Barème de voies de référence (vitesse, blocs, diffs) | doc 11 §6 |

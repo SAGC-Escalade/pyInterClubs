@@ -17,7 +17,7 @@ temps réel (Realtime) et le planifié (pg_cron) ; **logique métier portée par
 ## Sommaire des spécifications
 
 | # | Document | Contenu |
-|---|----------|---------|
+| --- | ---------- | --------- |
 | — | [README / index](docs/spec/README.md) | Décisions d'archi, conventions, ordre de lecture |
 | 00 | [Vue d'ensemble](docs/spec/00-vue-ensemble.md) | Contexte, rôles, glossaire, checklist de couverture |
 | 01 | [Modèle de données](docs/spec/01-modele-de-donnees.md) | Entités, enums, DDL Postgres, RLS |

@@ -66,7 +66,7 @@ grimpeur** (somme des points sur toutes les rencontres, `sort`, `:210-219`).
 ## 5. Mapping cible
 
 | Actuel | Cible |
-|--------|-------|
+| -------- | ------- |
 | Vues Django + templates print | **Pages Next.js imprimables** (`app/(admin)/reports/...`), CSS `@media print` A4 |
 | Agrégats (`ranking`, sommes, ex æquo) | **vues SQL** `v_classement`, `v_equipe_points`, `v_saison_*` (doc 02) |
 | Chart.js | Chart.js (idem) côté client |

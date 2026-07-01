@@ -59,7 +59,7 @@ de type vitesse, via signal (`core/signals.py:14-25`), qui appelle
 ### 3.1 Valeurs spéciales de `temps`
 
 | Saisie | Valeur stockée | Sens |
-|--------|----------------|------|
+| -------- | ---------------- | ------ |
 | « A réaliser » | `null` | pas encore passé (jamais classé) |
 | « Chute » | `-1 min` (`timedelta(minutes=-1)`) | chuté |
 | « Abandon » | `-2 min` (`timedelta(minutes=-2)`) | abandon |
@@ -207,7 +207,7 @@ Quand un admin modifie les `zones` d'une voie, l'ordre/contenu des clés peut ch
 ## 8. Mapping cible (triggers / fonctions / vues)
 
 | Logique actuelle | Cible Postgres |
-|------------------|----------------|
+| ------------------ | ---------------- |
 | `Performance.save()` (bloc/diff) | `BEFORE INSERT/UPDATE` trigger `trg_perf_points` → `fn_calc_perf_points(perf)` |
 | `proceed_speed_points()` + signal temps | `AFTER UPDATE OF temps` trigger → `fn_proceed_speed_points(rencontre, sexe)` (recalcul groupé) |
 | `maj_performances_etat()` (édition zones) | `AFTER UPDATE OF zones` trigger sur `voie` → `fn_remap_etat(voie, old_zones)` |

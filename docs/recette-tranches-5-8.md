@@ -45,7 +45,7 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 ### 4.1 Accès et navigation
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T5-01 | Garde admin | Déconnecté, ouvrir `/admin/reports` | Redirection vers `/login` | |
 | T5-02 | Index des rapports | Connecté admin → onglet « Rapports » | Liste des rencontres (par date décroissante) avec 4 boutons (Stats, Équipes, Individuel, Inscriptions) ; section « Par saison » listant les saisons | |
 | T5-03 | Navigation | Cliquer sur chaque bouton de rapport | Ouvre la page correspondante avec l'en-tête de rencontre (ville, date, catégorie) | |
@@ -53,7 +53,7 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 ### 4.2 Classement individuel — `report/<id>/ranking`
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T5-04 | Deux colonnes | Ouvrir le rapport « Individuel » | Colonnes **Femmes** et **Hommes** séparées, triées par points décroissants | |
 | T5-05 | Ex æquo | Deux grimpeurs à points égaux | Même rang partagé, puis saut de rang (ex. 1, 1, 3) | |
 | T5-06 | Médailles top 3 | Observer les 3 premiers de chaque colonne | Médaille or / argent / bronze sur les rangs 1 à 3 | |
@@ -61,7 +61,7 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 ### 4.3 Classement par équipes — `report/<id>/teams`
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T5-07 | Tri des équipes | Ouvrir le rapport « Équipes » | Équipes triées par points décroissants ; badge vert si l'équipe est valide, bleu sinon | |
 | T5-08 | Colonnes par voie | Observer l'en-tête de table d'une équipe | Une colonne par voie (dans l'ordre d'affichage) + colonne « Points » ; cellule = points de la perf (`—` si absente), libellé d'état en infobulle | |
 | T5-09 | Badge prêté | Grimpeur prêté par un autre club | Badge « prêté &lt;club&gt; » à côté du nom | |
@@ -76,7 +76,7 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 ### 4.5 Stats — `report/<id>/stats`
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T5-12 | Séries par genre/état/type | Ouvrir le rapport « Stats » | Trois tableaux : passages par **genre**, par **état**, par **type** ; une colonne par voie + colonne « Abandon » | |
 | T5-13 | Colonne Abandon | Perf sans points (non scorée ou Abandon) | Comptée dans la colonne « Abandon », pas sous la voie | |
 | T5-14 | États calculés ignorés | Voie de vitesse (barème `{rank}`) | Les états `{rank}` **n'apparaissent pas** dans le tableau par état | |
@@ -85,7 +85,7 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 ### 4.6 Rapports de saison
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T5-16 | Individuel de saison | `report/saison/<saison>/ranking` | Par **catégorie** (Enfants/Adolescents) × **sexe** ; points **cumulés** sur toutes les rencontres de la saison | |
 | T5-17 | Équipes de saison | `report/saison/<saison>/teams` | Équipes regroupées par **club + numéro**, points cumulés, par catégorie | |
 | T5-18 | Cumul multi-rencontres | Un grimpeur ayant couru 2 rencontres de la saison | Ses points sont **sommés** ; une seule ligne au classement de saison | |
@@ -115,7 +115,7 @@ realtime.messages order by inserted_at desc limit 20;` ou l'inspecteur réseau
 (WebSocket Realtime) du navigateur.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T6-00 | `realtime.send` disponible | Studio → `select realtime.send('{}'::jsonb, 'change', 'rencontre:0:test', false);` | Retourne sans erreur (sinon les broadcasts no-op : à traiter avant la suite) | |
 | T6-01 | Broadcast par trigger | Rencontre courante ouverte ; un juge saisit une perf de diff | Des messages sont émis sur `rencontre:{r}:voie:{v}:perfs`, `…:perfs:{id}`, puis en cascade `…:scores*` et `…:equipes*` (agrégats recalculés) | |
 | T6-02 | Isolation par rencontre | Ouvrir `/resultats?rencontre=A` et une saisie sur la rencontre B | Le classement de A **ne bouge pas** ; seul un client abonné à B se rafraîchit (topics préfixés `rencontre:{id}:`) | |
@@ -152,7 +152,7 @@ est **différé** (spec §4 le juge optionnel/lourd) : cf. T7-03.
   fichier → **5 inchangés** (idempotence, T7-04).
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T7-01 | Import grimpeurs (CSV) | `/admin/import-grimpeurs` → choisir un CSV FFME (Structure, Numéro de licence, Nom complet, Date de naissance) → observer l'aperçu → « Appliquer » | Aperçu (dry-run) listant Créer/Màj/Déplacer/Ignoré + compteurs (F/H) ; après application, grimpeurs créés, rattachés au club (club créé si absent), sexe déduit (colonne explicite sinon prénom) | |
 | T7-02 | Barème de voies | Appliquer `0010_seed_voies_reference.sql` puis les requêtes de vérif en pied de fichier | 40 voies actives ; répartition type 4/31/5, catégorie 20/20 ; `zones` au format `[{label,points}]` commençant par « A réaliser » | |
 | T7-03 | Import base historique | *(différé)* | Volet non livré en T7 (spec §4 optionnel) ; `importHistoricDB.py` reste la cartographie de référence (split rencontre enfants/ado, remap états, temps spéciaux, séquences) | ⏭️ |
@@ -186,7 +186,7 @@ forme du schéma → pas de régénération `database.types.ts`, pas d'adaptatio
 `seed.sql`/`reset-demo.sql`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
-|----|----------|--------|------------------|--------|
+| ---- | ---------- | -------- | ------------------ | -------- |
 | T8-01 | RLS lecture par rôle | Coller les requêtes (a)(b)(c) du pied de `0011` avec un JWT coach, juge, puis admin (`set local request.jwt.claims`) | Coach & juge : `config`/`coach`/`juge` → **0 ligne** ; `equipe`/`performance` → **> 0** (data large). Admin : tout **> 0** | |
 | T8-01b | RLS écriture croisée | Coller (d)(e) : coach `update` d'une équipe d'un **autre club** ; juge `update` d'une perf d'une **voie non affectée** | `UPDATE 0` dans les deux cas (coach_write borné club+rencontre ; juge_write borné aux voies) ; les écritures **dans** le périmètre passent (non-régression T4) | |
 | T8-02 | Confidentialité config | Requête (a)/(b) sur `public.config` en coach/juge, et `select * from config` en anonyme | Coach/juge : **0 ligne** (Wi-Fi jamais exposé). Anonyme : refusé (aucune policy `read_anon` sur `config`). La rencontre courante reste résolue via `default_rencontre_id()` (SECURITY DEFINER) | |

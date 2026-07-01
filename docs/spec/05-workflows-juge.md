@@ -80,7 +80,7 @@ dans la stratégie d'abonnement cible (doc 07).
 ## 7. Mapping cible
 
 | Actuel | Cible |
-|--------|-------|
+| -------- | ------- |
 | Périmètre juge (`profil.voies`) | **RLS** : juge ne lit/écrit que les perfs des voies de ses `rencontre_voie` |
 | `FullPerformanceSerializer` | vue/jointure exposant grimpeur+club avec la perf pour les voies du juge |
 | `register` | route handler → affecte la 1ʳᵉ perf sans voie à la voie du juge (vérif RLS) |

@@ -35,7 +35,7 @@ python manage.py importHistoricDB  # Import historical database
 ### Apps
 
 | App | Role |
-|-----|------|
+| ----- | ------ |
 | `core` | Central data models shared by all apps |
 | `admin` | Competition setup and administration |
 | `leader` | Team coach interface (register/manage teams) |

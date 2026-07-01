@@ -22,7 +22,7 @@ scoring, mêmes workflows, mêmes écrans), ce document en étant la référence
 ## 2. Les trois rôles
 
 | Rôle | Auth | Périmètre | Interface |
-|------|------|-----------|-----------|
+| ------ | ------ | ----------- | ----------- |
 | **Administrateur** | Compte Django superuser/staff (mot de passe) | Toutes les rencontres, tous les clubs | Création/pilotage de rencontre, affectation des juges, QR codes, rapports |
 | **Coach** (`Coach`) | Token/QR (sans mot de passe), provisionné à l'ouverture de la rencontre | Son **club** dans la **rencontre courante** | Gestion de ses équipes/grimpeurs, suivi des points |
 | **Juge** (`Juge`) | Token/QR (sans mot de passe), créé par l'admin | Les **voies** qui lui sont affectées | Feuille de scoring : saisie des performances |
@@ -53,7 +53,7 @@ est unique, `pyInterClubs/urls.py:40-44` note la limitation), comptes self-servi
 ## 4. Glossaire
 
 | Terme | Définition | Source |
-|-------|-----------|--------|
+| ------- | ----------- | -------- |
 | **Rencontre** | Une compétition (entité racine) : saison, date, club hôte, catégorie, nombres de voies, options. | `core/models.py:330` |
 | **Club** | Un club d'escalade (nom, ville). | `core/models.py:297` |
 | **Grimpeur** | Un compétiteur (nom, prénom, année de naissance, sexe, licence, club). | `core/models.py:309` |
@@ -75,7 +75,7 @@ est unique, `pyInterClubs/urls.py:40-44` note la limitation), comptes self-servi
 ## 5. Stack actuelle vs cible
 
 | Préoccupation | Actuel (Django) | Cible |
-|---------------|-----------------|-------|
+| --------------- | ----------------- | ------- |
 | Données | SQLite + ORM Django | Postgres (Supabase) + migrations SQL |
 | API | DRF viewsets/serializers | Route handlers Next.js / supabase-js (selon RLS) |
 | Logique métier | `save()` + signaux + querysets annotés | Triggers/fonctions PL/pgSQL + vues SQL |

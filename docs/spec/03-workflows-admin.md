@@ -24,7 +24,7 @@ Supprimer (si non démarrée)                    Arrêter (déprovisionne coachs
 ## 2. Écrans et routes
 
 | Route (`admin/`) | Vue | Rôle |
-|------|------|------|
+| ------ | ------ | ------ |
 | `` (GET/POST) | `RencontreSelectionView` | Sélection de la rencontre courante |
 | `create` | `RencontreCreateView` | Création (assistant 3 onglets) |
 | `<pk>/delete` | `RencontreDeleteView` | Suppression |

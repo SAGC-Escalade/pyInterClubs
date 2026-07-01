@@ -31,7 +31,7 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 - `useSSEUpdater({queryKey, endpoint, debounceTime})` : maj du cache sur événement (doc 07).
 
 | Brique actuelle | Cible |
-|-----------------|-------|
+| ----------------- | ------- |
 | React Query | TanStack Query (idem) |
 | `CRUDProvider`/CSRF | client supabase-js / fetch + auth header |
 | `SSEProvider`/`useSSEUpdater` | `useRealtime` sur `supabase.channel` (doc 07) |
@@ -79,7 +79,7 @@ recrée ces écrans en **Next.js** (composants React natifs, build standard).
 `ranking.jsx:59-68` — `age = saison - anneeNaissance` :
 
 | Âge | Catégorie |
-|-----|-----------|
+| ----- | ----------- |
 | 8–9 | U11 |
 | 10–11 | U13 |
 | 12–13 | U15 |
