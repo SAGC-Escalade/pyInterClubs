@@ -24,3 +24,19 @@
 .bronze {
   color: #cd7f32;
 }
+
+/* Rapports imprimables A4 (cf. doc 09 §4). */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .report {
+    font-size: 11px;
+  }
+  .report .no-page-break {
+    page-break-inside: avoid;
+  }
+  a[href]::after {
+    content: "";
+  }
+}

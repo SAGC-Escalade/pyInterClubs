@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/admin/clubs", label: "Clubs" },
   { href: "/admin/grimpeurs", label: "Grimpeurs" },
   { href: "/admin/voies", label: "Voies" },
+  { href: "/admin/reports", label: "Rapports" },
 ];
 
 /**
