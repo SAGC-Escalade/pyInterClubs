@@ -50,12 +50,12 @@ Réf. : `docs/spec/02 §5`, `08`, `07`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 | ---- | ---------- | -------- | ------------------ | -------- |
-| T1-01 | Affichage du classement | Ouvrir `/resultats` sans être connecté | Tableau par sexe, trié par points décroissants, colonnes points et validité | |
-| T1-02 | Rang ex-æquo | Observer deux grimpeurs à points égaux | Même rang partagé, puis saut de rang ensuite | |
-| T1-03 | Catégorie d'âge | Vérifier la colonne catégorie | U11..U21 selon `saison - année de naissance` | |
-| T1-04 | Mise à jour live | Garder `/resultats` ouvert ; faire saisir une perf (admin ou juge) sur la rencontre courante | Le classement se met à jour sans rechargement (Realtime) | |
-| T1-05 | Rencontre courante | Ouvrir `/resultats` puis `/resultats?rencontre=<id>` | Sans paramètre = `DEFAULT_RENCONTRE` ; avec paramètre = rencontre ciblée | |
-| T1-06 | Accès anonyme | Naviguer déconnecté | `/resultats` accessible sans authentification | |
+| T1-01 | Affichage du classement | Ouvrir `/resultats` sans être connecté | Tableau par sexe, trié par points décroissants, colonnes points et validité | ✅ |
+| T1-02 | Rang ex-æquo | Observer deux grimpeurs à points égaux | Même rang partagé, puis saut de rang ensuite | ✅ |
+| T1-03 | Catégorie d'âge | Vérifier la colonne catégorie | U11..U21 selon `saison - année de naissance` | ✅ |
+| T1-04 | Mise à jour live | Garder `/resultats` ouvert ; faire saisir une perf (admin ou juge) sur la rencontre courante | Le classement se met à jour sans rechargement (Realtime) | ✅ |
+| T1-05 | Rencontre courante | Ouvrir `/resultats` puis `/resultats?rencontre=<id>` | Sans paramètre = `DEFAULT_RENCONTRE` ; avec paramètre = rencontre ciblée | ✅ |
+| T1-06 | Accès anonyme | Naviguer déconnecté | `/resultats` accessible sans authentification | ✅ |
 
 ## 5. Tranche 2 — Auth admin et référentiels
 
@@ -63,13 +63,13 @@ Réf. : `docs/spec/10 §2/§3`, `02 §6`, `06 §5`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 | ---- | ---------- | -------- | ------------------ | -------- |
-| T2-01 | Connexion admin | Se connecter via `/login` avec le compte promu admin | Accès à `/admin` ; en-tête affiche l'e-mail | |
-| T2-02 | Garde admin | Déconnecté, ouvrir `/admin` | Redirection vers `/login` (ou `/`) | |
-| T2-03 | CRUD clubs | `/admin/clubs` : créer, éditer, supprimer un club | Liste à jour ; suppression d'un club référencé refusée avec message FR | |
-| T2-04 | CRUD grimpeurs | `/admin/grimpeurs` : créer/éditer/supprimer | Liste à jour ; champs (sexe, année, club) cohérents | |
-| T2-05 | CRUD voies + zones | `/admin/voies` : créer une voie, éditer le barème (zones) | Ordre des zones significatif ; points number / vide=null / expression vitesse acceptés | |
-| T2-06 | Recalage des états | Éditer les zones d'une voie déjà scorée (renommer/réordonner) | Les performances existantes sont remappées par libellé ; zones disparues réinitialisées | |
-| T2-07 | Messages d'erreur FR | Provoquer une violation (doublon, FK, action non autorisée) | Message en français (`frError`), pas d'erreur technique brute | |
+| T2-01 | Connexion admin | Se connecter via `/login` avec le compte promu admin | Accès à `/admin` ; en-tête affiche l'e-mail | ✅ |
+| T2-02 | Garde admin | Déconnecté, ouvrir `/admin` | Redirection vers `/login` (ou `/`) | ✅ |
+| T2-03 | CRUD clubs | `/admin/clubs` : créer, éditer, supprimer un club | Liste à jour ; suppression d'un club référencé refusée avec message FR | ✅ |
+| T2-04 | CRUD grimpeurs | `/admin/grimpeurs` : créer/éditer/supprimer | Liste à jour ; champs (sexe, année, club) cohérents | ✅ |
+| T2-05 | CRUD voies + zones | `/admin/voies` : créer une voie, éditer le barème (zones) | Ordre des zones significatif ; points number / vide=null / expression vitesse acceptés | ✅ |
+| T2-06 | Recalage des états | Éditer les zones d'une voie déjà scorée (renommer/réordonner) | Les performances existantes sont remappées par libellé ; zones disparues réinitialisées | ✅ |
+| T2-07 | Messages d'erreur FR | Provoquer une violation (doublon, FK, action non autorisée) | Message en français (`frError`), pas d'erreur technique brute | ✅ |
 
 ## 6. Tranche 3 — Administration des rencontres
 
@@ -77,10 +77,10 @@ Réf. : `docs/spec/03 §3/§4`.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 | ---- | ---------- | -------- | ------------------ | -------- |
-| T3-01 | Liste des rencontres | Ouvrir `/admin/rencontres` | Lignes avec club hôte, compteurs voies/équipes ; badge « Courante » | |
-| T3-02 | Création (assistant) | `/admin/rencontres/create` : renseigner paramètres, voies, options | Saison par défaut = année (+1 après août), date du jour, `voies_groupees` coché si catégorie enfants ; rencontre créée avec ses `rencontre_voie` | |
-| T3-03 | Rencontre courante | « Définir comme courante » sur une rencontre | `DEFAULT_RENCONTRE` mis à jour ; `/resultats` reflète la rencontre choisie | |
-| T3-04 | Suppression | Supprimer une rencontre non démarrée | Suppression OK ; le bouton est désactivé si la rencontre est démarrée | |
+| T3-01 | Liste des rencontres | Ouvrir `/admin/rencontres` | Lignes avec club hôte, compteurs voies/équipes ; badge « Courante » | ✅ |
+| T3-02 | Création (assistant) | `/admin/rencontres/create` : renseigner paramètres, voies, options | Saison par défaut = année (+1 après août), date du jour, `voies_groupees` coché si catégorie enfants ; rencontre créée avec ses `rencontre_voie` | ✅ |
+| T3-03 | Rencontre courante | « Définir comme courante » sur une rencontre | `DEFAULT_RENCONTRE` mis à jour ; `/resultats` reflète la rencontre choisie | ✅ |
+| T3-04 | Suppression | Supprimer une rencontre non démarrée | Suppression OK ; le bouton est désactivé si la rencontre est démarrée | ✅ |
 
 ## 7. Tranche 4 — Auth terrain, provisioning, coach et juge
 
