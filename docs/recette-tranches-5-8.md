@@ -144,7 +144,12 @@ est **différé** (spec §4 le juge optionnel/lourd) : cf. T7-03.
   `node --experimental-strip-types web/scripts/gen-seed-voies.ts`.
 - Rejouer un jeu de démo : coller `web/supabase/reset-demo.sql` (purge + `restart
   identity`) puis recoller `web/supabase/seed.sql`.
-- Import CSV : page admin `/admin/import-grimpeurs` (onglet « Import »).
+- Import CSV : page admin `/admin/import-grimpeurs` (onglet « Import »). CSV
+  d'exemple prêt à l'emploi : `web/supabase/fixtures/grimpeurs-exemple.csv`
+  (5 grimpeurs, 3 clubs). Sur base fraîche (barème seul) l'aperçu attendu est :
+  **5 à créer** (3 F / 1 H + « Xyzzy » sexe indéterminé), **3 clubs à créer**
+  (Caf Bordeaux, Pyrénéa Escalade, Us Cagouille), 0 ignoré. Ré-importer le même
+  fichier → **5 inchangés** (idempotence, T7-04).
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 |----|----------|--------|------------------|--------|
