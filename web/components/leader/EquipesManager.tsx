@@ -6,6 +6,13 @@ import { frError } from "@/lib/errors";
 import { unObjet } from "@/lib/supabase/embed";
 import { bornesAnneeNaissance } from "@/lib/leader/candidats";
 import { useRealtime } from "@/lib/realtime/useRealtime";
+import { reconcileCache } from "@/lib/realtime/reconcile";
+import {
+  topicEquipe,
+  topicClubEquipes,
+  topicClubScores,
+} from "@/lib/realtime/topics";
+import { surStatutRealtime } from "@/lib/ui/toast";
 import EquipeCard, { type Candidat, type VoieDiff } from "./EquipeCard";
 
 type EquipeRow = {
@@ -120,8 +127,25 @@ export default function EquipesManager({
     },
   });
 
-  useRealtime(["equipe", "score", "performance"], () =>
-    qc.invalidateQueries({ queryKey: ["leader"] }),
+  // Live (doc 07 §3.1/§4) — abonnement scindé par rencontre/club :
+  // - maj optimiste des points/validité des équipes existantes (liste plate) via
+  //   reconcileCache, sur le topic de chaque équipe ;
+  const opts = { debounceMs: 150, onStatus: surStatutRealtime };
+  useRealtime(
+    equipes.map((e) => topicEquipe(rencontre, e.equipe_id)),
+    (payload) =>
+      qc.setQueryData<EquipeRow[]>(cle, (old) =>
+        reconcileCache(old ?? [], payload as never, (x) =>
+          (x as { equipe_id?: number; deleted?: { id: number } }).equipe_id,
+        ) as EquipeRow[],
+      ),
+    opts,
+  );
+  // - ajout/suppression d'équipe ou de membre du club -> refetch ciblé (repli).
+  useRealtime(
+    [topicClubEquipes(rencontre, club), topicClubScores(rencontre, club)],
+    () => qc.invalidateQueries({ queryKey: ["leader"] }),
+    opts,
   );
 
   const creer = useMutation({

@@ -96,19 +96,35 @@ Logique d'agrégation couverte par Vitest : `web/test/tranche5/` (helpers
 |----|----------|--------|------------------|--------|
 | T5-19 | Aperçu impression | Bouton « Imprimer » (ou Ctrl+P) sur un rapport | Mise en page A4 ; contrôles (`no-print`) masqués ; pas de coupure au milieu d'une équipe/colonne (`no-page-break`) | |
 
-## 5. Tranche 6 — Temps réel avancé (à implémenter)
+## 5. Tranche 6 — Temps réel avancé
 
-Réf. : `docs/spec/07-temps-reel.md`. Remplace l'abonnement direct aux tables
-(T1) par une **diffusion broadcast par trigger**, avec des topics par
-rencontre/voie (cf. `0003_views_classement.sql:56`, `lib/realtime/useRealtime.ts:11`).
+Réf. : `docs/spec/07-temps-reel.md §3.1/§3.3/§4`. Remplace l'abonnement direct
+aux tables (T1) par une **diffusion broadcast pilotée par triggers** (migration
+`0009_realtime_broadcast.sql`), avec des topics préfixés par `rencontre:{id}:`.
+Constructeurs de topics et réconciliation de cache couverts par Vitest
+(`web/test/tranche6/`).
+
+Logique testée automatiquement : `topics.ts` (chaînes de topics), `reconcile.ts`
+(`reconcileCache`), hook `useRealtime` (abonnement broadcast, debounce, statut,
+nettoyage). Le SQL (triggers, `realtime.send`) n'est pas couvert par Vitest : le
+valider ici via Studio.
+
+**Pré-requis de validation** : `npm run db:reset` doit appliquer `0009` sans
+erreur. Pour observer les messages : Studio → SQL `select * from
+realtime.messages order by inserted_at desc limit 20;` ou l'inspecteur réseau
+(WebSocket Realtime) du navigateur.
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 |----|----------|--------|------------------|--------|
-| T6-01 | Broadcast par trigger | Saisir une perf (juge) | Un message broadcast est émis sur le topic de la rencontre (au lieu d'un `postgres_changes` par table) | ⏭️ |
-| T6-02 | Topic par rencontre | Deux rencontres ouvertes en parallèle | Un client n'écoute que sa rencontre ; pas de fuite d'événements entre rencontres | ⏭️ |
-| T6-03 | Topic par voie (juge) | Deux juges sur des voies différentes | Chaque feuille ne se rafraîchit que pour ses voies | ⏭️ |
-| T6-04 | Charge / débit | Rafale de saisies | Pas de perte d'événement ni de sur-rafraîchissement (debounce) | ⏭️ |
-| T6-05 | Non-régression T1/T4 | Classement public + écrans coach/juge | Les mises à jour live restent conformes aux scénarios T1-04 et T4-14 | ⏭️ |
+| T6-00 | `realtime.send` disponible | Studio → `select realtime.send('{}'::jsonb, 'change', 'rencontre:0:test', false);` | Retourne sans erreur (sinon les broadcasts no-op : à traiter avant la suite) | |
+| T6-01 | Broadcast par trigger | Rencontre courante ouverte ; un juge saisit une perf de diff | Des messages sont émis sur `rencontre:{r}:voie:{v}:perfs`, `…:perfs:{id}`, puis en cascade `…:scores*` et `…:equipes*` (agrégats recalculés) | |
+| T6-02 | Isolation par rencontre | Ouvrir `/resultats?rencontre=A` et une saisie sur la rencontre B | Le classement de A **ne bouge pas** ; seul un client abonné à B se rafraîchit (topics préfixés `rencontre:{id}:`) | |
+| T6-03 | Isolation par voie (juge) | Deux juges connectés sur des voies différentes ; scorer sur la voie du juge 1 | Seule la feuille du juge 1 se rafraîchit (abonnement `voie:{v}:perfs`) ; celle du juge 2 reste stable | |
+| T6-04 | Debounce sur rafale | Enchaîner rapidement plusieurs saisies sur une voie | Le classement/feuille se met à jour de façon groupée (~150 ms), sans clignotement ni refetch par événement | |
+| T6-05 | Cascade points/validité (coach) | Garder `/leader` ouvert ; un juge valide les perfs d'un membre | Points/validité de l'équipe se mettent à jour **en place** (reconcileCache) sans rechargement complet | |
+| T6-06 | Ajout/suppression (coach) | Créer puis supprimer une équipe côté coach dans une autre fenêtre | La liste des équipes du club se met à jour (refetch ciblé sur `club:{c}:equipes`) | |
+| T6-07 | Perte de connexion | Couper le réseau (ou arrêter la stack) pendant l'affichage | Un toast « Perte de la connexion au serveur » apparaît ; à la reprise, les données se resynchronisent | |
+| T6-08 | Non-régression T1/T4 | Rejouer T1-04 (classement live) et T4-14 (live coach) | Comportement live conforme aux tranches 1 et 4 | |
 
 ## 6. Tranche 7 — Reprise de données (à implémenter)
 
@@ -146,3 +162,9 @@ Réf. : `docs/spec/08`, `10`, checklist `00 §6`.
   élargir la surface SQL/RLS.
 - **SQL (RLS, fonctions `SECURITY DEFINER`)** : non couvert par Vitest ; à
   éprouver via cette recette et l'inspection Studio (cf. T8).
+- **Broadcast Realtime (T6)** : `fn_rt_broadcast` encapsule `realtime.send` dans
+  un `exception when others then null` — la migration `0009` s'applique donc même
+  si la signature diffère, mais les broadcasts sont alors silencieux. Valider
+  `realtime.send` (scénario T6-00) après `db:reset`. Canaux **non privés** ; le
+  cloisonnement par claims (canaux privés + RLS sur `realtime.messages`) est
+  différé à la T8.

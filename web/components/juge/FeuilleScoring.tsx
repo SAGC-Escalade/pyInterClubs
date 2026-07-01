@@ -5,6 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { TYPE_VOIE } from "@/lib/constants";
 import { useRealtime } from "@/lib/realtime/useRealtime";
+import { topicVoiePerfs } from "@/lib/realtime/topics";
+import { surStatutRealtime } from "@/lib/ui/toast";
 import VoiePanel, { type Perf, type Zone } from "./VoiePanel";
 
 type Voie = {
@@ -59,8 +61,12 @@ export default function FeuilleScoring({
     },
   });
 
-  useRealtime(["performance", "score"], () =>
-    qc.invalidateQueries({ queryKey: ["juge"] }),
+  // Live (doc 07 §3.1/§4) — abonnement aux perfs de chaque voie affectée
+  // (isolation par voie/rencontre) ; refetch de la feuille sur changement.
+  useRealtime(
+    voies.map((v) => topicVoiePerfs(rencontre, v)),
+    () => qc.invalidateQueries({ queryKey: ["juge"] }),
+    { debounceMs: 150, onStatus: surStatutRealtime },
   );
 
   const [actif, setActif] = useState<number | null>(null);

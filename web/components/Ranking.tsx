@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import FlipMove from "react-flip-move";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtime } from "@/lib/realtime/useRealtime";
+import { topicScores, topicEquipes } from "@/lib/realtime/topics";
+import { surStatutRealtime } from "@/lib/ui/toast";
 import { categorieAge } from "@/lib/categorie";
 
 type ClassementRow = {
@@ -80,11 +82,18 @@ export default function Ranking({ rencontreId }: { rencontreId: number }) {
     },
   });
 
-  // Rafraîchit le classement à tout changement de score/performance (doc 07).
+  // Rafraîchit le classement (liste classée : refetch, le rang étant recalculé
+  // globalement). Abonnement broadcast scindé par rencontre (doc 07 §3.1/§4) :
+  // les changements de points d'un juge remontent en cascade aux topics
+  // collection `scores`/`equipes` de la rencontre.
   const onChange = useCallback(() => {
     void refetch();
   }, [refetch]);
-  useRealtime(["score", "performance", "equipe"], onChange);
+  useRealtime(
+    [topicScores(rencontreId), topicEquipes(rencontreId)],
+    onChange,
+    { debounceMs: 150, onStatus: surStatutRealtime },
+  );
 
   if (isLoading) {
     return (
