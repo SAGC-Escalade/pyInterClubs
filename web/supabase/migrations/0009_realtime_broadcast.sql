@@ -114,6 +114,7 @@ begin
   return null;
 end$$;
 
+drop trigger if exists trg_equipe_broadcast on public.equipe;
 create trigger trg_equipe_broadcast
 after insert or update or delete on public.equipe
 for each row execute function public.fn_rt_equipe();
@@ -159,6 +160,7 @@ begin
   return null;
 end$$;
 
+drop trigger if exists trg_score_broadcast on public.score;
 create trigger trg_score_broadcast
 after insert or update or delete on public.score
 for each row execute function public.fn_rt_score();
@@ -236,6 +238,7 @@ begin
   return null;
 end$$;
 
+drop trigger if exists trg_performance_broadcast on public.performance;
 create trigger trg_performance_broadcast
 after insert or update or delete on public.performance
 for each row execute function public.fn_rt_perf();
