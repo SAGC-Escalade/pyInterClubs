@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getRapportRencontre } from "@/lib/reports/data";
 import PrintButton from "@/components/admin/reports/PrintButton";
+import { ariaLabelClassementRow } from "@/lib/a11y/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -35,15 +36,23 @@ export default async function RankingReportPage({
             <table className="table table-sm">
               <thead>
                 <tr>
-                  <th style={{ width: "3rem" }}>Rang</th>
-                  <th>Grimpeur</th>
-                  <th>Club</th>
-                  <th className="text-end">Points</th>
+                  <th scope="col" style={{ width: "3rem" }}>Rang</th>
+                  <th scope="col">Grimpeur</th>
+                  <th scope="col">Club</th>
+                  <th scope="col" className="text-end">Points</th>
                 </tr>
               </thead>
               <tbody>
                 {col.scores.map((s) => (
-                  <tr key={s.score_id}>
+                  <tr
+                    key={s.score_id}
+                    aria-label={ariaLabelClassementRow({
+                      rang: s.rang,
+                      prenom: s.grimpeur.prenom,
+                      nom: s.grimpeur.nom,
+                      points: s.points,
+                    })}
+                  >
                     <td>
                       {s.rang}
                       {s.rang <= 3 && (

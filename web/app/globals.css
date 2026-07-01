@@ -25,18 +25,42 @@
   color: #cd7f32;
 }
 
-/* Rapports imprimables A4 (cf. doc 09 §4). */
+/* Rapports imprimables A4 fine (cf. doc 08 §6, doc 09 §4).
+   Miroir de lib/print/page.ts:buildPrintCss (source testée par Vitest, T8-03). */
 @media print {
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
   .no-print {
     display: none !important;
+  }
+  .print-only {
+    display: revert !important;
   }
   .report {
     font-size: 11px;
   }
-  .report .no-page-break {
+  /* En-têtes de table répétés en haut de chaque page. */
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+  /* Pas de coupure au milieu d'un bloc (équipe, colonne, ligne). */
+  .no-page-break,
+  tr,
+  img {
+    break-inside: avoid;
     page-break-inside: avoid;
   }
   a[href]::after {
     content: "";
   }
+}
+
+/* Élément réservé à l'impression : masqué à l'écran (révélé sous @media print). */
+.print-only {
+  display: none;
 }
