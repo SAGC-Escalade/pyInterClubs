@@ -126,18 +126,33 @@ realtime.messages order by inserted_at desc limit 20;` ou l'inspecteur réseau
 | T6-07 | Perte de connexion | Couper le réseau (ou arrêter la stack) pendant l'affichage | Un toast « Perte de la connexion au serveur » apparaît ; à la reprise, les données se resynchronisent | |
 | T6-08 | Non-régression T1/T4 | Rejouer T1-04 (classement live) et T4-14 (live coach) | Comportement live conforme aux tranches 1 et 4 | |
 
-## 6. Tranche 7 — Reprise de données (à implémenter)
+## 6. Tranche 7 — Reprise de données
 
 Réf. : `docs/spec/11-migration-donnees.md`. Port des commandes Django
-`importClimbers`, `importHistoricDB`, `addVoies`.
+`importClimbers` et `addVoies`. Logique de transformation couverte par Vitest
+(`web/test/tranche7/` : `voies.ts`, `climbers.ts`).
+
+**Périmètre livré** : barème de voies de référence (seed complet) + import CSV
+des grimpeurs (route admin). L'**import de la base historique** (`importHistoricDB`)
+est **différé** (spec §4 le juge optionnel/lourd) : cf. T7-03.
+
+**Pré-requis SQL** (pas de `db:reset` ici — appliquer à la main, cf. §1 et la note
+« workflow migrations manuel ») :
+
+- Barème : appliquer `web/supabase/migrations/0010_seed_voies_reference.sql`
+  (rejouable, 40 voies). Généré depuis `web/lib/import/voies.ts` via
+  `node --experimental-strip-types web/scripts/gen-seed-voies.ts`.
+- Rejouer un jeu de démo : coller `web/supabase/reset-demo.sql` (purge + `restart
+  identity`) puis recoller `web/supabase/seed.sql`.
+- Import CSV : page admin `/admin/import-grimpeurs` (onglet « Import »).
 
 | ID | Scénario | Étapes | Résultat attendu | Statut |
 |----|----------|--------|------------------|--------|
-| T7-01 | Import grimpeurs (CSV) | Importer un CSV de grimpeurs | Grimpeurs créés/mis à jour ; rattachement au club ; doublons gérés | ⏭️ |
-| T7-02 | Barème de voies | Rejouer l'équivalent d'`addVoies` | Voies de référence (bloc/diff/vitesse) créées avec leurs `zones` | ⏭️ |
-| T7-03 | Import base historique | Importer la base SQLite historique | Rencontres/équipes/scores/perfs repris ; classements cohérents | ⏭️ |
-| T7-04 | Idempotence | Rejouer un import | Pas de doublon ; mise à jour en place | ⏭️ |
-| T7-05 | Intégrité | Après import | Contraintes FK/uniques respectées ; rapports T5 exploitables | ⏭️ |
+| T7-01 | Import grimpeurs (CSV) | `/admin/import-grimpeurs` → choisir un CSV FFME (Structure, Numéro de licence, Nom complet, Date de naissance) → observer l'aperçu → « Appliquer » | Aperçu (dry-run) listant Créer/Màj/Déplacer/Ignoré + compteurs (F/H) ; après application, grimpeurs créés, rattachés au club (club créé si absent), sexe déduit (colonne explicite sinon prénom) | |
+| T7-02 | Barème de voies | Appliquer `0010_seed_voies_reference.sql` puis les requêtes de vérif en pied de fichier | 40 voies actives ; répartition type 4/31/5, catégorie 20/20 ; `zones` au format `[{label,points}]` commençant par « A réaliser » | |
+| T7-03 | Import base historique | *(différé)* | Volet non livré en T7 (spec §4 optionnel) ; `importHistoricDB.py` reste la cartographie de référence (split rencontre enfants/ado, remap états, temps spéciaux, séquences) | ⏭️ |
+| T7-04 | Idempotence | Rejouer l'import du même CSV ; ré-appliquer `0010` ; recoller `seed.sql` après `reset-demo.sql` | CSV : lignes identiques → « Inchangé » (aucun doublon), changements → màj en place ; `0010` gardé par `if not exists` (barème non redoublé) ; `seed` rejouable après purge | |
+| T7-05 | Intégrité | Après import CSV + barème, ouvrir les rapports T5 | Aucune FK orpheline (grimpeur→club) ; licences en conflit signalées (ignorées sauf « Forcer ») ; rapports Inscriptions/Classements exploitables | |
 
 ## 7. Tranche 8 — Finitions & durcissement (à implémenter)
 

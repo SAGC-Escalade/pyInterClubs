@@ -1,50 +1,64 @@
 -- =====================================================================
--- Seed — barème de voies de référence
+-- Seed — barème de voies de référence + jeux de données de démo
 -- Réf. : admin/management/commands/addVoies.py (doc 02 §1/§3.3, doc 11 §6)
 -- =====================================================================
--- zones au format tableau ORDONNÉ [{label, points}] (doc 02 §6).
--- Sous-ensemble représentatif (vitesse + blocs + diffs M1-M4) suffisant pour
--- exercer le scoring. Le jeu complet de voies de difficulté (T1..T12 enfants/ado)
--- est à générer depuis addVoies.py.
+-- BARÈME COMPLET (40 voies) au format tableau ORDONNÉ [{label, points}] (doc 02 §6) :
+-- vitesse enfants/ado par genre, blocs, diffs M1..M4 + T1..T10 enfants/ado (doublons
+-- Cestas inclus). Bloc GÉNÉRÉ par web/lib/import/voies.ts (voiesVersSql, testé en
+-- web/test/tranche7/voies.test.ts) — identique à web/supabase/migrations/0010.
+-- Ne pas éditer à la main : régénérer via
+--   node --experimental-strip-types web/scripts/gen-seed-voies.ts
 -- Genre : 1 femme, 2 homme, 3 mixte | Catégorie : 1 enfants, 2 ado | Type : 1 bloc, 2 diff, 3 vitesse
 
--- Vitesse enfants (par genre) ----------------------------------------
-insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
-('Vitesse', 'Femme', 1, 1, 3,
- '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>44","points":2},{"label":"{rank}>5","points":"11-{rank}//5"},{"label":"{rank}<=5","points":"15-{rank}"}]', true),
-('Vitesse', 'Homme', 1, 2, 3,
- '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>44","points":2},{"label":"{rank}>5","points":"11-{rank}//5"},{"label":"{rank}<=5","points":"15-{rank}"}]', true);
-
--- Vitesse adolescents (par genre) ------------------------------------
-insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
-('Vitesse', 'Femme', 2, 1, 3,
- '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>50","points":10},{"label":"{rank}<=50","points":"60-{rank}"}]', true),
-('Vitesse', 'Homme', 2, 2, 3,
- '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>50","points":10},{"label":"{rank}<=50","points":"60-{rank}"}]', true);
-
--- Blocs ---------------------------------------------------------------
-insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
-('Bloc', '1', 1, 3, 1,
- '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"2e essai","points":3},{"label":"1er essai","points":4}]', true),
-('Bloc', '2', 1, 3, 1,
- '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"3e essai","points":4},{"label":"2e essai","points":5},{"label":"1er essai","points":6}]', true),
-('Bloc', '1', 2, 3, 1,
- '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 1","points":10},{"label":"Top","points":30}]', true),
-('Bloc', '2', 2, 3, 1,
- '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":40},{"label":"Zone 1","points":20},{"label":"Top","points":60}]', true);
-
--- Difficulté enfants M1..M4 ------------------------------------------
-insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
-('M1', '4c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":0}]', true),
-('M2', '5a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":1}]', true),
-('M3', '5b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":2}]', true),
-('M4', '5c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":3}]', true);
-
--- Difficulté enfants T1..T3 (exemples ; compléter depuis addVoies.py) -
-insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
-('T1', '4c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":3},{"label":"Top","points":5}]', true),
-('T2', '5a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":3},{"label":"Top","points":6}]', true),
-('T3', '5b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":4},{"label":"Top","points":7}]', true);
+do $$
+begin
+  if not exists (
+    select 1 from public.voie
+    where nom = 'Vitesse' and niveau = 'Homme' and categorie = 1
+  ) then
+    insert into public.voie (nom, niveau, categorie, genre, type, zones, actif) values
+    ('Vitesse', 'Femme', 1, 1, 3, '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>44","points":2},{"label":"{rank}>5","points":"11-{rank}//5"},{"label":"{rank}<=5","points":"15-{rank}"}]', true),
+    ('Vitesse', 'Homme', 1, 2, 3, '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>44","points":2},{"label":"{rank}>5","points":"11-{rank}//5"},{"label":"{rank}<=5","points":"15-{rank}"}]', true),
+    ('Vitesse', 'Femme', 2, 1, 3, '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>50","points":10},{"label":"{rank}<=50","points":"60-{rank}"}]', true),
+    ('Vitesse', 'Homme', 2, 2, 3, '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>50","points":10},{"label":"{rank}<=50","points":"60-{rank}"}]', true),
+    ('Vitesse', '2025', 2, 3, 3, '[{"label":"A réaliser","points":null},{"label":"Abandon","points":0},{"label":"Chute","points":1},{"label":"{rank}>50","points":10},{"label":"{rank}<=50","points":"60-{rank}"}]', true),
+    ('Bloc', '1', 1, 3, 1, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"2e essai","points":3},{"label":"1er essai","points":4}]', true),
+    ('Bloc', '2', 1, 3, 1, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"3e essai","points":4},{"label":"2e essai","points":5},{"label":"1er essai","points":6}]', true),
+    ('Bloc', '1', 2, 3, 1, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 1","points":10},{"label":"Top","points":30}]', true),
+    ('Bloc', '2', 2, 3, 1, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":40},{"label":"Zone 1","points":20},{"label":"Top","points":60}]', true),
+    ('M1', '4c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":0}]', true),
+    ('M2', '5a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":1}]', true),
+    ('M3', '5b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":2}]', true),
+    ('M4', '5c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Top","points":3}]', true),
+    ('T1', '4c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":3},{"label":"Top","points":5}]', true),
+    ('T2', '5a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":3},{"label":"Top","points":6}]', true),
+    ('T3', '5b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":4},{"label":"Top","points":7}]', true),
+    ('T4', '5c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":4},{"label":"Top","points":8}]', true),
+    ('T5', '6a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":5},{"label":"Top","points":9}]', true),
+    ('T6', '6b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":5},{"label":"Top","points":10}]', true),
+    ('T7', '6c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":6},{"label":"Top","points":11}]', true),
+    ('T8', '7a', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":6},{"label":"Top","points":12}]', true),
+    ('T9', '7b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":7},{"label":"Top","points":13}]', true),
+    ('T10', '7c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":8},{"label":"Top","points":14}]', true),
+    ('T3', '5b', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":4},{"label":"Top","points":7}]', true),
+    ('T4', '5c', 1, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone","points":4},{"label":"Top","points":8}]', true),
+    ('T1', '4c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":2},{"label":"Zone 1","points":1},{"label":"Top","points":4}]', true),
+    ('T2', '5a', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":4},{"label":"Zone 1","points":3},{"label":"Top","points":6}]', true),
+    ('T3', '5b', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":6},{"label":"Zone 1","points":5},{"label":"Top","points":8}]', true),
+    ('T4', '5c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":8},{"label":"Zone 1","points":7},{"label":"Top","points":10}]', true),
+    ('T5', '6a', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":10},{"label":"Zone 1","points":9},{"label":"Top","points":12}]', true),
+    ('T6', '6b', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":12},{"label":"Zone 1","points":11},{"label":"Top","points":14}]', true),
+    ('T7', '6c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":14},{"label":"Zone 1","points":13},{"label":"Top","points":16}]', true),
+    ('T8', '7a', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":16},{"label":"Zone 1","points":15},{"label":"Top","points":18}]', true),
+    ('T9', '7b', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":18},{"label":"Zone 1","points":17},{"label":"Top","points":20}]', true),
+    ('T10', '7c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":20},{"label":"Zone 1","points":19},{"label":"Top","points":22}]', true),
+    ('T1', '4c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":2},{"label":"Zone 1","points":1},{"label":"Top","points":4}]', true),
+    ('T2', '5a', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":4},{"label":"Zone 1","points":3},{"label":"Top","points":6}]', true),
+    ('T3', '5b', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":6},{"label":"Zone 1","points":5},{"label":"Top","points":8}]', true),
+    ('T4', '5c', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":8},{"label":"Zone 1","points":7},{"label":"Top","points":10}]', true),
+    ('T5', '6a', 2, 3, 2, '[{"label":"A réaliser","points":null},{"label":"Chute","points":0},{"label":"Zone 2","points":10},{"label":"Zone 1","points":9},{"label":"Top","points":12}]', true);
+  end if;
+end $$;
 
 -- =====================================================================
 -- Jeu de données de DÉMO (Tranche 1) — pour tester l'IHM /resultats
