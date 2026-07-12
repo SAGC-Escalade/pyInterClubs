@@ -70,6 +70,12 @@ La sélection des voies crée les lignes `RencontreVoie` (M2M).
 
 ## 5. Démarrage : provisioning des coachs
 
+> **Contrainte : une seule rencontre active à la fois.** Il est interdit de démarrer une
+> rencontre si une autre est déjà à l'état `EN_COURS`. L'UI doit masquer / désactiver le
+> bouton « Démarrer » dans ce cas et l'API doit retourner une erreur métier (HTTP 409)
+> si la contrainte est violée côté serveur. Pour démarrer une nouvelle rencontre, l'admin
+> doit d'abord arrêter la rencontre en cours.
+
 `RencontreStartView` (`admin/views.py:97-121`, **transaction atomique**) : pour **chaque
 club**, crée un `Coach(club, rencontre)` et un `User` Django dont :
 

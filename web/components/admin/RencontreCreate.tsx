@@ -56,7 +56,7 @@ export default function RencontreCreate() {
   const [nbDiff, setNbDiff] = useState(3);
   const [nbVitesse, setNbVitesse] = useState(1);
   const [voiesReutilisables, setVoiesReutilisables] = useState(false);
-  const [voiesGroupees, setVoiesGroupees] = useState(false);
+  const [voiesGroupees, setVoiesGroupees] = useState(categorie === CATEGORIE_ENFANTS);
   const [groupeesTouche, setGroupeesTouche] = useState(false);
 
   const { data: clubs = [] } = useQuery({

@@ -208,11 +208,11 @@ begin
   v_vf := (select id from public.voie where type = 3 and categorie = 1 and genre = 1 limit 1);
   v_vh := (select id from public.voie where type = 3 and categorie = 1 and genre = 2 limit 1);
 
-  -- Rencontre T4 (enfants, 2 blocs + 3 diffs + 1 vitesse), non groupée.
+  -- Rencontre T4 (enfants, 2 blocs + 3 diffs + 1 vitesse), voies groupées pour tester T4-12/T4-12b.
   insert into public.rencontre
     (saison, club_id, date, categorie, nb_bloc, nb_diff, nb_vitesse, voies_reutilisables, voies_groupees)
   values
-    (2025, c1, date '2025-04-12', 1, 2, 3, 1, true, false)
+    (2025, c1, date '2025-04-12', 1, 2, 3, 1, true, true)
   returning id into r;
 
   -- Rencontre courante par défaut.
